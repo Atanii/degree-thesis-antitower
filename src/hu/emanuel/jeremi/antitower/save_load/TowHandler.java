@@ -200,7 +200,7 @@ public final class TowHandler {
 	public void LoadLevel(final String PATH, boolean fromResource) {
 		if (fromResource) {
 			try(
-				Scanner sc = new Scanner(getClass().getResource("/res/"+PATH).openStream());
+				Scanner sc = new Scanner(getClass().getResource("/res/" + PATH).openStream());
 			) {
 				System.out.println("<<< LOADING: " + PATH + " >>>");
 				

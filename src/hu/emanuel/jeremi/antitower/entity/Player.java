@@ -90,7 +90,7 @@ public class Player extends Entity {
 					inventory[i] = item;
 					break;
 				}
-				else if( i == INVENTORY_SIZE-1 ) {
+				else if( i == INVENTORY_SIZE - 1 ) {
 					return false;
 				}
 		}
@@ -117,8 +117,8 @@ public class Player extends Entity {
 	}
 	
 	public void chooseItem(int slot) {
-		if( inventory[slot-1] != null ) {
-			actualItemPointer = slot-1;
+		if( inventory[slot - 1] != null ) {
+			actualItemPointer = slot - 1;
 		}
 	}
 	
@@ -129,13 +129,13 @@ public class Player extends Entity {
 			if( this.inventory[actualItemPointer].value <= 0 ) {
 				this.hp += this.inventory[actualItemPointer].value;
 				removeItem( this.inventory[actualItemPointer].id );
-				chooseItem( actualItemPointer-1 );
+				chooseItem( actualItemPointer - 1 );
 				DEFENSE_MODE = false;
 				return;
 			}
 		}
 		else if( hp >= 0 ) {
-			this.hp -= (dmg-dp) >= 0 ? (dmg-dp) : 0;
+			this.hp -= (dmg - dp) >= 0 ? (dmg - dp) : 0;
 			return;
 		}			
 	}
@@ -205,36 +205,36 @@ public class Player extends Entity {
 		float dy = pwc.getSinTable()[angle]*speed;
 		
 		if(UP) {
-			if( pwc.isCollision(x,y,dx,dy) ) {
+			if( pwc.isCollision(x, y, dx, dy) ) {
 				x += (int) dx;
 				y += (int) dy;
 			}		
-			if( pwc.isOutside((x>>SIZE_LOG),(y>>SIZE_LOG)) ) {
+			if( pwc.isOutside((x >> SIZE_LOG), (y >> SIZE_LOG)) ) {
 				isInside = false;
 			} else {
 				isInside = true;
 			}
 		}
 		if(DOWN) {
-			if( pwc.isCollision(x,y,-dx,-dy) ) {
+			if( pwc.isCollision(x, y, -dx, -dy) ) {
 				x -= (int) dx;
 				y -= (int) dy;				
 			}			
-			if( pwc.isOutside((x>>SIZE_LOG),(y>>SIZE_LOG)) ) {
+			if( pwc.isOutside((x >> SIZE_LOG), (y >> SIZE_LOG)) ) {
 				isInside = false;
 			} else {
 				isInside = true;
 			}
 		}
 		if(LEFT) {
-			pwc.synchSkyboxWithRotation(true,rotateSpeed);
-			if( (angle-=rotateSpeed) < pwc.g().ANGLE0 ) {
+			pwc.synchSkyboxWithRotation(true, rotateSpeed);
+			if( (angle -= rotateSpeed) < pwc.g().ANGLE0 ) {
 				angle += pwc.g().ANGLE360;
 			}
 		}
 		if(RIGHT) {
-			pwc.synchSkyboxWithRotation(false,rotateSpeed);
-			if( (angle+=rotateSpeed) >= pwc.g().ANGLE360 ) {
+			pwc.synchSkyboxWithRotation(false, rotateSpeed);
+			if( (angle += rotateSpeed) >= pwc.g().ANGLE360 ) {
 				angle -= pwc.g().ANGLE360;
 			}
 		}
@@ -249,24 +249,24 @@ public class Player extends Entity {
 				y += (int) dy;
 				x += (int) dx;
 			}
-			if( pwc.isOutside((x>>SIZE_LOG),(y>>SIZE_LOG)) ) {
+			if( pwc.isOutside((x >> SIZE_LOG),(y >> SIZE_LOG)) ) {
 				isInside = false;
 			} else {
 				isInside = true;
 			}
 		}
 		if(STEPRIGHT) {
-			int temp = angle+pwc.g().ANGLE90;
+			int temp = angle + pwc.g().ANGLE90;
 			if(temp>pwc.g().ANGLE360) temp -= pwc.g().ANGLE360;
 			
-			dy = pwc.getSinTable()[temp]*speed;
-			dx = pwc.getCosTable()[temp]*speed;
+			dy = pwc.getSinTable()[temp] * speed;
+			dx = pwc.getCosTable()[temp] * speed;
 			
 			if( pwc.isCollision(x, y, dx, dy) ) {
 				y += (int) dy;
 				x += (int) dx;
 			}
-			if( pwc.isOutside((x>>SIZE_LOG),(y>>SIZE_LOG)) ) {
+			if( pwc.isOutside((x >> SIZE_LOG),(y >> SIZE_LOG)) ) {
 				isInside = false;
 			} else {
 				isInside = true;

@@ -28,7 +28,7 @@ public class Graphic extends JPanel {
 	private static final long serialVersionUID = 3697273593000989014L;	
 	
 	/////////////////////////////// PLANE ////////////////////////////////////////////////////
-	private int planeWidth = 640, planeHeight = 480;
+	private int planeWidth, planeHeight;
 	//////////////////////////////////////////////////////////////////////////////////////////
 	
 	/////////////////////////////// GRAPHICS FOR DRAWING ON SCREEN ///////////////////////////
@@ -40,10 +40,10 @@ public class Graphic extends JPanel {
 	public int ANGLE0 = 0;
 	public int ANGLE60 = planeWidth;
 	public int ANGLE30 = ANGLE60 / 2;
-	public int ANGLE360 = ANGLE60*6;
+	public int ANGLE360 = ANGLE60 * 6;
 	public int ANGLE5 = ANGLE30 / 6;
 	public int ANGLE90 = ANGLE30 * 3;
-	public int ANGLE180 = ANGLE90*2;
+	public int ANGLE180 = ANGLE90 * 2;
 	public int ANGLE270 = ANGLE90 * 3;	
 	public int angleBetweenRays;
 	//////////////////////////////////////////////////////////////////////////////////////////
@@ -75,7 +75,7 @@ public class Graphic extends JPanel {
 	/////////////////////////////// FLAGS ////////////////////////////////////////////////////
 	public boolean IS_ANGLE_MARKER_ON = false;
 	public boolean IS_SHADERS_ON = false;
-	public boolean IS_RAIN_ON 	  = false;
+	public boolean IS_RAIN_ON = false;
 	public boolean IS_SPRITES_ON = true;
 	public boolean IS_HELP_ON = false;
 	public boolean IS_STATUS_ON = false;
@@ -94,7 +94,7 @@ public class Graphic extends JPanel {
 	
 	// OBJECTS FOR EFFECTS: SKYBOX, RAIN
 	public Skybox skybox;
-	RainEffect rain = new RainEffect(planeWidth,planeHeight);
+	RainEffect rain = new RainEffect(planeWidth, planeHeight);
 	
 	/**
 	 * Precalculate values for the tables (sinTable, cosTable, ...) and fills them.
@@ -104,31 +104,31 @@ public class Graphic extends JPanel {
 		ANGLE0 = 0;
 		ANGLE60 = planeWidth;
 		ANGLE30 = ANGLE60 / 2;
-		ANGLE360 = ANGLE60*6;
+		ANGLE360 = ANGLE60 * 6;
 		ANGLE5 = ANGLE30 / 6;
 		ANGLE90 = ANGLE30 * 3;
-		ANGLE180 = ANGLE90*2;
+		ANGLE180 = ANGLE90 * 2;
 		ANGLE270 = ANGLE90 * 3;	
 		
 		// DECLARING PRECALCULATED TABLES (sin,cos,...etc)
-		sinTable = new float[ANGLE360+1];
-		InvSinTable = new float[ANGLE360+1];
-		cosTable = new float[ANGLE360+1];
-		InvCosTable = new float[ANGLE360+1];
-		tanTable = new float[ANGLE360+1];
-		InvTanTable = new float[ANGLE360+1];
-		xStepTable = new float[ANGLE360+1];
-		yStepTable = new float[ANGLE360+1];
+		sinTable = new float[ANGLE360 + 1];
+		InvSinTable = new float[ANGLE360 + 1];
+		cosTable = new float[ANGLE360 + 1];
+		InvCosTable = new float[ANGLE360 + 1];
+		tanTable = new float[ANGLE360 + 1];
+		InvTanTable = new float[ANGLE360 + 1];
+		xStepTable = new float[ANGLE360 + 1];
+		yStepTable = new float[ANGLE360 + 1];
 		// fisheye correction table
-		fishEyeCorrectionTable = new float[ANGLE60+1];
+		fishEyeCorrectionTable = new float[ANGLE60 + 1];
 		
 		// FILLING PRECALCULATED TABLES
 		for(int i = 0; i <= ANGLE360; i++) {
-			sinTable[i] = (float) Math.sin(GamePhysicsHelper.toCustomRad((float)i,ANGLE180));
+			sinTable[i] = (float) Math.sin(GamePhysicsHelper.toCustomRad((float) i, ANGLE180));
 			InvSinTable[i] = 1.0f / sinTable[i];
-			cosTable[i] = (float) Math.cos(GamePhysicsHelper.toCustomRad((float)i,ANGLE180));
+			cosTable[i] = (float) Math.cos(GamePhysicsHelper.toCustomRad((float) i, ANGLE180));
 			InvCosTable[i] = 1.0f / cosTable[i];
-			tanTable[i] = (float) Math.tan(GamePhysicsHelper.toCustomRad((float)i,ANGLE180));
+			tanTable[i] = (float) Math.tan(GamePhysicsHelper.toCustomRad((float) i, ANGLE180));
 			InvTanTable[i] = 1.0f / tanTable[i];
 			// Facing left:
 			if(i >= ANGLE90 && i < ANGLE270) {
@@ -149,8 +149,8 @@ public class Graphic extends JPanel {
 			}
 		}
 		// FILLING FISHEYE CORRECTION TABLE
-		for(int i = -ANGLE30 ; i <= ANGLE30; i++) {
-			fishEyeCorrectionTable[i+ANGLE30] = (float) (1.0f / Math.cos(GamePhysicsHelper.toCustomRad((float)i,ANGLE180)));
+		for(int i = -ANGLE30; i <= ANGLE30; i++) {
+			fishEyeCorrectionTable[i+ANGLE30] = (float) (1.0f / Math.cos(GamePhysicsHelper.toCustomRad( (float) i, ANGLE180)) );
 		}
 		
 	}
@@ -163,13 +163,13 @@ public class Graphic extends JPanel {
 		player.FOV = ANGLE60; setFOV(player.FOV);
 		player.speed = 5;
 		player.rotateSpeed = ANGLE5 / 2;
-		player.playerPaneDist = (int) ((planeWidth >> 1) / (float)Math.tan(GamePhysicsHelper.toCustomRad(player.FOV>>1,ANGLE180)));
+		player.playerPaneDist = (int) ((planeWidth >> 1) / (float) Math.tan(GamePhysicsHelper.toCustomRad(player.FOV >> 1, ANGLE180)));
 		//System.out.println("Player pane dist: " + player.playerPaneDist);
-		player.x = 2*SIZE;
-		player.y = 2*SIZE;
+		player.x = SIZE << 1;
+		player.y = SIZE << 1;
 		player.isInside = false;
 		player.angle = ANGLE0;
-		angleBetweenRays = getFOV()/planeWidth;
+		angleBetweenRays = getFOV() / planeWidth;
 	}
 	
 	/**
@@ -204,10 +204,10 @@ public class Graphic extends JPanel {
 		
 		this.screenw = planeWidth;
 		this.screenh = planeHeight;
-		//this.planeWidth = planeWidth/4;
-		//this.planeHeight = planeHeight/4;
-		this.planeWidth = 320;
-		this.planeHeight = 200;
+		this.planeWidth = planeWidth >> 2;
+		this.planeHeight = planeHeight >> 2;
+		//this.planeWidth = 320;
+		//this.planeHeight = 200;
 		this.player = player;
 		
 		preCalculateTablesAndValues();
@@ -216,7 +216,7 @@ public class Graphic extends JPanel {
 		
 		msgdisp = new MessageDisplayer(manager.msgh);
 		
-		skybox = new Skybox(player.FOV,tex.loadAndGetTextureFromImageFile("skybox_2560x240.png", 656345));
+		skybox = new Skybox(player.FOV, tex.loadAndGetTextureFromImageFile("skybox_2560x240.png", 656345));
 	}
 	
 	public void takeScreenshot() {
@@ -229,18 +229,26 @@ public class Graphic extends JPanel {
 		}
 	}
 	
+	/**
+	 * Set the resolution for rendering and displaying.
+	 * 
+	 * @param w
+	 * @param h
+	 */
 	public void setResolution(int w, int h) {
+		// Display resolution:
 		this.screenw = w;
 		this.screenh = h;
-		this.planeWidth = w/4;
-		this.planeHeight = h/4;
+		// Render resolution is slower for better perfomance:
+		this.planeWidth = w >> 2;
+		this.planeHeight = h >> 2;
 	}
 	
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		//g.drawImage(ImageAndPostProcessHelper.scaleNearest(frame, 4), 0, 0, this);
-		g.drawImage(ImageAndPostProcessHelper.scaleNearest(frame, screenw, screenh), 0, 0, this);
+		g.drawImage(ImageAndPostProcessHelper.scaleNearest(frame, 4), 0, 0, this);
+		//g.drawImage(ImageAndPostProcessHelper.scaleNearest(frame, screenw, screenh), 0, 0, this);
 		renderHUDAndOverheadGraphic(g);
 	}
 	
@@ -251,7 +259,7 @@ public class Graphic extends JPanel {
 	 * @param g
 	 */
 	public final void renderHUDAndOverheadGraphic(Graphics g) {
-		g.drawImage(tex.getItem(player.getSelectedItem().overheadImg), (screenw>>1)-(SIZE), screenh-(SIZE<<1),SIZE<<1,SIZE<<1, this);
+		g.drawImage(tex.getItem(player.getSelectedItem().overheadImg), (screenw >> 1) - SIZE, screenh - (SIZE << 1), SIZE << 1, SIZE << 1, this);
 	}
 	
 	/**
@@ -314,7 +322,8 @@ public class Graphic extends JPanel {
 		
 		public void hardReset() {
 			distance = .0f;										// Horizontal and vertical wall distances:
-			tempAx = .0f; tempAy = .0f;							// wall-slice coordinate for computing texture offset
+			tempAx = .0f;										// wall-slice coordinate for computing texture offset 
+			tempAy = .0f;
 			
 			// arrays for the texture pixels and the slice pixels
 			// all of the textures has the size of SIZE
@@ -334,7 +343,8 @@ public class Graphic extends JPanel {
 			
 			// virtual
 			v_distance = .0f;										// Horizontal and vertical wall distances:
-			v_tempAx = .0f; v_tempAy = .0f;							// wall-slice coordinate for computing texture offset
+			v_tempAx = .0f;											// wall-slice coordinate for computing texture offset
+			v_tempAy = .0f;
 		}
 		
 		public void reset() {
@@ -387,13 +397,13 @@ public class Graphic extends JPanel {
 		int rayAngle = (rayAngle = getAngle() - ANGLE30) < 0 ? rayAngle + ANGLE360 : rayAngle;
 		
 		// buffer for frames
-		BufferedImage screenBuffer = new BufferedImage(planeWidth,planeHeight,BufferedImage.TYPE_INT_ARGB);
+		BufferedImage screenBuffer = new BufferedImage(planeWidth, planeHeight, BufferedImage.TYPE_INT_ARGB);
 		gb = screenBuffer.createGraphics();
 		
 		// skybox and background
 		//gb.setColor(Color.GRAY);
 		//gb.fillRect(0, planeHeight>>1, planeWidth, planeHeight>>1);
-		gb.drawImage(skybox.getImage(planeWidth, planeHeight>>1), 0, 0, this);
+		gb.drawImage(skybox.getImage(planeWidth, planeHeight >> 1), 0, 0, this);
 		
 		// Loop from left to right
 		for( int raysCasted = 0; raysCasted < planeWidth; raysCasted += angleBetweenRays ) {
@@ -412,15 +422,15 @@ public class Graphic extends JPanel {
 				//System.out.println("You're facing down!");
 				rc.DOWN = true;
 				rc.Ya = SIZE;
-				rc.Ay =  ( (( ( (getPlayerY()>>SIZE_LOG) ) )) << SIZE_LOG ) + SIZE ;
-				rc.Ax = getPlayerX() + (InvTanTable[rayAngle] * (rc.Ay-getPlayerY()));
+				rc.Ay = ( (getPlayerY() >> SIZE_LOG) << SIZE_LOG ) + SIZE ;
+				rc.Ax = getPlayerX() + (InvTanTable[rayAngle] * (rc.Ay - getPlayerY()));
 			} else {
 				// ! (angle > ANGLE 0 && angle < ANGLE 180)
 				//System.out.println("You're facing up!");
 				rc.DOWN = false;
 				rc.Ya = -SIZE;
-				rc.Ay = (( (getPlayerY()>>SIZE_LOG) )) << SIZE_LOG;
-				rc.Ax = getPlayerX() + (InvTanTable[rayAngle] * (--rc.Ay-getPlayerY()));
+				rc.Ay = (( (getPlayerY() >> SIZE_LOG) )) << SIZE_LOG;
+				rc.Ax = getPlayerX() + (InvTanTable[rayAngle] * (--rc.Ay - getPlayerY()));
 				//Ay -= 1.0;
 			}
 			rc.Xa = xStepTable[rayAngle];			
@@ -441,17 +451,17 @@ public class Graphic extends JPanel {
 				// THIN WALL
 				if( !rc.isThereThinWallHor && map.isDoor(rc.gridX, rc.gridY) ) {
 					if( map.isOpen(rc.gridX, rc.gridY) ) {
-						rc.thinWallTempHor[0] = Math.abs( (rc.Ax-getPlayerX())*InvCosTable[rayAngle] );
+						rc.thinWallTempHor[0] = Math.abs( (rc.Ax - getPlayerX()) * InvCosTable[rayAngle] );
 						rc.thinWallTempHor[1] = DOOR_OPENED;
 						rc.thinWallTempHor[2] = (float) Math.floor(rc.Ax);
 						rc.isThereThinWallHor = true;
 					} else {
 						rc.isClosedDoor = true;
-						rc.wallDistHorizontal = Math.abs( (rc.Ax-getPlayerX())*InvCosTable[rayAngle] );
+						rc.wallDistHorizontal = Math.abs( (rc.Ax - getPlayerX()) * InvCosTable[rayAngle] );
 						rc.tileIndexHor = DOOR_CLOSED;
 						rc.tempAx = (float) Math.floor(rc.Ax);
-						zbuffer[raysCasted] = (float) Math.sqrt( (getPlayerX()-( (rc.gridX<<SIZE_LOG) + (SIZE>>1) ))*(getPlayerX()-( (rc.gridX<<SIZE_LOG) + (SIZE>>1) ))+
-								 								 (getPlayerY()-( (rc.gridY<<SIZE_LOG) + (SIZE>>1) ))*(getPlayerY()-( (rc.gridY<<SIZE_LOG) + (SIZE>>1) )) );
+						zbuffer[raysCasted] = (float) Math.sqrt( (getPlayerX() - ( (rc.gridX << SIZE_LOG) + (SIZE >> 1) )) * (getPlayerX() - ( (rc.gridX << SIZE_LOG) + (SIZE>>1) )) +
+								 								 (getPlayerY() - ( (rc.gridY << SIZE_LOG) + (SIZE >> 1) )) * (getPlayerY() - ( (rc.gridY << SIZE_LOG) + (SIZE>>1) )) );
 						break;
 					}
 				}
@@ -469,7 +479,7 @@ public class Graphic extends JPanel {
 						}
 					}
 					
-					rc.v_wallDistHorizontal = Math.abs( (rc.Ax-getPlayerX())*InvCosTable[rayAngle] );
+					rc.v_wallDistHorizontal = Math.abs( (rc.Ax - getPlayerX()) * InvCosTable[rayAngle] );
 					rc.v_tempAx = (float) Math.floor(rc.Ax);
 					
 					rc.v_horizontalHeight = map.getHeight(rc.gridX, rc.gridY);
@@ -489,11 +499,11 @@ public class Graphic extends JPanel {
 						rc.isHorizontalWallInside = false;
 					}						
 					
-					rc.wallDistHorizontal = Math.abs( (rc.Ax-getPlayerX())*InvCosTable[rayAngle] );
-					rc.tileIndexHor = map.texMap[rc.gridY*mapWidth+rc.gridX];
+					rc.wallDistHorizontal = Math.abs( (rc.Ax - getPlayerX()) * InvCosTable[rayAngle] );
+					rc.tileIndexHor = map.texMap[rc.gridY * mapWidth + rc.gridX];
 					rc.tempAx = (float) Math.floor(rc.Ax);
-					zbuffer[raysCasted] = (float) Math.sqrt( (getPlayerX()-( (rc.gridX<<SIZE_LOG) + (SIZE>>1) ))*(getPlayerX()-( (rc.gridX<<SIZE_LOG) + (SIZE>>1) ))+
-							 								 (getPlayerY()-( (rc.gridY<<SIZE_LOG) + (SIZE>>1) ))*(getPlayerY()-( (rc.gridY<<SIZE_LOG) + (SIZE>>1) )) );
+					zbuffer[raysCasted] = (float) Math.sqrt( (getPlayerX() - ( (rc.gridX << SIZE_LOG) + (SIZE >> 1) )) * (getPlayerX() - ( (rc.gridX << SIZE_LOG) + (SIZE>>1) )) +
+							 								 (getPlayerY() - ( (rc.gridY << SIZE_LOG) + (SIZE >> 1) )) * (getPlayerY() - ( (rc.gridY << SIZE_LOG) + (SIZE>>1) )) );
 					
 					rc.horizontalHeight = map.getHeight(rc.gridX, rc.gridY);
 					
@@ -509,12 +519,12 @@ public class Graphic extends JPanel {
 			if( (rayAngle < ANGLE90) ^ (rayAngle > ANGLE270) ) {	// facing right
 				rc.RIGHT = true;
 				rc.Xa = SIZE;
-				rc.Ax = ((getPlayerX()>>SIZE_LOG) << SIZE_LOG) + SIZE;
+				rc.Ax = ((getPlayerX() >> SIZE_LOG) << SIZE_LOG) + SIZE;
 				rc.Ay = getPlayerY() + (tanTable[rayAngle] * (rc.Ax - getPlayerX()));
 			} else {												// facing left
 				rc.RIGHT = false;
 				rc.Xa = -SIZE;
-				rc.Ax = ((getPlayerX()>>SIZE_LOG) << SIZE_LOG);
+				rc.Ax = ((getPlayerX() >> SIZE_LOG) << SIZE_LOG);
 				rc.Ay = getPlayerY() + (tanTable[rayAngle] * (--rc.Ax - getPlayerX()));
 				//Ax -= 1.0;
 			}
@@ -536,17 +546,17 @@ public class Graphic extends JPanel {
 				// THIN WALL
 				if( !rc.isThereThinWallVer && map.isDoor(rc.gridX, rc.gridY) ) {
 					if( map.isOpen(rc.gridX, rc.gridY) ) {
-						rc.thinWallTempVer[0] = Math.abs( (rc.Ay-getPlayerY())*InvSinTable[rayAngle] );
+						rc.thinWallTempVer[0] = Math.abs( (rc.Ay - getPlayerY()) * InvSinTable[rayAngle] );
 						rc.thinWallTempVer[1] = DOOR_OPENED;
 						rc.thinWallTempVer[2] = rc.Ay;
 						rc.isThereThinWallVer = true;
 					} else {
 						rc.isClosedDoor = true;
-						rc.wallDistVertical = Math.abs( (rc.Ay-getPlayerY())*InvSinTable[rayAngle] );
+						rc.wallDistVertical = Math.abs( (rc.Ay - getPlayerY()) * InvSinTable[rayAngle] );
 						rc.tileIndexVer = DOOR_CLOSED;
 						rc.tempAy = rc.Ay;
-						zbuffer[raysCasted] = (float) Math.sqrt( (getPlayerX()-( (rc.gridX<<SIZE_LOG) + (SIZE>>1) ))*(getPlayerX()-( (rc.gridX<<SIZE_LOG) + (SIZE>>1) ))+
-								 								 (getPlayerY()-( (rc.gridY<<SIZE_LOG) + (SIZE>>1) ))*(getPlayerY()-( (rc.gridY<<SIZE_LOG) + (SIZE>>1) )) );
+						zbuffer[raysCasted] = (float) Math.sqrt( (getPlayerX() - ( (rc.gridX << SIZE_LOG) + (SIZE >> 1) )) * (getPlayerX() - ( (rc.gridX << SIZE_LOG) + (SIZE >> 1) )) +
+								 								 (getPlayerY() - ( (rc.gridY << SIZE_LOG) + (SIZE >> 1) )) * (getPlayerY() - ( (rc.gridY << SIZE_LOG) + (SIZE >> 1) )) );
 						break;
 					}
 				}
@@ -564,7 +574,7 @@ public class Graphic extends JPanel {
 						}
 					}						
 					
-					rc.v_wallDistVertical = Math.abs( (rc.Ay-getPlayerY())*InvSinTable[rayAngle]);
+					rc.v_wallDistVertical = Math.abs( (rc.Ay - getPlayerY()) * InvSinTable[rayAngle]);
 					rc.v_tempAy = rc.Ay;
 					
 					rc.v_verticalHeight = map.getHeight(rc.gridX, rc.gridY);
@@ -584,8 +594,8 @@ public class Graphic extends JPanel {
 						rc.isVerticalWallInside = false;
 					}						
 					
-					rc.wallDistVertical = Math.abs( (rc.Ay-getPlayerY())*InvSinTable[rayAngle]);
-					rc.tileIndexVer = map.texMap[rc.gridY*mapWidth+rc.gridX];	
+					rc.wallDistVertical = Math.abs( (rc.Ay - getPlayerY()) * InvSinTable[rayAngle]);
+					rc.tileIndexVer = map.texMap[rc.gridY * mapWidth + rc.gridX];	
 					rc.tempAy = rc.Ay;
 					
 					rc.verticalHeight = map.getHeight(rc.gridX, rc.gridY);
@@ -601,14 +611,14 @@ public class Graphic extends JPanel {
 			///////////////	TEXTURE PIXEL OFFSET /////////////////////////////////////////////
 			// HORIZONTAL
 			if(rc.wallDistHorizontal < rc.wallDistVertical) {
-				rc.distance = rc.wallDistHorizontal/fishEyeCorrectionTable[raysCasted];
+				rc.distance = rc.wallDistHorizontal / fishEyeCorrectionTable[raysCasted];
 				zbuffer[raysCasted] = rc.distance;					
 				if(rc.DOWN) {
-					rc.offset = 63 - ((((int)(rc.tempAx))) & 63);
+					rc.offset = 63 - (( (int) rc.tempAx ) & 63);
 					
 					manager.getTexture(rc.tileIndexHor).getRGB(rc.offset, 0, 1, SIZE, rc.pixels, 0, 1);
 				} else {
-					rc.offset = ((((int)(rc.tempAx))) & 63);
+					rc.offset = (( (int) rc.tempAx ) & 63);
 					manager.getTexture(rc.tileIndexHor).getRGB(rc.offset, 0, 1, SIZE, rc.pixels, 0, 1);
 				}
 				if(rc.storeyIdHor >= 0) {
@@ -618,13 +628,13 @@ public class Graphic extends JPanel {
 			} else {
 				rc.isHorizontalWallInside = rc.isVerticalWallInside;
 				rc.horizontalHeight = rc.verticalHeight;
-				rc.distance = rc.wallDistVertical/fishEyeCorrectionTable[raysCasted];
+				rc.distance = rc.wallDistVertical / fishEyeCorrectionTable[raysCasted];
 				zbuffer[raysCasted] = rc.distance;					
 				if(!rc.RIGHT) {
-					rc.offset = 63 - ((((int)(rc.tempAy))) & 63);
+					rc.offset = 63 - (( (int) rc.tempAy ) & 63);
 					manager.getTexture(rc.tileIndexVer).getRGB(rc.offset, 0, 1, SIZE, rc.pixels, 0, 1);
 				} else {
-					rc.offset = ((((int)(rc.tempAy))) & 63);
+					rc.offset = (( (int) rc.tempAy ) & 63);
 					manager.getTexture(rc.tileIndexVer).getRGB(rc.offset, 0, 1, SIZE, rc.pixels, 0, 1);
 				}
 				if(rc.storeyIdVer >= 0) {
@@ -637,11 +647,11 @@ public class Graphic extends JPanel {
 				rc.isThereVirtualWallAndStorey = true;
 				
 				if( rc.v_wallDistHorizontal < rc.v_wallDistVertical ) {
-					rc.v_distance = rc.v_wallDistHorizontal/fishEyeCorrectionTable[raysCasted];
+					rc.v_distance = rc.v_wallDistHorizontal / fishEyeCorrectionTable[raysCasted];
 					if(rc.DOWN) {
-						rc.v_offset = 63 - ((((int)(rc.v_tempAx))) & 63);
+						rc.v_offset = 63 - (( (int) rc.v_tempAx ) & 63);
 					} else {
-						rc.v_offset = ((((int)(rc.v_tempAx))) & 63);
+						rc.v_offset = (( (int) rc.v_tempAx ) & 63);
 					}
 					if(rc.storeyIdHor >= 0) {
 						manager.getTexture(rc.storeyIdHor).getRGB(rc.v_offset, 0, 1, SIZE, rc.storeyPixels, 0, 1);
@@ -650,11 +660,11 @@ public class Graphic extends JPanel {
 				} else {
 					rc.isHorizontalWallInside = rc.isVerticalWallInside;
 					rc.v_horizontalHeight = rc.v_verticalHeight;
-					rc.v_distance = rc.v_wallDistVertical/fishEyeCorrectionTable[raysCasted];
+					rc.v_distance = rc.v_wallDistVertical / fishEyeCorrectionTable[raysCasted];
 					if(!rc.RIGHT) {
-						rc.v_offset = 63 - ((((int)(rc.v_tempAy))) & 63);
+						rc.v_offset = 63 - (( (int) rc.v_tempAy ) & 63);
 					} else {
-						rc.v_offset = ((((int)(rc.v_tempAy))) & 63);
+						rc.v_offset = (( (int) rc.v_tempAy ) & 63);
 					}
 					if(rc.storeyIdVer >= 0) {
 						manager.getTexture(rc.storeyIdVer).getRGB(rc.v_offset, 0, 1, SIZE, rc.storeyPixels, 0, 1);
@@ -667,15 +677,15 @@ public class Graphic extends JPanel {
 				rc.v_projectedSliceHeight = (int) ((getPlayerPaneDist() * rc.v_horizontalHeight) / rc.v_distance);
 				
 				// "smallest" wall size must be zero
-				if(rc.v_projectedSliceHeight<0)
+				if(rc.v_projectedSliceHeight < 0)
 					rc.v_projectedSliceHeight = 0;
 				
 				// smaller than normal walls are sunken while higher than normal walls are risen (relative to SIZE)
 				int v_sunkenOrRisen = rc.v_projectedSliceHeight - v_64_sliceHeight;
 				
 				// startDraw is the point on the screen where the wall-drawing starts
-				rc.v_startDraw = ((planeHeight-v_sunkenOrRisen)>>1)-(rc.v_projectedSliceHeight>>1);
-				if(rc.v_startDraw>=planeHeight) rc.v_startDraw = planeHeight-1;			
+				rc.v_startDraw = ((planeHeight - v_sunkenOrRisen) >> 1) - (rc.v_projectedSliceHeight >> 1);
+				if(rc.v_startDraw >= planeHeight) rc.v_startDraw = planeHeight - 1;			
 			    //////////////////////////////////////////////////////////////////////////////	
 			}	
 		    //////////////////////////////////////////////////////////////////////////////////
@@ -690,15 +700,15 @@ public class Graphic extends JPanel {
 			rc.projectedSliceHeight = (int) ((getPlayerPaneDist() * rc.horizontalHeight) / rc.distance);
 			
 			// "smallest" wall size must be zero
-			if(rc.projectedSliceHeight<0)
+			if(rc.projectedSliceHeight < 0)
 				rc.projectedSliceHeight = 0;
 			
 			// smaller than normal walls are sunken while higher than normal walls are risen (relative to SIZE)
 			int sunkenOrRisen = rc.projectedSliceHeight - _64_sliceHeight;
 			
 			// startDraw is the point on the screen where the wall-drawing starts
-			rc.startDraw = ((planeHeight-sunkenOrRisen)>>1)-(rc.projectedSliceHeight>>1);
-			if(rc.startDraw>=planeHeight) rc.startDraw = planeHeight-1;			
+			rc.startDraw = ((planeHeight - sunkenOrRisen) >> 1) - (rc.projectedSliceHeight >> 1);
+			if(rc.startDraw >= planeHeight) rc.startDraw = planeHeight - 1;			
 		    //////////////////////////////////////////////////////////////////////////////////
 			
 		    /////////////// FLOOR-CASTING ////////////////////////////////////////////////////			
@@ -706,20 +716,21 @@ public class Graphic extends JPanel {
 			// https://www.allegro.cc/forums/thread/374305
 			// Nem mûködtek a megoldások, ezért egyszerûsítettem rajtuk.
 			// Stack postom: https://gamedev.stackexchange.com/questions/159285/ray-casting-floor-casting-part-fails			 
-			int floorCastingStartPixel = rc.startDraw+rc.projectedSliceHeight;
-			int x,y;
+			int floorCastingStartPixel = rc.startDraw + rc.projectedSliceHeight;
+			int x, y;
 			if(floorCastingStartPixel < planeHeight) {
-				for (int i=floorCastingStartPixel; i<=planeHeight-1; i++) {
+				for (int i = floorCastingStartPixel; i <= planeHeight - 1; i++) {
 					// floor distance
-					rc.distance = ((float) (((float)PLAYERHEIGHT / (i-(planeHeight>>1)) )* getPlayerPaneDist() ) ) * fishEyeCorrectionTable[raysCasted];
+					rc.distance = ((float) (((float) PLAYERHEIGHT / 
+								  (i - (planeHeight >> 1)) ) * getPlayerPaneDist() ) ) * fishEyeCorrectionTable[raysCasted];
 					
 					// floor-tile coordinate in the world
 					x = ( (int) (rc.distance * (cosTable[rayAngle])) ) + getPlayerX();
 					y = ( (int) (rc.distance * (sinTable[rayAngle])) ) + getPlayerY();
 					
 					// floor-tile coordinate on the grid
-					int mapX = x>>6;
-					int mapY = y>>6;
+					int mapX = x >> 6;
+					int mapY = y >> 6;
 					
 					// check if out of grid
 					if(mapX < 0 || mapY < 0 || mapX >= mapWidth || mapY >= mapHeight)
@@ -730,12 +741,12 @@ public class Graphic extends JPanel {
 					// TODO: x&63 helyett x&(SIZE-1)-el ekvivalens általánosítás
 					if( !map.isOutside(mapX, mapY) ) {
 						if(IS_SHADERS_ON) {
-							screenBuffer.setRGB(raysCasted, i, addFogEffect(manager.getTexture(map.texMap[mapY*mapWidth+mapX]).getRGB(x&63,y&63),rc.distance));
+							screenBuffer.setRGB(raysCasted, i, addFogEffect(manager.getTexture(map.texMap[mapY * mapWidth + mapX]).getRGB(x&63, y&63), rc.distance));
 						} else {							
-							screenBuffer.setRGB(raysCasted, i, manager.getTexture(map.texMap[mapY*mapWidth+mapX]).getRGB(x&63,y&63));
+							screenBuffer.setRGB(raysCasted, i, manager.getTexture(map.texMap[mapY * mapWidth + mapX]).getRGB(x&63, y&63));
 						}
 					} else {
-						screenBuffer.setRGB(raysCasted, i, manager.getTexture(map.texMap[mapY*mapWidth+mapX]).getRGB(x&63,y&63));
+						screenBuffer.setRGB(raysCasted, i, manager.getTexture(map.texMap[mapY * mapWidth+mapX]).getRGB(x&63, y&63));
 					}
 					
 				}
@@ -743,18 +754,19 @@ public class Graphic extends JPanel {
 			//////////////////////////////////////////////////////////////////////////////////
 			
 			/////////////// CEIL-CASTING ////////////////////////////////////////////////////
-			if(rc.startDraw>=0) {
-				for (int i=0; i<=rc.startDraw; i++) {
+			if(rc.startDraw >= 0) {
+				for (int i=0; i <= rc.startDraw; i++) {
 					// ceil distance
-					rc.distance = (float) (Math.abs(((float)PLAYERHEIGHT / (i-(planeHeight>>1)) )* getPlayerPaneDist() )) * fishEyeCorrectionTable[raysCasted];
+					rc.distance = (float) (Math.abs(((float) PLAYERHEIGHT / 
+								  (i - (planeHeight >> 1)) ) * getPlayerPaneDist() )) * fishEyeCorrectionTable[raysCasted];
 					
 					// ceil world coordinates
 					x = ( (int) (rc.distance * (cosTable[rayAngle])) ) + getPlayerX();
 					y = ( (int) (rc.distance * (sinTable[rayAngle])) ) + getPlayerY();
 					
 					// ceil grid coordinates
-					int mapX = x>>6;
-					int mapY = y>>6;
+					int mapX = x >> 6;
+					int mapY = y >> 6;
 					
 					// check if outside of grid
 					if(mapX < 0 || mapY < 0 || mapX >= mapWidth || mapY >= mapHeight)
@@ -766,9 +778,9 @@ public class Graphic extends JPanel {
 					// TODO: megjavítani
 					if( !map.isOutside(mapX, mapY) ) {
 						if(IS_SHADERS_ON) {
-							screenBuffer.setRGB(raysCasted, i, addFogEffect(manager.getTexture(map.ceiling).getRGB(x&63,y&63),rc.distance));
+							screenBuffer.setRGB(raysCasted, i, addFogEffect(manager.getTexture(map.ceiling).getRGB(x&63, y&63), rc.distance));
 						} else {							
-							screenBuffer.setRGB(raysCasted, i, manager.getTexture(map.ceiling).getRGB(x&63,y&63));
+							screenBuffer.setRGB(raysCasted, i, manager.getTexture(map.ceiling).getRGB(x&63, y&63));
 						}						
 					}				
 				}
@@ -779,34 +791,33 @@ public class Graphic extends JPanel {
 			int y_ratio;
 			if(rc.isThereVirtualWallAndStorey) {
 				// Scaling function simplified to handle one pixel wide images better. Inlined for better perfomance.
-				if(rc.projectedSliceHeight==0) rc.projectedSliceHeight = 1;
+				if(rc.projectedSliceHeight == 0) rc.projectedSliceHeight = 1;
 				rc.slicePixels = new int[rc.projectedSliceHeight];
 				rc.storeySlicePixels = new int[rc.v_projectedSliceHeight];
-			    y_ratio = (int)((SIZE<<16)/rc.projectedSliceHeight)+1;
-			    for (int i=0;i<rc.projectedSliceHeight;i++) {
-			    	if(((i*y_ratio)>>16) < SIZE ) {
+			    y_ratio = (int) ((SIZE << 16) / rc.projectedSliceHeight) + 1;
+			    for (int i=0; i < rc.projectedSliceHeight; i++) {
+			    	if(((i * y_ratio) >> 16) < SIZE ) {
 			    		// wall
-			    		rc.slicePixels[i] = rc.pixels[((i*y_ratio)>>16)] ;
+			    		rc.slicePixels[i] = rc.pixels[((i * y_ratio) >> 16)] ;
 			    	}	
 			    }
-			    y_ratio = (int)((SIZE<<16)/rc.v_projectedSliceHeight)+1;
-			    for (int i=0;i<rc.v_projectedSliceHeight;i++) {
-			    	if(((i*y_ratio)>>16) < SIZE ) {
+			    y_ratio = (int) ((SIZE << 16) / rc.v_projectedSliceHeight) + 1;
+			    for (int i=0; i < rc.v_projectedSliceHeight; i++) {
+			    	if(((i * y_ratio) >> 16) < SIZE ) {
 			    		// storey
 			    		if(rc.isThereStoreyVer || rc.isThereStoreyHor) {
-			    			rc.storeySlicePixels[i] = rc.storeyPixels[((i*y_ratio)>>16)];
+			    			rc.storeySlicePixels[i] = rc.storeyPixels[((i * y_ratio) >> 16)];
 			    		}
 			    	}	
 			    }
 			} else {
 				// Scaling function simplified to handle one pixel wide images better. Inlined for better perfomance.
-				if(rc.projectedSliceHeight==0) rc.projectedSliceHeight = 1;
-				if(rc.projectedSliceHeight>1366) rc.projectedSliceHeight = 1366;
+				if(rc.projectedSliceHeight == 0) rc.projectedSliceHeight = 1;
 				rc.slicePixels = new int[rc.projectedSliceHeight];
 				rc.storeySlicePixels = new int[rc.projectedSliceHeight];
-			    y_ratio = (int)((SIZE<<16)/rc.projectedSliceHeight)+1;
-			    for (int i=0;i<rc.projectedSliceHeight;i++) {
-			    	if(((i*y_ratio)>>16) < SIZE ) {
+			    y_ratio = (int) ((SIZE << 16) / rc.projectedSliceHeight) + 1;
+			    for (int i=0; i < rc.projectedSliceHeight; i++) {
+			    	if( ((i * y_ratio) >> 16) < SIZE ) {
 			    		// wall
 			    		rc.slicePixels[i] = rc.pixels[((i*y_ratio)>>16)] ;
 			    		// storey
@@ -825,23 +836,23 @@ public class Graphic extends JPanel {
 		    
 		    if(rc.isThereVirtualWallAndStorey) {
 		    	
-		    	for(int wy2 = rc.v_startDraw-rc.v_projectedSliceHeight, index = 0; 
-			    		wy2 <= rc.v_startDraw-1; wy2++, index++) {
+		    	for(int wy2 = rc.v_startDraw - rc.v_projectedSliceHeight, index = 0; 
+			    		wy2 <= rc.v_startDraw - 1; wy2++, index++) {
 			    	if( (rc.isThereStoreyVer || rc.isThereStoreyHor) && wy2 >= 0 && wy2 < planeHeight && index < rc.storeySlicePixels.length) {
 			    		screenBuffer.setRGB(raysCasted, wy2, rc.storeySlicePixels[index]);
 			    	}
 			    }
 		    	
 		    	for(int wy = rc.startDraw, index = 0; 
-			    		wy <= rc.startDraw+rc.projectedSliceHeight-1; wy++, index++) {
+			    		wy <= rc.startDraw + rc.projectedSliceHeight - 1; wy++, index++) {
 			    	if(wy >= 0 && wy < planeHeight) {
 			    		screenBuffer.setRGB(raysCasted, wy, rc.slicePixels[index]);
 			    	}
 			    }
 		    	
 		    } else {
-		    	for(int wy = rc.startDraw, wy2 = rc.startDraw-rc.projectedSliceHeight, index = 0; 
-			    		wy <= rc.startDraw+rc.projectedSliceHeight-1 || wy2 <= rc.startDraw-1; wy++, wy2++, index++) {
+		    	for(int wy = rc.startDraw, wy2 = rc.startDraw - rc.projectedSliceHeight, index = 0; 
+			    		wy <= rc.startDraw + rc.projectedSliceHeight - 1 || wy2 <= rc.startDraw - 1; wy++, wy2++, index++) {
 			    	if( (rc.isThereStoreyVer || rc.isThereStoreyHor) && wy2 >= 0 && wy2 < planeHeight) {
 			    		screenBuffer.setRGB(raysCasted, wy2, rc.storeySlicePixels[index]);
 			    	}
@@ -867,36 +878,36 @@ public class Graphic extends JPanel {
 			if(rc.isThereThinWallVer || rc.isThereThinWallHor) {
 				
 				if(rc.thinWallTempHor[0] < rc.thinWallTempVer[0]) {
-					rc.distance = (int) rc.thinWallTempHor[0]/fishEyeCorrectionTable[raysCasted];
+					rc.distance = (int) rc.thinWallTempHor[0] / fishEyeCorrectionTable[raysCasted];
 					
 					if(rc.DOWN) {
-						rc.offset = 63 - ((((int)(rc.thinWallTempHor[2]))) & 63);
+						rc.offset = 63 - (( (int) rc.thinWallTempHor[2] ) & 63);
 					} else {
-						rc.offset = ((((int)(rc.thinWallTempHor[2]))) & 63);
+						rc.offset = ( ((int) rc.thinWallTempHor[2] ) & 63);
 					}			
 					
 				} else {
-					rc.distance = (int) rc.thinWallTempVer[0]/fishEyeCorrectionTable[raysCasted];
+					rc.distance = (int) rc.thinWallTempVer[0] / fishEyeCorrectionTable[raysCasted];
 					
 					if(!rc.RIGHT) {
-						rc.offset = 63 - ((((int)(rc.thinWallTempVer[2]))) & 63);
+						rc.offset = 63 - ( ((int) rc.thinWallTempVer[2]) & 63);
 					} else {
-						rc.offset = ((((int)(rc.thinWallTempVer[2]))) & 63);
+						rc.offset = ( ((int) rc.thinWallTempVer[2]) & 63);
 					}	
 				}
 				
 				manager.getTexture(map.openedDoor).getRGB(rc.offset, 0, 1, SIZE, rc.pixels, 0, 1);
 				
 				if(rc.distance < zbuffer[raysCasted]) {					
-					rc.projectedSliceHeight = (int) ((getPlayerPaneDist()<<SIZE_LOG) / rc.distance);
+					rc.projectedSliceHeight = (int) ((getPlayerPaneDist() << SIZE_LOG) / rc.distance);
 					
 					if(rc.projectedSliceHeight == 0) rc.projectedSliceHeight = 1;
-					if(rc.projectedSliceHeight >= planeHeight) rc.projectedSliceHeight = planeHeight-1;
+					if(rc.projectedSliceHeight >= planeHeight) rc.projectedSliceHeight = planeHeight - 1;
 					
-					if(rc.startDraw>=planeHeight) rc.startDraw = planeHeight-1;
+					if(rc.startDraw >= planeHeight) rc.startDraw = planeHeight - 1;
 					
-					rc.startDraw = (planeHeight>>1)-(rc.projectedSliceHeight>>1);
-					if(rc.startDraw>=planeHeight) rc.startDraw = planeHeight-1;
+					rc.startDraw = (planeHeight >> 1) - (rc.projectedSliceHeight >> 1);
+					if(rc.startDraw >= planeHeight) rc.startDraw = planeHeight - 1;
 					
 					// Scaling function simplified to handle one pixel wide images better. Inlined for better perfomance.
 					rc.slicePixels = new int[rc.projectedSliceHeight];    
@@ -906,8 +917,8 @@ public class Graphic extends JPanel {
 				    			rc.slicePixels[i] = rc.pixels[((i*y_ratio)>>16)] ;
 				    }
 				    
-				    for(int wy = rc.startDraw, index = 0; wy <= rc.startDraw+rc.projectedSliceHeight-1; wy++, index++) {
-				    	if(wy >= 0 && wy < planeHeight && ( (rc.slicePixels[index]>>24) & 0xff ) != 0 ) {
+				    for(int wy = rc.startDraw, index = 0; wy <= rc.startDraw + rc.projectedSliceHeight - 1; wy++, index++) {
+				    	if(wy >= 0 && wy < planeHeight && ( (rc.slicePixels[index] >> 24) & 0xff ) != 0 ) {
 				    		screenBuffer.setRGB(raysCasted, wy, rc.slicePixels[index]);
 				    	}
 				    }
@@ -943,25 +954,25 @@ public class Graphic extends JPanel {
 		if(theta < 0) theta += 360;
 		if(theta >= 360) theta -= 360;
 		
-		int xInc = (int) ( (spriteX<<SIZE_LOG) - player.x);
-		int yInc = (int) ( (spriteY<<SIZE_LOG) - player.y);
+		int xInc = (int) ( (spriteX << SIZE_LOG) - player.x);
+		int yInc = (int) ( (spriteY << SIZE_LOG) - player.y);
 		
 		// radian = degree * PI / 180°
 		// degree = radian / PI * 180°
 		
 		float thetaTemp = (float) Math.atan2(yInc,xInc);
-		thetaTemp *= 180/Math.PI;
+		thetaTemp *= 180 / Math.PI;
 		
 		if(thetaTemp < 0) thetaTemp += 360;
 		
 		// theta - player.angle
 		float yTmp = theta + (fov>>1) - thetaTemp;
-		if(thetaTemp > 270 && theta < 90) yTmp = theta + (fov>>1) - thetaTemp + 360;
-		if(theta > 270 && thetaTemp < 90) yTmp = theta + (fov>>1) - thetaTemp - 360;
+		if(thetaTemp > 270 && theta < 90) yTmp = theta + (fov >> 1) - thetaTemp + 360;
+		if(theta > 270 && thetaTemp < 90) yTmp = theta + (fov >> 1) - thetaTemp - 360;
 		
-		float xTmp = (float) (yTmp * planeWidth / (fov+.0) );
+		float xTmp = (float) (yTmp * planeWidth / (fov + .0));
 		
-		return planeWidth-xTmp-32;
+		return planeWidth - xTmp - 32;
 	}
 	
 	/**
@@ -986,7 +997,7 @@ public class Graphic extends JPanel {
 			inside = !map.isOutside(manager.sprites[i].x, manager.sprites[i].y);
 			
 			distance = manager.sprites[i].distanceFromPlayer;
-			projectedSliceHeight = (int) ((getPlayerPaneDist()<<(SIZE_LOG)) / distance ) % planeHeight;
+			projectedSliceHeight = (int) ((getPlayerPaneDist() << (SIZE_LOG)) / distance ) % planeHeight;
 			
 			if( (distance <= 91) || ( (onscreenX+projectedSliceHeight) <= 0) ^ ( (onscreenX) >= planeWidth) || projectedSliceHeight<=0 )
 				continue;
@@ -995,22 +1006,22 @@ public class Graphic extends JPanel {
 			if (temp < 0) temp = 0;
 			
 			manager.getTexture(manager.sprites[i].texture).getRGB( 0, 0, SIZE, SIZE, pixels2, 0, SIZE);
-			pixels3 = new int[projectedSliceHeight*projectedSliceHeight];
+			pixels3 = new int[projectedSliceHeight * projectedSliceHeight];
 			pixels3 = resizePixels(pixels2, SIZE, SIZE, projectedSliceHeight, projectedSliceHeight);
 			
 			for(int col = 0; col <= projectedSliceHeight; col++) {					
 				if( ( (onscreenX >= 0) && (col < planeWidth) && (onscreenX+col < planeWidth) && ( distance < zbuffer[onscreenX+col]) ) ^
 					( (onscreenX < 0) && (col < planeWidth) && (onscreenX+col < planeWidth) && ( distance < zbuffer[0+col]) ) ) {
-					for (int a=0; a<projectedSliceHeight; a++) {
-				    	if( (onscreenX+col < planeWidth) && 
-				    		(onscreenX+col >= 0) && 
-				    		((temp+a) < planeHeight) && 
-				    		(((pixels3[a*projectedSliceHeight+(col%projectedSliceHeight)]>>24)&0xff) != 0) ) {
+					for (int a=0; a < projectedSliceHeight; a++) {
+				    	if( (onscreenX + col < planeWidth) && 
+				    		(onscreenX + col >= 0) && 
+				    		( (temp + a) < planeHeight) && 
+				    		( ( (pixels3[a * projectedSliceHeight + (col % projectedSliceHeight)] >> 24) & 0xff) != 0) ) {
 				    		
 				    		if (IS_SHADERS_ON && inside) {
-				    			screenBuffer.setRGB(onscreenX + col, temp + a, ImageAndPostProcessHelper.addFogEffect(pixels3[a*projectedSliceHeight + (col % projectedSliceHeight)], distance));
+				    			screenBuffer.setRGB(onscreenX + col, temp + a, ImageAndPostProcessHelper.addFogEffect(pixels3[a * projectedSliceHeight + (col % projectedSliceHeight)], distance));
 				    		} else {
-				    			screenBuffer.setRGB(onscreenX + col, temp + a, pixels3[a*projectedSliceHeight+(col%projectedSliceHeight)]);
+				    			screenBuffer.setRGB(onscreenX + col, temp + a, pixels3[a * projectedSliceHeight + (col % projectedSliceHeight)]);
 				    		}
 				    		
 				    	}
@@ -1052,11 +1063,11 @@ public class Graphic extends JPanel {
 	
 	private void showPlayerData() {
 		gb.setColor(Color.BLACK);
-		gb.fillRect(5, (planeHeight>>1)+(planeHeight>>2)-15, 130, 60);
+		gb.fillRect(5, (planeHeight >> 1) + (planeHeight >> 2) - 15, 130, 60);
 		gb.setColor(Color.YELLOW);
-		gb.drawString("HP: "+player.getHp(), 10, (planeHeight>>1)+(planeHeight>>2));
-		gb.drawString("DP: "+player.getDp(), 10, (planeHeight>>1)+(planeHeight>>2)+20);
-		gb.drawString("Active inventory slot: "+player.getActualItemPointer(), 10, (planeHeight>>1)+(planeHeight>>2)+40);		
+		gb.drawString("HP: " + player.getHp(), 10, (planeHeight >> 1) + (planeHeight >> 2));
+		gb.drawString("DP: " + player.getDp(), 10, (planeHeight >> 1) + (planeHeight >> 2) + 20);
+		gb.drawString("Active inventory slot: " + player.getActualItemPointer(), 10, (planeHeight >> 1) + (planeHeight >> 2) + 40);		
 	}
 	
 	/**
@@ -1067,8 +1078,8 @@ public class Graphic extends JPanel {
 	private void animateRain(Graphics g) {
 		rain.generateDrops();
 		g.setColor(Color.GRAY);
-		for(int i = 0; i < rain.dropCount-1; i += 2) {
-			g.drawLine(rain.drops[i], rain.drops[i+1], rain.drops[i],rain.drops[i+1]+5);
+		for(int i = 0; i < rain.dropCount - 1; i += 2) {
+			g.drawLine(rain.drops[i], rain.drops[i + 1], rain.drops[i],rain.drops[i + 1] + 5);
 		}
 		rain.fall();		
 	}

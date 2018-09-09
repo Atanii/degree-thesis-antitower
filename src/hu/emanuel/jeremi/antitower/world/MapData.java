@@ -1,7 +1,5 @@
 package hu.emanuel.jeremi.antitower.world;
 
-import static hu.emanuel.jeremi.antitower.common.Tile64.INSIDE;
-import static hu.emanuel.jeremi.antitower.common.Tile64.OUTSIDE;
 import static hu.emanuel.jeremi.antitower.common.Tile64.VIRTUAL;
 import static hu.emanuel.jeremi.antitower.common.Tile64.SIZE_LOG;
 
@@ -25,7 +23,7 @@ public class MapData {
 	public int pack, ceiling, closedDoor, openedDoor;
 	
 	public MapData(ToggleDoor[] doors, Sprite[] spritesFromMap, Enemy[] enemiesFromMap) {
-		loadLevel(doors,spritesFromMap,enemiesFromMap);
+		loadLevel(doors, spritesFromMap, enemiesFromMap);
 	}
 	
 	public MapData() {
@@ -60,7 +58,7 @@ public class MapData {
 	public void printMatrix(int[] matrix, int width) {
 		for (int i = 0; i < matrix.length; i++) {
 			System.out.print(matrix[i]);
-			if (((i+1)%width == 0)) {
+			if (((i + 1) % width == 0)) {
 				System.out.println();
 			}
 		}
@@ -72,11 +70,11 @@ public class MapData {
 	}
 	*/
 	public final boolean isWall(final int x, final int y) {
-		return ( (heightMap[y*width+x] > 0) && (texMap[y*width+x] != VIRTUAL) );
+		return ( (heightMap[y * width + x] > 0) && (texMap[y * width + x] != VIRTUAL) );
 	}
 	
 	public final boolean isVirtual(final int x, final int y) {
-		return ( (texMap[y*width+x] == VIRTUAL) );
+		return ( (texMap[y * width + x] == VIRTUAL) );
 	}
 	
 	public final boolean isDoor(final int x, final int y) {
@@ -100,17 +98,17 @@ public class MapData {
 	}
 	
 	public final boolean isOutside(int mapX, int mapY) {
-		if( ((mapY*width+mapX) < 0) ^ ((mapY*width+mapX) >= width*height) )
+		if( ((mapY * width + mapX) < 0) ^ ((mapY * width + mapX) >= width * height) )
 			return true;
-		return insideMap[mapY*width+mapX] == 0;
+		return insideMap[mapY * width + mapX] == 0;
 	}
 	
 	public final int getHeight(int x, int y) {
-		return heightMap[y*width+x];
+		return heightMap[y * width + x];
 	}
 	
 	public final int getStorey(int x, int y) {
-		int temp = storeyMap[y*width+x];
+		int temp = storeyMap[y * width + x];
 		if(temp > 2) {
 			return temp;
 		} else {
@@ -120,8 +118,8 @@ public class MapData {
 	
 	public final boolean isCollision(int world_x, int world_y, float xd, float yd) {
 		return isPathWay(
-				((int)((world_x+xd))>>SIZE_LOG), 
-				((int)((world_y+yd))>>SIZE_LOG)
+				((int) ((world_x + xd)) >> SIZE_LOG), 
+				((int) ((world_y + yd)) >> SIZE_LOG)
 		);
 	}
 }

@@ -16,7 +16,7 @@ public final class GamePhysicsHelper {
 	 * @return logarithm (base 2) of n -- round down
 	 */
 	public static final int log2(final int n) {
-		return (int)Math.floor(Math.log(n) / Math.log(2));
+		return (int) Math.floor(Math.log(n) / Math.log(2));
 	}
 	
 	
@@ -26,7 +26,7 @@ public final class GamePhysicsHelper {
 	 * @return radian value
 	 */
 	public static final double toCustomRad(final double degrees, final int custom180degree) {
-		return (degrees * Math.PI / (float)custom180degree) + .0001;
+		return (degrees * Math.PI / (float) custom180degree) + .0001;
 	}
 	
 	
@@ -36,7 +36,7 @@ public final class GamePhysicsHelper {
 	 * @return radian value
 	 */
 	public static final float toCustomRad(final float degrees, final int custom180degree) {
-		return  ((float)(degrees * Math.PI) / (float)custom180degree) + .0001f;
+		return  ((float) (degrees * Math.PI) / (float) custom180degree) + .0001f;
 	}
 	
 	
@@ -46,7 +46,7 @@ public final class GamePhysicsHelper {
 	 * @return radian value
 	 */
 	public static final float toRad(final float degrees) {
-		return (float) ((degrees * Math.PI / (float)180) + .0001f);
+		return (float) ((degrees * Math.PI / (float) 180) + .0001f);
 	}
 	
 	
@@ -96,7 +96,7 @@ public final class GamePhysicsHelper {
 		for(int i = 0; i < maxDistance; i++) {
 			startX += cos[angle] * 5;
 			startY += sin[angle] * 5;
-			if( en.isThereAnEnemyThenHitIt( (int)Math.floor(startX/SIZE), (int)Math.floor(startY/SIZE) ) ) {
+			if( en.isThereAnEnemyThenHitIt( (int) Math.floor(startX / SIZE), (int) Math.floor(startY / SIZE) ) ) {
 				return;
 			}
 		}
@@ -112,9 +112,9 @@ public final class GamePhysicsHelper {
 	 * @return angle between two points
 	 */
 	public static final float rotatePlayerAngleToTarget(float targetX, float targetY, float originX, float originY, int originAngle, int planeWidth, int FOV) {
-		float theta  = (float) ( Math.atan2(targetY - originY,targetX - originX) * 180/Math.PI );
+		float theta  = (float) ( Math.atan2(targetY - originY, targetX - originX) * 180/ Math.PI );
 		if(theta < 0) theta += 360;
-		return theta*((float)planeWidth/(float)60);
+		return theta * ((float) planeWidth / (float) 60);
 	}
 	
 	
@@ -129,13 +129,13 @@ public final class GamePhysicsHelper {
 	public static float getDistance(final int mapX1, final int mapY1, final int x2, final int y2) {
 		return (float) (
 				Math.sqrt(
-						(  ( (mapX1<<SIZE_LOG) + (SIZE>>1) )  -  x2  )
+						(  ( (mapX1 << SIZE_LOG) + (SIZE >> 1) )  -  x2  )
 						*
-						(  ( (mapX1<<SIZE_LOG) + (SIZE>>1) )  -  x2  )
+						(  ( (mapX1 << SIZE_LOG) + (SIZE >> 1) )  -  x2  )
 						+
-						(  ( (mapY1<<SIZE_LOG) + (SIZE>>1) )  -  y2  )
+						(  ( (mapY1 << SIZE_LOG) + (SIZE >> 1) )  -  y2  )
 						*
-						(  ( (mapY1<<SIZE_LOG) + (SIZE>>1) )  -  y2  )
+						(  ( (mapY1 << SIZE_LOG) + (SIZE >> 1) )  -  y2  )
 					) );
 	}
 

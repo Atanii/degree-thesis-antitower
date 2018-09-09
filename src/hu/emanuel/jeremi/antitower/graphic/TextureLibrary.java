@@ -81,7 +81,7 @@ public class TextureLibrary {
 		
 		try {
 			// getting texture atlas
-			URL url = getClass().getResource("/res/"+filename);
+			URL url = getClass().getResource("/res/" + filename);
 			sheet = new Sheet(ImageIO.read(url).getSubimage(0, 2 * SIZE, ImageIO.read(url).getWidth(), SIZE),
 					ImageIO.read(url).getWidth() >> SIZE_LOG, 1);
 		} catch (IOException e) {
@@ -96,7 +96,7 @@ public class TextureLibrary {
 		
 		try {
 			// getting texture atlas
-			URL url = getClass().getResource("/res/"+filename);
+			URL url = getClass().getResource("/res/" + filename);
 			sheet = new Sheet(ImageIO.read(url).getSubimage(0, 0, SIZE, ImageIO.read(url).getHeight()), 
 					1, ImageIO.read(url).getHeight() >> SIZE_LOG);
 		} catch (IOException e) {
@@ -112,7 +112,7 @@ public class TextureLibrary {
 		try {
 			for (int i = 0; i < filenames.length; i++) {
 				// getting texture atlas
-				URL url = getClass().getResource("/res/"+filenames[i]);
+				URL url = getClass().getResource("/res/" + filenames[i]);
 				sheets[i] = new Sheet(ImageIO.read(url), ImageIO.read(url).getWidth() >> SIZE_LOG, ImageIO.read(url).getHeight() >> SIZE_LOG);
 			}
 		} catch (IOException e) {
@@ -173,7 +173,7 @@ public class TextureLibrary {
 	public BufferedImage loadAndGetTextureFromImageFile(String filename, int id) {
 		try {
 			// getting texture atlas
-			URL url = getClass().getResource("/res/"+filename);
+			URL url = getClass().getResource("/res/" + filename);
 			return ImageIO.read(url);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -197,9 +197,9 @@ public class TextureLibrary {
 	public BufferedImage loadAndGetTextureFromImageFile(String filename, int id, int x, int y, int w, int h) {
 		try {
 			// getting texture atlas
-			URL url = getClass().getResource("/res/"+filename);
+			URL url = getClass().getResource("/res/" + filename);
 			return ImageIO.read
-					(getClass().getResource("/res/"+filename)).getSubimage(x,y,w,h);
+					(getClass().getResource("/res/" + filename)).getSubimage(x, y, w, h);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

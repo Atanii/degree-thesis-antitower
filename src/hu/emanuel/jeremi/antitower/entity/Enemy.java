@@ -32,10 +32,10 @@ public class Enemy extends Entity {
 	//int projectileId;
 	
 	public Enemy(int id, int x, int y, boolean hostile, EnemyType type, int spritesheet[], int sheetWidth) {
-		super(x,y,id);
+		super(x, y, id);
 		this.now = 0;
 		this.hostile = hostile;
-		setConfiguration(type,spritesheet,sheetWidth);
+		setConfiguration(type, spritesheet, sheetWidth);
 	}
 	
 	private void setConfiguration(EnemyType type, int[] spritesheet, int sheetWidth) {
@@ -54,7 +54,7 @@ public class Enemy extends Entity {
 				};
 				
 				for(int i = 0; i < temp.length; i++) {
-					temp[i] = spritesheet[i+(0*sheetWidth)];
+					temp[i] = spritesheet[i + (0 * sheetWidth)];
 				}
 				
 				break;
@@ -70,7 +70,7 @@ public class Enemy extends Entity {
 				};
 				
 				for(int i = 0; i < temp.length; i++) {
-					temp[i] = spritesheet[i+(1*sheetWidth)];
+					temp[i] = spritesheet[i + (1 * sheetWidth)];
 				}
 				
 				break;
@@ -86,7 +86,7 @@ public class Enemy extends Entity {
 				};
 				
 				for(int i = 0; i < temp.length; i++) {
-					temp[i] = spritesheet[i+(2*sheetWidth)];
+					temp[i] = spritesheet[i + (2 * sheetWidth)];
 				}
 				
 				break;
@@ -102,14 +102,14 @@ public class Enemy extends Entity {
 				};
 				
 				for(int i = 0; i < temp.length; i++) {
-					temp[i] = spritesheet[i+(0*sheetWidth)];
+					temp[i] = spritesheet[i + (0 * sheetWidth)];
 				}
 				
 				break;
 			}
 		}
 		
-		frames = new SpriteSequence(temp,0,this.x,this.y,this.id);
+		frames = new SpriteSequence(temp, 0, this.x, this.y, this.id);
 	}
 	
 	public Sprite getFrame() {
@@ -118,9 +118,9 @@ public class Enemy extends Entity {
 
 	public void takeDamage(int dmg) {
 		this.hp -= dmg;
-		if(!destroyed && hp<=0) {
+		if(!destroyed && hp <= 0) {
 			destroyed = true;
-			frames.setActualFrame(frames.getFramePointer()+1);
+			frames.setActualFrame(frames.getFramePointer() + 1);
 		}
 	}
 	
@@ -128,7 +128,7 @@ public class Enemy extends Entity {
 		xp += xpPerShoot;
 		if(level < xpcaps.length && level < 3 && xp >= xpcaps[level]) {
 			level++;
-			frames.setActualFrame(frames.getFramePointer()+2);
+			frames.setActualFrame(frames.getFramePointer() + 2);
 			//System.out.println("[Enemy] New level: "+level);
 			syncAttributesWithNewLevel();
 		}

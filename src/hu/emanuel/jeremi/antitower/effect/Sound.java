@@ -39,7 +39,7 @@ public class Sound {
         	// add the sound to play, assuming it's a *.wav
         	clip = AudioSystem.getClip();
         	// getting the sound file
-			clip.open(AudioSystem.getAudioInputStream(Sound.class.getResource(PATH_TO_RESOURCES+fileName)));
+			clip.open(AudioSystem.getAudioInputStream(Sound.class.getResource(PATH_TO_RESOURCES + fileName)));
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (UnsupportedAudioFileException e) {

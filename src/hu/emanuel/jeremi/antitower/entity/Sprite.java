@@ -18,7 +18,7 @@ public class Sprite {
 		}
 		
 		public void setActualFrame(int framePointer) {
-			if(framePointer<frames.length) {
+			if(framePointer < frames.length) {
 				setFramePointer(framePointer);
 				texture = frames[framePointer];
 			}	
@@ -29,7 +29,7 @@ public class Sprite {
 		}
 
 		public void setFramePointer(int framePointer) {
-			if(framePointer<frames.length)
+			if(framePointer < frames.length)
 				this.framePointer = framePointer;
 		}
 		

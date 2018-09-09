@@ -23,7 +23,7 @@ public class MessageHandler {
 		if (msgToPlay.contains(new Message(sender,msg,id,time))) {
 			return false;
 		} else {
-			msgToPlay.add(new Message(sender,msg,id,time));
+			msgToPlay.add(new Message(sender, msg, id, time));
 			return true;
 		}
 	}
@@ -54,7 +54,7 @@ public class MessageHandler {
 			} else {
 				activeTemp = msgToPlay.poll();
 				startTime = System.currentTimeMillis();
-				endTime = startTime + activeTemp.getTime()*1000;
+				endTime = startTime + activeTemp.getTime() * 1000;
 			}
 		}
 	}

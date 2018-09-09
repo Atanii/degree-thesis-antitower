@@ -26,21 +26,21 @@ public class RainEffect {
 	}
 	
 	public void generateDrops() {
-		for(int i = 0; i < drops.length-1; i+=2) {
+		for(int i = 0; i < drops.length - 1; i += 2) {
 			if(drops[i] == Integer.MIN_VALUE) {
 				drops[i] = (int) Math.floor( (Math.random() * width) );
-				drops[i+1] = (int) -Math.floor( (Math.random() * 1500) );
+				drops[i + 1] = (int) -Math.floor( (Math.random() * 1500) );
 			}
 		}
 	}
 	
 	public void fall() {
-		for(int i = 0; i < drops.length-1; i += 2) {
+		for(int i = 0; i < drops.length - 1; i += 2) {
 	      drops[i] += dx;
-	      drops[i+1] += dy;
-	      if(drops[i+1] >= this.height) {
+	      drops[i + 1] += dy;
+	      if(drops[i + 1] >= this.height) {
 	        drops[i] = Integer.MIN_VALUE;
-	        drops[i+1] = Integer.MIN_VALUE;
+	        drops[i + 1] = Integer.MIN_VALUE;
 	      }
 	    }
 	}

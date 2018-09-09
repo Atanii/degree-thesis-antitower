@@ -40,20 +40,20 @@ public class Skybox {
 	 * @return actual part of the skybox
 	 */
 	public BufferedImage getImage(int w, int h) {
-		if(startX > this.w-playerFOV) {
+		if(startX > this.w - playerFOV) {
 			return
 					concatTwoSubimage
 					(
-							skybox_image.getSubimage(startX, 0, Math.abs(this.w-startX), h),
-							skybox_image.getSubimage(0, 0, Math.abs(this.w-startX-w), h)
+							skybox_image.getSubimage(startX, 0, Math.abs(this.w - startX), h),
+							skybox_image.getSubimage(0, 0, Math.abs(this.w - startX - w), h)
 					);
 		}
 		else if(startX < 0) {
 			return
 					concatTwoSubimage
 					(
-							skybox_image.getSubimage(this.w+startX, 0, Math.abs(this.w-this.w+startX), h),
-							skybox_image.getSubimage(0, 0, Math.abs(w-(this.w-this.w+startX))-1, h)
+							skybox_image.getSubimage(this.w + startX, 0, Math.abs(this.w - this.w + startX), h),
+							skybox_image.getSubimage(0, 0, Math.abs(w - (this.w - this.w + startX)) - 1, h)
 					);
 		}
 		return skybox_image.getSubimage(startX, 0, w, h);
@@ -72,7 +72,7 @@ public class Skybox {
 		} 
 		else {
 			if( (startX -= speed) <= -playerFOV ) {
-				startX = w-playerFOV;
+				startX = w - playerFOV;
 			}
 		}
 	}

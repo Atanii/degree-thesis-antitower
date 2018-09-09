@@ -12,17 +12,17 @@ public class ResourceHandler implements MessageProvider {
 	public ResourceHandler(String lang) {
 		this.lang = lang;
 		setLocale();
-		res = ResourceBundle.getBundle("hu.emanuel.jeremi.antitower.i18n.GameTexts",loc);
+		res = ResourceBundle.getBundle("hu.emanuel.jeremi.antitower.i18n.GameTexts", loc);
 	} 
 	
 	private final void setLocale() {
 		if( lang.equalsIgnoreCase("HU") ) {
-			loc = new Locale("hu","HU");			 
+			loc = new Locale("hu", "HU");			 
 		}
 		else if( lang.equalsIgnoreCase("EN") ) {
-			loc = new Locale("en","US");
+			loc = new Locale("en", "US");
 		} else {
-			loc = new Locale("hu","HU");
+			loc = new Locale("hu", "HU");
 		}
 	}
 	

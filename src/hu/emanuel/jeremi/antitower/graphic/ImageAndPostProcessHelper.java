@@ -24,16 +24,16 @@ public final class ImageAndPostProcessHelper {
 		
 		// Getting color components one by one and fading them:
 		
-		int R = ((color>>16) & 0xff)-(((int)distance & 2047)>>1);// % 256);// & 0xff;	// increment red component
-		int G = ((color>>8) & 0xff)-(((int)distance & 2047)>>1);// % 256);// & 0xff;	// increment green component
-		int B = (color & 0xff)-(((int)distance & 2047)>>1);// % 256);// & 0xff;	// increment blue component
+		int R = ((color >> 16) & 0xff) - (((int) distance & 2047) >> 1); // increment red component
+		int G = ((color >> 8) & 0xff) - (((int) distance & 2047) >> 1); // increment green component
+		int B = (color & 0xff) - (((int) distance & 2047) >> 1); // increment blue component
 		
 		R = R < 0 ? 0 : R;
 		G = G < 0 ? 0 : G;
 		B = B < 0 ? 0 : B;
 		
 		// Returning "fogged" color:
-		return (255<<24)|(R<<16)|(G<<8)|B;
+		return (255 << 24) | (R << 16) | (G << 8) | B;
 		
 	}
 	
@@ -51,13 +51,13 @@ public final class ImageAndPostProcessHelper {
 		int R,G,B;
 		
 		for(int i = 0; i < colors.length; i++) {
-			R = ((colors[i]>>16) & 0xff)-(((int)distance & 2047)>>1);	// & 0xff;	// increment red component
-			G = ((colors[i]>>8) & 0xff)-(((int)distance & 2047)>>1);	// & 0xff;	// increment green component
-			B = (colors[i] & 0xff)-(((int)distance & 2047)>>1);		// & 0xff;	// increment blue component
+			R = ((colors[i] >> 16) & 0xff) - (((int) distance & 2047) >> 1);	// & 0xff;	// increment red component
+			G = ((colors[i] >> 8) & 0xff) - (((int) distance & 2047) >> 1);	// & 0xff;	// increment green component
+			B = (colors[i] & 0xff) - (((int) distance & 2047) >> 1);		// & 0xff;	// increment blue component
 			R = R < 0 ? 0 : R;
 			G = G < 0 ? 0 : G;
 			B = B < 0 ? 0 : B;
-			colors[i] = (255<<24)|(R<<16)|(G<<8)|B;
+			colors[i] = (255 << 24) | (R << 16) | (G << 8) | B;
 		}
 		
 		// Returning "fogged" colors:
@@ -79,16 +79,16 @@ public final class ImageAndPostProcessHelper {
 		
 		// Getting color components one by one:		
 		
-		int R = ((color>>16) & 0xff)-(((int)distance % 2000));	// increment red component
-		int G = ((color>>8) & 0xff)-(((int)distance % 2000));	// increment green component
-		int B = (color & 0xff)-(((int)distance % 2000));		// increment blue component
+		int R = ((color >> 16) & 0xff) - (((int) distance % 2000));	// increment red component
+		int G = ((color >> 8) & 0xff) - (((int) distance % 2000));	// increment green component
+		int B = (color & 0xff) - (((int) distance % 2000));		// increment blue component
 		
 		R = R < 0 ? 0 : R;
 		G = G < 0 ? 0 : G;
 		B = B < 0 ? 0 : B;
 		
 		// Returning "fogged" color:
-		return (255<<24)|(R<<16)|(G<<8)|B;
+		return (255 << 24) | (R << 16) | (G << 8) | B;
 	}
 	//////////////////////////////////////////////////////////////////////////////////////////
 	
@@ -103,19 +103,19 @@ public final class ImageAndPostProcessHelper {
 	 * @param h2	 -- new height
 	 * @return pixels of scaled image
 	 */
-	public static final int[] resizePixels(int[] pixels,int w1,int h1,int w2,int h2) {
+	public static final int[] resizePixels(int[] pixels, int w1, int h1, int w2, int h2) {
 	    int[] temp = new int[w2*h2] ;
 	    // EDIT: added +1 to account for an early rounding problem
-	    int x_ratio = (int)((w1<<16)/w2) +1;
-	    int y_ratio = (int)((h1<<16)/h2) +1;
+	    int x_ratio = (int) ((w1 << 16) / w2) +1;
+	    int y_ratio = (int) ((h1 << 16) / h2) +1;
 	    //int x_ratio = (int)((w1<<16)/w2) ;
 	    //int y_ratio = (int)((h1<<16)/h2) ;
 	    int x2, y2 ;
-	    for (int i=0;i<h2;i++) {
-	        for (int j=0;j<w2;j++) {
-	            x2 = ((j*x_ratio)>>16) ;
-	            y2 = ((i*y_ratio)>>16) ;
-	            temp[(i*w2)+j] = pixels[(y2*w1)+x2] ;
+	    for (int i = 0; i < h2; i++) {
+	        for (int j = 0; j < w2; j++) {
+	            x2 = ((j * x_ratio) >> 16) ;
+	            y2 = ((i * y_ratio) >> 16) ;
+	            temp[(i * w2) + j] = pixels[(y2 * w1) + x2] ;
 	        }                
 	    }                
 	    return temp ;
@@ -151,7 +151,7 @@ public final class ImageAndPostProcessHelper {
 	    int w = before.getWidth();
 	    int h = before.getHeight();
 	    BufferedImage after = new BufferedImage(w2, h2, before.getType());
-	    AffineTransform scaleInstance = AffineTransform.getScaleInstance(w2/w, h2/h);
+	    AffineTransform scaleInstance = AffineTransform.getScaleInstance(w2 / w, h2 / h);
 	    AffineTransformOp scaleOp = new AffineTransformOp(scaleInstance, type);
 	    scaleOp.filter(before, after);
 	    return after;

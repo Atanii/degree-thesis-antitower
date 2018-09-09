@@ -8,8 +8,8 @@ public class ToggleDoor extends Entity implements Interactive {
 	public boolean isClosed;
 	public int closed, opened;
 	
-	public ToggleDoor(int closed, int opened,int x, int y, int key, boolean isClosed) {
-		super(x,y,key);
+	public ToggleDoor(int closed, int opened, int x, int y, int key, boolean isClosed) {
+		super(x, y, key);
 		this.x = x;
 		this.y = y;
 		this.closed = closed;
@@ -21,7 +21,6 @@ public class ToggleDoor extends Entity implements Interactive {
 	public void toggle() {
 		isClosed = isClosed ? false : true;
 		(new Sound("43677__stijn__click11.wav")).play();
-		//System.out.println("Toggled!");
 	}
 	
 	public int getActualTexture() {

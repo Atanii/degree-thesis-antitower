@@ -69,11 +69,11 @@ public class EntityManager implements PlayerWorldConnector {
 		msgh = new MessageHandler();
 		
 		msgp = new ArrayList<>(Arrays.asList(new MessagePoint[] {
-				new MessagePoint("Teszt","Bemész egy ajtón...",10,23,11),
+				new MessagePoint("Teszt", "Bemész egy ajtón...", 10, 23, 11),
 		}));
 		
 		player.addItem(
-				new Item(ItemType.ZAPPER,110,10)			
+				new Item(ItemType.ZAPPER, 110, 10)			
 		);
 		
 		this.h = h;
@@ -173,7 +173,7 @@ public class EntityManager implements PlayerWorldConnector {
 		float minDistance = Float.MAX_VALUE;
 		float distance = Float.MAX_VALUE;
 		for(Interactive i : doors) {
-			distance = GamePhysicsHelper.getDistance(i.getMapX(),i.getMapY(),player.x,player.y);
+			distance = GamePhysicsHelper.getDistance(i.getMapX(), i.getMapY(), player.x,player.y);
 			if(distance <= minDistance) {
 				minDistance = distance;
 				minTemp = i;
@@ -185,9 +185,9 @@ public class EntityManager implements PlayerWorldConnector {
 		}			
 		//if(minDistance < )
 		if( !player.interact(minTemp) ) {
-			msgh.addMessage("@",rr.get("need_keycard"),1,1);
+			msgh.addMessage("@", rr.get("need_keycard"), 1, 1);
 		} else {
-			msgh.addMessage("@",rr.get("keycard_accepted"),1,1);
+			msgh.addMessage("@", rr.get("keycard_accepted"), 1, 1);
 		}
 	}
 	
@@ -256,7 +256,7 @@ public class EntityManager implements PlayerWorldConnector {
 	public void updateDistBetweenPlayerAndSprites() {
 		for(int i = 0; i < sprites.length; i++) {
 			sprites[i].distanceFromPlayer = 
-					GamePhysicsHelper.getDistance(sprites[i].x,sprites[i].y,player.x,player.y);
+					GamePhysicsHelper.getDistance(sprites[i].x, sprites[i].y, player.x,player.y);
 		}
 		sortSpritesByDistanceAscending();
 	}
@@ -270,12 +270,12 @@ public class EntityManager implements PlayerWorldConnector {
 		
 		Sprite temp = sprites[0];
 		
-		for(int i = 0; i < sprites.length-1; i++)
-			for(int j = 0; j < sprites.length-i-1; j++ ) {
-				if(sprites[j].distanceFromPlayer < sprites[j+1].distanceFromPlayer) {
+		for(int i = 0; i < sprites.length - 1; i++)
+			for(int j = 0; j < sprites.length - i - 1; j++ ) {
+				if(sprites[j].distanceFromPlayer < sprites[j + 1].distanceFromPlayer) {
 					temp = sprites[j];
 					sprites[j] = sprites[j+1];
-					sprites[j+1] = temp;
+					sprites[j + 1] = temp;
 				}
 			}
 	}
@@ -312,8 +312,8 @@ public class EntityManager implements PlayerWorldConnector {
 		int sight = 200;
 		for(Enemy en : enemies) {
 			if( !en.destroyed ) {
-				tempX = en.x * SIZE + (SIZE>>1);
-				tempY = en.y * SIZE + (SIZE>>1);
+				tempX = en.x * SIZE + (SIZE >> 1);
+				tempY = en.y * SIZE + (SIZE >> 1);
 				
 				angle = (int)(GamePhysicsHelper.rotatePlayerAngleToTarget
 						( tempX, tempY, player.x, player.y, player.angle, planeWidth, player.FOV ));
@@ -322,15 +322,15 @@ public class EntityManager implements PlayerWorldConnector {
 				tempY = player.y;
 				
 				for(int i = 0; i < sight; i++) {
-					tempX += Math.cos(GamePhysicsHelper.toCustomRad(angle, 640*3)) * 10;
-					tempY += Math.sin(GamePhysicsHelper.toCustomRad(angle, 640*3)) * 10;
+					tempX += Math.cos(GamePhysicsHelper.toCustomRad(angle, 640 * 3)) * 10;
+					tempY += Math.sin(GamePhysicsHelper.toCustomRad(angle, 640 * 3)) * 10;
 					
 					if(map.isWall(tempX>>SIZE_LOG, tempY>>SIZE_LOG)) {
 								return false;
 					}
 					
-					if( (int)Math.floor(tempX>>SIZE_LOG) == en.x && 
-						(int)Math.floor(tempY>>SIZE_LOG) == en.y ) {
+					if( (int) Math.floor(tempX >> SIZE_LOG) == en.x && 
+						(int) Math.floor(tempY >> SIZE_LOG) == en.y ) {
 						en.gainXP();
 						player.takeDamage(en.dmg);
 						return true;
@@ -346,7 +346,7 @@ public class EntityManager implements PlayerWorldConnector {
 			return;
 		for (Iterator<MessagePoint> iterator = msgp.iterator(); iterator.hasNext(); ) {
 			MessagePoint mp = iterator.next();
-			if(mp.x == (player.x>>SIZE_LOG) && mp.y == (player.y>>SIZE_LOG) ) {
+			if(mp.x == (player.x >> SIZE_LOG) && mp.y == (player.y >> SIZE_LOG) ) {
 				//System.out.println(mp.x+"|"+mp.y+"\n"+(player.x>>SIZE_LOG)+"|"+(player.y>>SIZE_LOG));
 				msgh.addMessage(mp);
 				iterator.remove();
@@ -361,13 +361,13 @@ public class EntityManager implements PlayerWorldConnector {
 		int l = 0;
 		for(int i = 0; i < assumables.length; i++) {
 			if(assumables[i] != null) {
-				if(assumables[i].x == (player.x>>SIZE_LOG) && assumables[i].y == (player.y>>SIZE_LOG) ) {
+				if(assumables[i].x == (player.x >> SIZE_LOG) && assumables[i].y == (player.y >> SIZE_LOG) ) {
 					player.addItem(assumables[i]);
 					// TODO: -1 id esetén nullpointer exp. messagedisplayerben...megakadályozni
-					msgh.addMessage("@",rr.get("player_item_gained"),2,3);
+					msgh.addMessage("@", rr.get("player_item_gained"), 2, 3);
 					for(int j = 0; j < sprites.length; j++) {
 						if(sprites[j].id == assumables[i].id) {
-							temp = new Sprite[sprites.length-1];
+							temp = new Sprite[sprites.length - 1];
 							for(int k = 0; k < sprites.length; k++) {
 								if(sprites[k].id != assumables[i].id) {
 									// TODO: javítani
@@ -405,8 +405,8 @@ public class EntityManager implements PlayerWorldConnector {
 
 	@Override
 	public boolean isCollision(int playerx, int playery, float dx, float dy) {
-		return map.isPathWay(((int)((playerx+dx))>>SIZE_LOG), 
-							((int)((playery+dy))>>SIZE_LOG));
+		return map.isPathWay( (( (int) (playerx + dx)) >> SIZE_LOG), 
+							  (( (int) (playery + dy)) >> SIZE_LOG) );
 	}
 
 	@Override
@@ -453,7 +453,7 @@ public class EntityManager implements PlayerWorldConnector {
 	public void handleShoot(int x, int y, int angle) {
 		GamePhysicsHelper.traceBeamTillHitsEnemy(
 				100, 
-				(float)x, (float)y, 
+				(float) x, (float) y, 
 				renderer.cosTable, renderer.sinTable, angle,
 				this
 		);

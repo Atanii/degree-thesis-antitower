@@ -2,7 +2,7 @@ package hu.emanuel.jeremi.antitower.message;
 
 public class MessagePoint extends Message {
 
-	public int x,y;
+	public int x, y;
 	
 	public MessagePoint(String sender, String message, int id, int x, int y) {
 		super(sender, message, id);

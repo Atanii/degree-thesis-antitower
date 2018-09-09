@@ -56,8 +56,8 @@ public class Game extends JFrame implements Runnable, KeyListener {
 	// transparent cursor
 	private static final Cursor transparentCursor = 
 			Toolkit.getDefaultToolkit().createCustomCursor(
-					new BufferedImage(16,16,BufferedImage.TYPE_INT_ARGB), 
-					new Point(0,0), 
+					new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB), 
+					new Point(0, 0), 
 					"blank cursor");
 	
 	// Program constructor:
@@ -83,7 +83,7 @@ public class Game extends JFrame implements Runnable, KeyListener {
 		h = new Help(rr);
 		texLib = new TextureLibrary("sprites.png", "items.png", "mainframe.png", "winter.png", "office.png");
 		
-		manager = new EntityManager(player,planeWidth,planeHeight,rr,h,texLib,tower,renderer);
+		manager = new EntityManager(player, planeWidth, planeHeight, rr, h, texLib, tower, renderer);
 		
 		// Adding listeners:
 		addKeyListener(this);
@@ -191,7 +191,7 @@ public class Game extends JFrame implements Runnable, KeyListener {
 			
 			delta = (now_fps - last) >> 4;
             manager.attackPlayer();
-			player.update(manager,1);
+			player.update(manager, 1);
 			renderer.castGraphic();
 			if (player.SHOOTING) {
 				renderer.renderBeam();
@@ -200,7 +200,7 @@ public class Game extends JFrame implements Runnable, KeyListener {
 			
 			
 			try {
-				Thread.sleep( (long) ((lastTime-System.nanoTime() + ns)/1000000) );
+				Thread.sleep( (long) ((lastTime-System.nanoTime() + ns) / 1000000) );
 			} catch(Exception e) {
 			}
 			

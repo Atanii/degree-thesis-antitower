@@ -97,7 +97,7 @@ public final class TowLoader {
 		
 		try {
 			// get file
-			URL url = getClass().getResource("/res/"+filename);
+			URL url = getClass().getResource("/res/" + filename);
 			StringTokenizer tokenizer = null;
 			int current = 0;
 			sc = new Scanner(url.openStream());

@@ -30,7 +30,7 @@ public class Message {
 	@Override
 	public boolean equals(Object other) {
 		if(other instanceof Message)
-			return this.sender.equals(((Message)other).getSender()) && this.message.equals(((Message)other).getMessage());
+			return this.sender.equals( ((Message) other).getSender() ) && this.message.equals( ((Message) other).getMessage() );
 		else
 			return false;
 	}
