@@ -289,24 +289,6 @@ public class Graphic extends JPanel {
 		
 		boolean isClosedDoor = true;
 		
-		// STOREY WALL
-		int storeyPixels[] = new int[SIZE];
-		int storeySlicePixels[];
-		int storeyIdVer = -1;
-		int storeyIdHor = -1;
-		boolean isThereStoreyVer;
-		boolean isThereStoreyHor;		
-		// VIRTUAL WALL
-		boolean isThereVirtualWallAndStorey;
-		boolean isVirtualVer;
-		boolean isVirtualHor;
-		int v_offset;														// texture offset
-		float v_wallDistHorizontal, v_wallDistVertical, v_distance = .0f;	// Horizontal and vertical wall distances:
-		float v_tempAx = .0f, v_tempAy = .0f;								// wall-slice coordinate for computing texture offset
-		int v_projectedSliceHeight;											// this height what you'll see
-		float v_horizontalHeight;
-		float v_verticalHeight;
-		
 		// SPRITES		
 		int tileIndexHor = 0, tileIndexVer = 0;
 		boolean DOWN, RIGHT;
@@ -327,10 +309,7 @@ public class Graphic extends JPanel {
 			
 			// arrays for the texture pixels and the slice pixels
 			// all of the textures has the size of SIZE
-			pixels = new int[SIZE];			
-			storeyPixels = new int[SIZE];
-			storeyIdVer = -1;
-			storeyIdHor = -1;
+			pixels = new int[SIZE];
 			
 			// spritecasting		
 			tileIndexHor = 0; tileIndexVer = 0;
@@ -340,11 +319,6 @@ public class Graphic extends JPanel {
 			thinWallTempVer = new float[3];
 			isThereThinWallHor = isThereThinWallVer = false;
 			isHorizontalWallInside = isVerticalWallInside = false;
-			
-			// virtual
-			v_distance = .0f;										// Horizontal and vertical wall distances:
-			v_tempAx = .0f;											// wall-slice coordinate for computing texture offset
-			v_tempAy = .0f;
 		}
 		
 		public void reset() {
@@ -354,9 +328,6 @@ public class Graphic extends JPanel {
 			thinWallTempHor[0] = Float.MAX_VALUE;
 			thinWallTempVer[0] = Float.MAX_VALUE;
 			
-			storeyIdVer = -1;
-			storeyIdHor = -1;
-			
 			isClosedDoor = false;
 			
 			// default wall height
@@ -365,15 +336,6 @@ public class Graphic extends JPanel {
 			// default state is inside
 			isHorizontalWallInside = true;
 			isVerticalWallInside = true;
-			
-			// default is no storey
-			isThereStoreyVer = false;
-			isThereStoreyHor = false;
-			isThereVirtualWallAndStorey = false;
-			isVirtualVer = false;
-			isVirtualHor = false;
-			v_verticalHeight = v_horizontalHeight = SIZE;
-			v_wallDistHorizontal = v_wallDistVertical = Float.MAX_VALUE;
 			
 			v_startDraw = startDraw = Integer.MAX_VALUE;	
 		}
@@ -465,37 +427,10 @@ public class Graphic extends JPanel {
 						break;
 					}
 				}
-				// VIRTUAL WALL
-				if( map.isVirtual(rc.gridX, rc.gridY) ) {
-					rc.isVirtualHor = true;
-					
-					if(!map.isOutside(rc.gridX, rc.gridY)) {
-						// STOREY
-						if(!player.isInside) {
-							rc.storeyIdHor = map.getStorey(rc.gridX, rc.gridY);
-							if( rc.storeyIdHor != -1 ) {
-								rc.isThereStoreyHor = true;
-							}
-						}
-					}
-					
-					rc.v_wallDistHorizontal = Math.abs( (rc.Ax - getPlayerX()) * InvCosTable[rayAngle] );
-					rc.v_tempAx = (float) Math.floor(rc.Ax);
-					
-					rc.v_horizontalHeight = map.getHeight(rc.gridX, rc.gridY);
-				}
 				// NORMAL WALL
 				if( map.isWall(rc.gridX, rc.gridY) ) {
 					
-					if(map.isOutside(rc.gridX, rc.gridY)) {
-						// STOREY
-						if(!player.isInside) {
-							rc.storeyIdHor = map.getStorey(rc.gridX, rc.gridY);
-							if( rc.storeyIdHor != -1 ) {
-								rc.isThereStoreyHor = true;
-							}
-						}
-						
+					if(map.isOutside(rc.gridX, rc.gridY)) {						
 						rc.isHorizontalWallInside = false;
 					}						
 					
@@ -560,37 +495,10 @@ public class Graphic extends JPanel {
 						break;
 					}
 				}
-				// VIRTUAL WALL
-				if( map.isVirtual(rc.gridX, rc.gridY) ) {
-					rc.isVirtualVer = true;
-					
-					if(!map.isOutside(rc.gridX, rc.gridY)) {
-						// STOREY
-						if(!player.isInside) {
-							rc.storeyIdVer = map.getStorey(rc.gridX, rc.gridY);
-							if( rc.storeyIdVer != -1 ) {
-								rc.isThereStoreyVer = true;
-							}
-						}
-					}						
-					
-					rc.v_wallDistVertical = Math.abs( (rc.Ay - getPlayerY()) * InvSinTable[rayAngle]);
-					rc.v_tempAy = rc.Ay;
-					
-					rc.v_verticalHeight = map.getHeight(rc.gridX, rc.gridY);
-				}
 				// NORMAL WALL
 				if( map.isWall(rc.gridX, rc.gridY) ) {
 					
-					if(map.isOutside(rc.gridX, rc.gridY)) {
-						// STOREY
-						if(!player.isInside) {
-							rc.storeyIdVer = map.getStorey(rc.gridX, rc.gridY);
-							if( rc.storeyIdVer != -1 ) {
-								rc.isThereStoreyVer = true;
-							}
-						}
-						
+					if(map.isOutside(rc.gridX, rc.gridY)) {						
 						rc.isVerticalWallInside = false;
 					}						
 					
@@ -621,9 +529,6 @@ public class Graphic extends JPanel {
 					rc.offset = (( (int) rc.tempAx ) & 63);
 					manager.getTexture(rc.tileIndexHor).getRGB(rc.offset, 0, 1, SIZE, rc.pixels, 0, 1);
 				}
-				if(rc.storeyIdHor >= 0) {
-					manager.getTexture(rc.storeyIdHor).getRGB(rc.offset, 0, 1, SIZE, rc.storeyPixels, 0, 1);
-				}
 			// VERTICAL
 			} else {
 				rc.isHorizontalWallInside = rc.isVerticalWallInside;
@@ -637,59 +542,7 @@ public class Graphic extends JPanel {
 					rc.offset = (( (int) rc.tempAy ) & 63);
 					manager.getTexture(rc.tileIndexVer).getRGB(rc.offset, 0, 1, SIZE, rc.pixels, 0, 1);
 				}
-				if(rc.storeyIdVer >= 0) {
-					manager.getTexture(rc.storeyIdVer).getRGB(rc.offset, 0, 1, SIZE, rc.storeyPixels, 0, 1);
-				}
 			}	
-			///////////////	VIRTUAL TEXTURE PIXEL OFFSET & CALCULATIONS //////////////////////			
-			// HORIZONTAL
-			if( rc.v_wallDistHorizontal != Float.MAX_VALUE || rc.v_wallDistVertical != Float.MAX_VALUE ) {
-				rc.isThereVirtualWallAndStorey = true;
-				
-				if( rc.v_wallDistHorizontal < rc.v_wallDistVertical ) {
-					rc.v_distance = rc.v_wallDistHorizontal / fishEyeCorrectionTable[raysCasted];
-					if(rc.DOWN) {
-						rc.v_offset = 63 - (( (int) rc.v_tempAx ) & 63);
-					} else {
-						rc.v_offset = (( (int) rc.v_tempAx ) & 63);
-					}
-					if(rc.storeyIdHor >= 0) {
-						manager.getTexture(rc.storeyIdHor).getRGB(rc.v_offset, 0, 1, SIZE, rc.storeyPixels, 0, 1);
-					}
-				// VERTICAL
-				} else {
-					rc.isHorizontalWallInside = rc.isVerticalWallInside;
-					rc.v_horizontalHeight = rc.v_verticalHeight;
-					rc.v_distance = rc.v_wallDistVertical / fishEyeCorrectionTable[raysCasted];
-					if(!rc.RIGHT) {
-						rc.v_offset = 63 - (( (int) rc.v_tempAy ) & 63);
-					} else {
-						rc.v_offset = (( (int) rc.v_tempAy ) & 63);
-					}
-					if(rc.storeyIdVer >= 0) {
-						manager.getTexture(rc.storeyIdVer).getRGB(rc.v_offset, 0, 1, SIZE, rc.storeyPixels, 0, 1);
-					}
-				}				
-				///////////////	WALL DISTANCE AND STARTDRAW VALUE ////////////////////////////
-				// sliceheight relative to SIZE (64 is the common) is mandatory to determine if the wall sunken or risen
-				int v_64_sliceHeight =  (int) ((getPlayerPaneDist() << SIZE_LOG) / rc.v_distance);
-				// real sliceheight relative to the actual size
-				rc.v_projectedSliceHeight = (int) ((getPlayerPaneDist() * rc.v_horizontalHeight) / rc.v_distance);
-				
-				// "smallest" wall size must be zero
-				if(rc.v_projectedSliceHeight < 0)
-					rc.v_projectedSliceHeight = 0;
-				
-				// smaller than normal walls are sunken while higher than normal walls are risen (relative to SIZE)
-				int v_sunkenOrRisen = rc.v_projectedSliceHeight - v_64_sliceHeight;
-				
-				// startDraw is the point on the screen where the wall-drawing starts
-				rc.v_startDraw = ((planeHeight - v_sunkenOrRisen) >> 1) - (rc.v_projectedSliceHeight >> 1);
-				if(rc.v_startDraw >= planeHeight) rc.v_startDraw = planeHeight - 1;			
-			    //////////////////////////////////////////////////////////////////////////////	
-			}	
-		    //////////////////////////////////////////////////////////////////////////////////
-			
 			// TODO: ezt eltüntetni
 			float shaderDistance = rc.distance;
 			
@@ -789,83 +642,33 @@ public class Graphic extends JPanel {
 			
 			///////////////	SCALING TEXTURE SLICE ////////////////////////////////////////////
 			int y_ratio;
-			if(rc.isThereVirtualWallAndStorey) {
-				// Scaling function simplified to handle one pixel wide images better. Inlined for better perfomance.
-				if(rc.projectedSliceHeight == 0) rc.projectedSliceHeight = 1;
-				rc.slicePixels = new int[rc.projectedSliceHeight];
-				rc.storeySlicePixels = new int[rc.v_projectedSliceHeight];
-			    y_ratio = (int) ((SIZE << 16) / rc.projectedSliceHeight) + 1;
-			    for (int i=0; i < rc.projectedSliceHeight; i++) {
-			    	if(((i * y_ratio) >> 16) < SIZE ) {
-			    		// wall
-			    		rc.slicePixels[i] = rc.pixels[((i * y_ratio) >> 16)] ;
-			    	}	
-			    }
-			    y_ratio = (int) ((SIZE << 16) / rc.v_projectedSliceHeight) + 1;
-			    for (int i=0; i < rc.v_projectedSliceHeight; i++) {
-			    	if(((i * y_ratio) >> 16) < SIZE ) {
-			    		// storey
-			    		if(rc.isThereStoreyVer || rc.isThereStoreyHor) {
-			    			rc.storeySlicePixels[i] = rc.storeyPixels[((i * y_ratio) >> 16)];
-			    		}
-			    	}	
-			    }
-			} else {
-				// Scaling function simplified to handle one pixel wide images better. Inlined for better perfomance.
-				if(rc.projectedSliceHeight == 0) rc.projectedSliceHeight = 1;
-				rc.slicePixels = new int[rc.projectedSliceHeight];
-				rc.storeySlicePixels = new int[rc.projectedSliceHeight];
-			    y_ratio = (int) ((SIZE << 16) / rc.projectedSliceHeight) + 1;
-			    for (int i=0; i < rc.projectedSliceHeight; i++) {
-			    	if( ((i * y_ratio) >> 16) < SIZE ) {
-			    		// wall
-			    		rc.slicePixels[i] = rc.pixels[((i*y_ratio)>>16)] ;
-			    		// storey
-			    		if(rc.isThereStoreyVer || rc.isThereStoreyHor) {
-			    			rc.storeySlicePixels[i] = rc.storeyPixels[((i*y_ratio)>>16)];
-			    		}
-			    	}	
-			    }		
-			}
+			// Scaling function simplified to handle one pixel wide images better. Inlined for better perfomance.
+			if(rc.projectedSliceHeight == 0) rc.projectedSliceHeight = 1;
+			rc.slicePixels = new int[rc.projectedSliceHeight];
+		    y_ratio = (int) ((SIZE << 16) / rc.projectedSliceHeight) + 1;
+		    for (int i=0; i < rc.projectedSliceHeight; i++) {
+		    	if( ((i * y_ratio) >> 16) < SIZE ) {
+		    		// wall
+		    		rc.slicePixels[i] = rc.pixels[((i*y_ratio)>>16)] ;
+		    	}	
+		    }		
 		    //////////////////////////////////////////////////////////////////////////////////
 		    
 		    ///////////////	DRAWING WALL SLICE ///////////////////////////////////////////////
 		    if(!rc.isClosedDoor && rc.isHorizontalWallInside && IS_SHADERS_ON) {
 	    		rc.slicePixels = addFogEffect(rc.slicePixels,shaderDistance);
 		    }
-		    
-		    if(rc.isThereVirtualWallAndStorey) {
-		    	
-		    	for(int wy2 = rc.v_startDraw - rc.v_projectedSliceHeight, index = 0; 
-			    		wy2 <= rc.v_startDraw - 1; wy2++, index++) {
-			    	if( (rc.isThereStoreyVer || rc.isThereStoreyHor) && wy2 >= 0 && wy2 < planeHeight && index < rc.storeySlicePixels.length) {
-			    		screenBuffer.setRGB(raysCasted, wy2, rc.storeySlicePixels[index]);
-			    	}
-			    }
-		    	
-		    	for(int wy = rc.startDraw, index = 0; 
-			    		wy <= rc.startDraw + rc.projectedSliceHeight - 1; wy++, index++) {
-			    	if(wy >= 0 && wy < planeHeight) {
-			    		screenBuffer.setRGB(raysCasted, wy, rc.slicePixels[index]);
-			    	}
-			    }
-		    	
-		    } else {
-		    	for(int wy = rc.startDraw, wy2 = rc.startDraw - rc.projectedSliceHeight, index = 0; 
-			    		wy <= rc.startDraw + rc.projectedSliceHeight - 1 || wy2 <= rc.startDraw - 1; wy++, wy2++, index++) {
-			    	if( (rc.isThereStoreyVer || rc.isThereStoreyHor) && wy2 >= 0 && wy2 < planeHeight) {
-			    		screenBuffer.setRGB(raysCasted, wy2, rc.storeySlicePixels[index]);
-			    	}
-			    	if(wy >= 0 && wy < planeHeight) {
-			    		
-			    		if(IS_ANGLE_MARKER_ON && rayAngle == (player.angle)) {
-			    			screenBuffer.setRGB(raysCasted, wy, 0xffffff);
-			    		} else {
-			    			screenBuffer.setRGB(raysCasted, wy, rc.slicePixels[index]);
-			    		}
-			    		
-			    	}
-			    }
+		    for(int wy = rc.startDraw, wy2 = rc.startDraw - rc.projectedSliceHeight, index = 0; 
+		    		wy <= rc.startDraw + rc.projectedSliceHeight - 1 || wy2 <= rc.startDraw - 1; wy++, wy2++, index++) {
+		    	if(wy >= 0 && wy < planeHeight) {
+		    		
+		    		if(IS_ANGLE_MARKER_ON && rayAngle == (player.angle)) {
+		    			screenBuffer.setRGB(raysCasted, wy, 0xffffff);
+		    		} else {
+		    			screenBuffer.setRGB(raysCasted, wy, rc.slicePixels[index]);
+		    		}
+		    		
+		    	}
 		    }
 			//////////////////////////////////////////////////////////////////////////////////
 		    
@@ -911,10 +714,10 @@ public class Graphic extends JPanel {
 					
 					// Scaling function simplified to handle one pixel wide images better. Inlined for better perfomance.
 					rc.slicePixels = new int[rc.projectedSliceHeight];    
-				    y_ratio = (int)((SIZE<<16)/rc.projectedSliceHeight)+1;
-				    for (int i=0;i<rc.projectedSliceHeight;i++) {
-				    	if( (((i*y_ratio)>>16) < SIZE) )
-				    			rc.slicePixels[i] = rc.pixels[((i*y_ratio)>>16)] ;
+				    y_ratio = (int) ((SIZE << 16) / rc.projectedSliceHeight) + 1;
+				    for (int i=0; i < rc.projectedSliceHeight; i++) {
+				    	if( (((i * y_ratio) >> 16) < SIZE) )
+				    			rc.slicePixels[i] = rc.pixels[((i * y_ratio) >> 16)] ;
 				    }
 				    
 				    for(int wy = rc.startDraw, index = 0; wy <= rc.startDraw + rc.projectedSliceHeight - 1; wy++, index++) {

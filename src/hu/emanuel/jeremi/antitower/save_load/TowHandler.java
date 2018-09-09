@@ -266,7 +266,6 @@ public final class TowHandler {
 				gui.map.texMap = new int[size];
 				gui.map.heightMap = new int[size];
 				gui.map.insideMap = new int[size];
-				gui.map.storeyMap = new int[size];
 				int virtualMap[] = new int[size];
 				
 				for(int i = 0; i < size; i++) {
@@ -281,7 +280,7 @@ public final class TowHandler {
 					gui.map.heightMap[(y * gui.map.width) + x] = Integer.parseInt(tokenizer.nextToken());
 					gui.map.insideMap[(y * gui.map.width) + x] = Integer.parseInt(tokenizer.nextToken());
 					virtualMap[(y * gui.map.width) + x] = Integer.parseInt(tokenizer.nextToken());
-					gui.map.storeyMap[(y * gui.map.width) + x] = Integer.parseInt(tokenizer.nextToken());
+					Integer.parseInt(tokenizer.nextToken());
 				}
 				
 				sc.nextLine();
@@ -494,7 +493,6 @@ public final class TowHandler {
 					gui.map.texMap = new int[size];
 					gui.map.heightMap = new int[size];
 					gui.map.insideMap = new int[size];
-					gui.map.storeyMap = new int[size];
 					int virtualMap[] = new int[size];
 					
 					for(int i = 0; i < size; i++) {
@@ -509,7 +507,7 @@ public final class TowHandler {
 						gui.map.heightMap[(y * gui.map.width) + x] = Integer.parseInt(tokenizer.nextToken());
 						gui.map.insideMap[(y * gui.map.width) + x] = Integer.parseInt(tokenizer.nextToken());
 						virtualMap[(y * gui.map.width) + x] = Integer.parseInt(tokenizer.nextToken());
-						gui.map.storeyMap[(y * gui.map.width) + x] = Integer.parseInt(tokenizer.nextToken());
+						Integer.parseInt(tokenizer.nextToken());
 					}
 					
 					sc.nextLine();

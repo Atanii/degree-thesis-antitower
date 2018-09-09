@@ -93,7 +93,6 @@ public class EntityManager implements PlayerWorldConnector {
 		System.out.println();
 		map.printMatrix(map.heightMap, 10);
 		System.out.println();
-		map.printMatrix(map.storeyMap, 10);
 		System.out.println();
 		System.out.println(map.ceiling);
 		System.out.println();

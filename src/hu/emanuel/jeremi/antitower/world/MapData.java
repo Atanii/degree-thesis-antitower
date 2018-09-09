@@ -18,7 +18,6 @@ public class MapData {
 	public int texMap[];
 	public int insideMap[];
 	public int heightMap[];
-	public int storeyMap[];
 	
 	public int pack, ceiling, closedDoor, openedDoor;
 	
@@ -34,27 +33,8 @@ public class MapData {
 		this.doors = doors;
 		this.spritesFromMap = spritesFromMap;
 		this.enemiesFromMap = enemiesFromMap;
-	}	
-	/*
-	private void processMapCells(LevelData d) {
-		final int size = d.w * d.h;
-		
-		this.width = d.w;
-		this.height = d.h;
-		
-		texMap = new int[size];
-		insideMap = new int[size];
-		heightMap = new int[size];
-		storeyMap = new int[size];		
-		
-		for(int i = 0; i < size; i++) {
-			texMap[i] = d.texMap[i];
-			insideMap[i] = d.insideMap[i];
-			heightMap[i] = d.heightMap[i];
-			storeyMap[i] = d.storeyMap[i];
-		}
 	}
-	*/
+	
 	public void printMatrix(int[] matrix, int width) {
 		for (int i = 0; i < matrix.length; i++) {
 			System.out.print(matrix[i]);
@@ -64,17 +44,8 @@ public class MapData {
 		}
 	}
 	
-	/*
-	public final boolean isWall(final int x, final int y) {
-		return ( (texMap[y*width+x] != INSIDE) && (texMap[y*width+x] != OUTSIDE) && (texMap[y*width+x] != VIRTUAL) );
-	}
-	*/
 	public final boolean isWall(final int x, final int y) {
 		return ( (heightMap[y * width + x] > 0) && (texMap[y * width + x] != VIRTUAL) );
-	}
-	
-	public final boolean isVirtual(final int x, final int y) {
-		return ( (texMap[y * width + x] == VIRTUAL) );
 	}
 	
 	public final boolean isDoor(final int x, final int y) {
@@ -105,15 +76,6 @@ public class MapData {
 	
 	public final int getHeight(int x, int y) {
 		return heightMap[y * width + x];
-	}
-	
-	public final int getStorey(int x, int y) {
-		int temp = storeyMap[y * width + x];
-		if(temp > 2) {
-			return temp;
-		} else {
-			return -1;
-		}
 	}
 	
 	public final boolean isCollision(int world_x, int world_y, float xd, float yd) {
