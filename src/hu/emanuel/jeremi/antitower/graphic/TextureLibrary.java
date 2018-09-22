@@ -1,6 +1,8 @@
 package hu.emanuel.jeremi.antitower.graphic;
 
 import static hu.emanuel.jeremi.antitower.common.Tile64.*;
+import hu.emanuel.jeremi.antitower.entity.Enemy.EnemyType;
+import hu.emanuel.jeremi.antitower.entity.Sprite.SpriteSequence;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -8,11 +10,14 @@ import java.net.URL;
 
 import javax.imageio.ImageIO;
 
-public class TextureLibrary {
+public class TextureLibrary implements GetEnemySpriteSequence {
 	/////////////////////////////// VARIABLES, CONSTS... /////////////////////////////////////
 	public static final boolean DEBUG = true;
 	public static final int startTextureId = START_ID;
 	public int id = 0;
+        
+        private static final int SPRITES_ROW_LENGTH = 6;
+        private static final int ENEMY_SPSEQ_START_FRAME = 0;
 	
 	public class Sheet {
 		public BufferedImage s;
@@ -124,7 +129,6 @@ public class TextureLibrary {
 	//////////////////////////////////////////////////////////////////////////////////////////
 	
 	/////////////////////////////// IMAGE ////////////////////////////////////////////////////
-	
 	public BufferedImage getTexture2(int pack, int id) {
 		//System.out.println("Pack: " + pack + "\nId: " + id);
 		
@@ -206,6 +210,73 @@ public class TextureLibrary {
 		
 		return null;
 	}
+        /*
+        public GetEnemySpriteSequence getEnemySeqCallback = (EnemyType type, int x, int y, int id) -> {
+            int temp[] = new int[SPRITES_ROW_LENGTH];
+            
+            switch(type) {
+                case BZZZZ_TOWER: {				
+                        for(int i = 0; i < temp.length; i++) {
+                                temp[i] = i + (0 * SPRITES_ROW_LENGTH);
+                        }				
+                        break;
+                }
+                case SCOPE_TOWER: {
+                        for(int i = 0; i < temp.length; i++) {
+                                temp[i] = i + (1 * SPRITES_ROW_LENGTH);
+                        }				
+                        break;
+                }
+                case RIFLE_TOWER: {
+                        for(int i = 0; i < temp.length; i++) {
+                                temp[i] = i + (2 * SPRITES_ROW_LENGTH);
+                        }				
+                        break;
+                }
+                default: {
+                        for(int i = 0; i < temp.length; i++) {
+                                temp[i] = i + (0 * SPRITES_ROW_LENGTH);
+                        }				
+                        break;
+                }
+            }
+            
+            return new SpriteSequence(temp, ENEMY_SPSEQ_START_FRAME, x, y, id);
+        };
+        */
+        @Override
+        public SpriteSequence getEnemySprites(EnemyType type, int x, int y, int id) {
+            int temp[] = new int[SPRITES_ROW_LENGTH];
+            
+            switch(type) {
+                case BZZZZ_TOWER: {				
+                        for(int i = 0; i < temp.length; i++) {
+                                temp[i] = i + (0 * SPRITES_ROW_LENGTH);
+                        }				
+                        break;
+                }
+                case SCOPE_TOWER: {
+                        for(int i = 0; i < temp.length; i++) {
+                                temp[i] = i + (1 * SPRITES_ROW_LENGTH);
+                        }				
+                        break;
+                }
+                case RIFLE_TOWER: {
+                        for(int i = 0; i < temp.length; i++) {
+                                temp[i] = i + (2 * SPRITES_ROW_LENGTH);
+                        }				
+                        break;
+                }
+                default: {
+                        for(int i = 0; i < temp.length; i++) {
+                                temp[i] = i + (0 * SPRITES_ROW_LENGTH);
+                        }				
+                        break;
+                }
+            }
+            
+            return new SpriteSequence(temp, ENEMY_SPSEQ_START_FRAME, x, y, id);
+        }
 	//////////////////////////////////////////////////////////////////////////////////////////
 	
 	/////////////////////////////// MISC. ////////////////////////////////////////////////////

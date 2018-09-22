@@ -4,6 +4,7 @@ import static hu.emanuel.jeremi.antitower.common.Tile64.VIRTUAL;
 import static hu.emanuel.jeremi.antitower.common.Tile64.SIZE_LOG;
 
 import hu.emanuel.jeremi.antitower.entity.Enemy;
+import hu.emanuel.jeremi.antitower.entity.EntityManager;
 import hu.emanuel.jeremi.antitower.entity.Sprite;
 import hu.emanuel.jeremi.antitower.entity.ToggleDoor;
 
@@ -14,6 +15,8 @@ public class MapData {
 	public Sprite[] spritesFromMap;
 	public Enemy[] enemiesFromMap;
 	public ToggleDoor[] doors;
+        
+        EntityManager em;
 	
 	public int texMap[];
 	public int insideMap[];
@@ -24,9 +27,10 @@ public class MapData {
 	public MapData(ToggleDoor[] doors, Sprite[] spritesFromMap, Enemy[] enemiesFromMap) {
 		loadLevel(doors, spritesFromMap, enemiesFromMap);
 	}
-	
-	public MapData() {
-		// TODO Auto-generated constructor stub
+        
+        public MapData(EntityManager em) {
+		this.em = em;
+                loadLevel(em.doors, em.sprites, em.enemies);
 	}
 
 	public void loadLevel(ToggleDoor[] doors, Sprite[] spritesFromMap, Enemy[] enemiesFromMap) {
@@ -49,17 +53,19 @@ public class MapData {
 	}
 	
 	public final boolean isDoor(final int x, final int y) {
-		for(int i = 0; i < doors.length; i++) {
-			if( doors[i].x == x && doors[i].y == y )
-				return true;
+		for(int i = 0; i < em.doors.length; i++) {
+			if( em.doors[i].x == x && em.doors[i].y == y ) {
+                            System.out.println(em.doors.length + " | " + em.doors[i].x + " | " + em.doors[i].y);
+                            return true;
+                        }			
 		}
 		return false;
 	}
 	
 	public final boolean isOpen(final int x, final int y) {
-		for(int i = 0; i < doors.length; i++) {
-			if( doors[i].x == x && doors[i].y == y )
-				return !doors[i].isClosed;
+		for(int i = 0; i < em.doors.length; i++) {
+			if( em.doors[i].x == x && em.doors[i].y == y )
+				return !em.doors[i].isClosed;
 		}
 		return true;
 	}

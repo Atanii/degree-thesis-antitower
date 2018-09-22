@@ -5,6 +5,11 @@ package hu.emanuel.jeremi.antitower.entity;
  * @author Jeremi Emánuel Kádár
  */
 public class Sprite {
+    
+        public int texture;
+	public int id;
+	public int x,y;
+	public float distanceFromPlayer;
 	
 	public static class SpriteSequence extends Sprite {
 
@@ -34,11 +39,6 @@ public class Sprite {
 		}
 		
 	}
-	
-	public int texture;
-	public int id;
-	public int x,y;
-	public float distanceFromPlayer;
 	
 	public Sprite(int tex, int x, int y, int id) {
 		this.texture = tex;

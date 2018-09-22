@@ -1,9 +1,11 @@
 package hu.emanuel.jeremi.antitower.entity;
 
 import hu.emanuel.jeremi.antitower.entity.Sprite.SpriteSequence;
+import hu.emanuel.jeremi.antitower.graphic.GetEnemySpriteSequence;
 
 public class Enemy extends Entity {
 	
+        // <editor-fold defaultstate="collapsed" desc="enums, variables, constants">
 	public enum EnemyType {
 		BZZZZ_TOWER, SCOPE_TOWER, RIFLE_TOWER
 	}
@@ -20,16 +22,13 @@ public class Enemy extends Entity {
 	public int xp;
 	public int xpPerShoot;
 	
-	
 	private byte timerInSeconds;
 	private long now;
 	private long timeOut;
 	
-	
 	public SpriteSequence frames;
 	public int framePointer;
-	
-	//int projectileId;
+        // </editor-fold>
 	
 	public Enemy(int id, int x, int y, boolean hostile, EnemyType type, int spritesheet[], int sheetWidth) {
 		super(x, y, id);
@@ -37,9 +36,65 @@ public class Enemy extends Entity {
 		this.hostile = hostile;
 		setConfiguration(type, spritesheet, sheetWidth);
 	}
+        
+        public Enemy(int id, int x, int y, boolean hostile, EnemyType type, GetEnemySpriteSequence seqGetter) {
+		super(x, y, id);
+		this.now = 0;
+		this.hostile = hostile;
+                this.frames = seqGetter.getEnemySprites(type, x, y, id);
+		setConfiguration(type);
+	}
+        
+        private void setConfiguration(EnemyType type) {
+		switch(type) {
+			case BZZZZ_TOWER: {
+				this.hp = 100;
+				this.dmg = 20;
+				this.timerInSeconds = 0;
+				this.level = 0;
+				this.xpPerShoot = 20;
+				this.xpcaps = new int[] {
+					1000, 2000	
+				};
+				break;
+			}
+			case SCOPE_TOWER: {
+				this.hp = 20;
+				this.dmg = 200;
+				this.timerInSeconds = 4;
+				this.level = 0;
+				this.xpPerShoot = 500;
+				this.xpcaps = new int[] {
+					1000, 2000	
+				};
+				break;
+			}
+			case RIFLE_TOWER: {
+				this.hp = 150;
+				this.dmg = 50;
+				this.timerInSeconds = 2;
+				this.level = 0;
+				this.xpPerShoot = 40;
+				this.xpcaps = new int[] {
+					1000, 2000	
+				};
+				break;
+			}
+			default: {
+				this.hp = 100;
+				this.dmg = 20;
+				this.timerInSeconds = 0;
+				this.level = 0;
+				this.xpPerShoot = 20;
+				this.xpcaps = new int[] {
+					1000, 2000	
+				};
+				break;
+			}
+		}
+	}
 	
-	private void setConfiguration(EnemyType type, int[] spritesheet, int sheetWidth) {
-		
+	private void setConfiguration(EnemyType type, int[] spritesheet, int sheetWidth) {		
 		int temp[] = new int[sheetWidth];
 		
 		switch(type) {
