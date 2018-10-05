@@ -286,7 +286,7 @@ public class Player extends Entity {
 		pwc.checkMessagePoint();
 		pwc.checkAssumableCollision();
 		
-		if( UP || DOWN )
-			System.out.println("X: " + x + "\nY: " + y + "\nAngle: " + angle + "\n======================");
+		//if( UP || DOWN )
+			//System.out.println("X: " + x + "\nY: " + y + "\nAngle: " + angle + "\n======================");
 	}
 }

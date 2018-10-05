@@ -50,7 +50,7 @@ public class Game extends JFrame implements Runnable, KeyListener {
     Player player;
 
     public static int planeWidth = 1024, planeHeight = 768;
-    public static boolean IS_FULLSCREEN = true;
+    public static boolean IS_FULLSCREEN = false;
     // </editor-fold>
 
     // transparent cursor
@@ -183,7 +183,7 @@ public class Game extends JFrame implements Runnable, KeyListener {
                 times.poll();
             }
             times.add(now_fps);
-            System.out.println(times.size());
+            //System.out.println(times.size());
 
             delta = (now_fps - last) >> 4;
             manager.attackPlayer();
@@ -192,13 +192,14 @@ public class Game extends JFrame implements Runnable, KeyListener {
             if (player.SHOOTING) {
                 renderer.renderBeam();
             }
+            //renderer.paintImmediately(0, 0, planeWidth, planeHeight);
             renderer.repaint();
-
+            /*
             try {
                 Thread.sleep((long) ((lastTime - System.nanoTime() + ns) / 1000000));
             } catch (InterruptedException e) {
             }
-
+            */
             last = now_fps;
         }
 

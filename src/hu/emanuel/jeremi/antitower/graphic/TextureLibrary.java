@@ -139,7 +139,7 @@ public class TextureLibrary implements GetEnemySpriteSequence {
 		
 		length = col * row;
 		
-		System.out.println("\nw: " + w + "\nid: " + id + "\ncol: " + col + "\nrow: " + row);
+		//System.out.println("\nw: " + w + "\nid: " + id + "\ncol: " + col + "\nrow: " + row);
 		
 		return this.tiles[pack].s.getSubimage(col, row, SIZE, SIZE);
 	}

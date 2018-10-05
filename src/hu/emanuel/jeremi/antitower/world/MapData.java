@@ -55,7 +55,7 @@ public class MapData {
 	public final boolean isDoor(final int x, final int y) {
 		for(int i = 0; i < em.doors.length; i++) {
 			if( em.doors[i].x == x && em.doors[i].y == y ) {
-                            System.out.println(em.doors.length + " | " + em.doors[i].x + " | " + em.doors[i].y);
+                            //System.out.println(em.doors.length + " | " + em.doors[i].x + " | " + em.doors[i].y);
                             return true;
                         }			
 		}
