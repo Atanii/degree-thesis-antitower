@@ -49,7 +49,7 @@ public class Game extends JFrame implements Runnable, KeyListener {
     Graphic renderer;
     Player player;
 
-    public static int planeWidth = 1024, planeHeight = 768;
+    public static int planeWidth = 640, planeHeight = 480;
     public static boolean IS_FULLSCREEN = false;
     // </editor-fold>
 
@@ -234,16 +234,27 @@ public class Game extends JFrame implements Runnable, KeyListener {
 
         player.keyPressed(e);
 
-        if (code == KeyEvent.VK_R) {
+        if (code == KeyEvent.VK_F1) {
             renderer.IS_RAIN_ON = !renderer.IS_RAIN_ON;
         }
+        if (code == KeyEvent.VK_F2) {
+            renderer.IS_SHADERS_ON = !renderer.IS_SHADERS_ON;
+        }
+        if (code == KeyEvent.VK_F3) {
+            renderer.IS_SPRITES_ON = !renderer.IS_SPRITES_ON;
+        }
+        if (code == KeyEvent.VK_F4) {
+            renderer.IS_ANGLE_MARKER_ON = !renderer.IS_ANGLE_MARKER_ON;
+        }
+        
+        
         if (code == KeyEvent.VK_H) {
             renderer.IS_HELP_ON = true;
         }
         if (code == KeyEvent.VK_ESCAPE) {
             System.exit(0);
         }
-        if (code == KeyEvent.VK_F10) {
+        if (code == KeyEvent.VK_F11) {
             toggleFullScreen();
         }
         if (code == KeyEvent.VK_F12) {
@@ -251,10 +262,10 @@ public class Game extends JFrame implements Runnable, KeyListener {
         }
 
         if (DEBUG) {
-            if (code == KeyEvent.VK_F1) {
+            if (code == KeyEvent.VK_F9) {
                 manager.reloadActualLevel();
             }
-            if (code == KeyEvent.VK_F2) {
+            if (code == KeyEvent.VK_F10) {
                 manager.chooseLevel();
             }
         }

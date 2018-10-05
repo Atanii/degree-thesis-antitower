@@ -82,12 +82,14 @@ public class Graphic extends JPanel {
     public boolean IS_SPRITES_ON = true;
     public boolean IS_HELP_ON = false;
     public boolean IS_STATUS_ON = false;
+    public boolean IS_SKYBOX_ON = true;
+    public boolean IS_RENDER_OVERHEAD_AND_HUD = false;
     //////////////////////////////////////////////////////////////////////////////////////////
     // For program constructor:
     int screenw, screenh;
     /////////////////////////////// map LOCAL DATA ///////////////////////////////////////////
-    private int mapWidth;
-    private int mapHeight;
+    private final int mapWidth;
+    private final int mapHeight;
     //////////////////////////////////////////////////////////////////////////////////////////
 
     // MANAGER AND LIBRARY OBJECTS: EntityManager, MapData, TextureLibrary, MessageDisplayers
@@ -100,7 +102,7 @@ public class Graphic extends JPanel {
     public Skybox skybox;
     RainEffect rain = new RainEffect(planeWidth, planeHeight);
 
-    private RayCastedGridData rc = new RayCastedGridData();
+    private final RayCastedGridData rc = new RayCastedGridData();
     // </editor-fold>
 
     /**
@@ -264,12 +266,14 @@ public class Graphic extends JPanel {
      *
      * @param g
      */
-    public final void renderHUDAndOverheadGraphic(Graphics g) {
+    public final void renderHUDAndOverheadGraphic() {
         //g.drawImage(tex.getItem(player.getSelectedItem().overheadImg), (screenw >> 1) - SIZE, , SIZE << 1, SIZE << 1, this);
-        int[] overhead = (  (DataBufferInt) (tex.getItem(player.getSelectedItem().overheadImg).getRaster().getDataBuffer()) ).getData();
+        //int[] overhead = (  (DataBufferInt) (tex.getItem(player.getSelectedItem().overheadImg).getRaster().getDataBuffer()) ).getData();
+        int[] img = new int[64 * 64];
+        tex.getItem(player.getSelectedItem().overheadImg).getRGB(0, 0, 64, 64, img, 0, 64);
         for(int y = screenh - (SIZE << 1); y < screenh; y++) {
             for(int x = (screenw >> 1) - SIZE; x < ((screenw >> 1) - SIZE + (SIZE << 1)); x++) {
-                output[y * (SIZE << 1) + x] = overhead[ (y - screenh - (SIZE << 1)) * (SIZE >> 1) + (x - ((screenw >> 1) - SIZE)) ];
+                output[y * screenw + x] = img[ (y - screenh - (SIZE << 1)) * (SIZE >> 1) + (x - ((screenw >> 1) - SIZE)) ];
             }
         }
     }
@@ -380,15 +384,6 @@ public class Graphic extends JPanel {
 
         // The angle of the angle to be casted:
         int rayAngle = (rayAngle = getAngle() - ANGLE30) < 0 ? rayAngle + ANGLE360 : rayAngle;
-
-        // buffer for frames
-        //BufferedImage screenBuffer = new BufferedImage(planeWidth, planeHeight, BufferedImage.TYPE_INT_ARGB);
-        //gb = screenBuffer.createGraphics();
-
-        // skybox and background
-        //gb.setColor(Color.GRAY);
-        //gb.fillRect(0, planeHeight>>1, planeWidth, planeHeight>>1);
-        //gb.drawImage(skybox.getImage(planeWidth, planeHeight >> 1), 0, 0, this);
 
         // Loop from left to right
         for (int raysCasted = 0; raysCasted < planeWidth; raysCasted += angleBetweenRays) {
@@ -945,11 +940,19 @@ public class Graphic extends JPanel {
     public void castGraphic() {
         // rendering walls, floor, ceiling, sprites, shaders
         
+        if (IS_SKYBOX_ON) {
+            renderSky();
+        }
+        
         render();
         
         if (IS_SPRITES_ON) {
             castSprites();
         }
+        
+        if (IS_RENDER_OVERHEAD_AND_HUD) {
+            renderHUDAndOverheadGraphic();
+        }        
         
         // if the player is inside and rain is turn on, then it renders simple rain effect
         if (IS_RAIN_ON && !player.isInside) {
@@ -961,11 +964,22 @@ public class Graphic extends JPanel {
         }
         // if there are active messages, then it shows them
         msgdisp.showMessage(gb);
-        //gb.setColor(Color.WHITE);
-        //gb.drawLine(planeWidth>>1, 0, planeWidth>>1, planeHeight-1);
+        
         // show player data
         if (IS_STATUS_ON) {
             showPlayerData();
+        }
+    }
+    
+    private void renderSky() {
+        int[] img = new int[360 * 240]; // 2560 x 240
+        skybox.getImage(360, 240).getRGB(0, 0, 360, 240, img, 0, 1);
+        final float xW = 360 / planeWidth;
+        final float yW = 240 / (planeHeight >> 1);
+        for(int y = 0; y < (planeHeight >> 1); y++) {
+            for(int x = 0; x < planeWidth; x++) {
+                output[y * planeWidth + x] = img[(int)(y * yW) * 360 + (int)(x * xW)];
+            }
         }
     }
 
