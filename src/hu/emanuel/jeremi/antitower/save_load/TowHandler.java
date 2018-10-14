@@ -1,5 +1,6 @@
 package hu.emanuel.jeremi.antitower.save_load;
 
+import static hu.emanuel.jeremi.antitower.common.Tile64.SIZE;
 import hu.emanuel.jeremi.antitower.entity.Enemy;
 import hu.emanuel.jeremi.antitower.entity.Enemy.EnemyType;
 import java.io.FileNotFoundException;
@@ -92,36 +93,38 @@ public final class TowHandler {
         sc.nextLine();
 
         // MAP CELLS
-        // x y inside fw height virtual storey //
-        // int x, int y, int fw, int height, int inside, int virtual, int storey
+        // x y inside fw //
+        // int x, int y, int fw, int inside
         // int oneDindex = (row * length_of_row) + column; // Indexes
+        tokenizer = new StringTokenizer(sc.next(), ",");
         int size = manager.map.width * manager.map.height;
-
+        System.out.println("<<< Map Cells >>>");
+        
         manager.map.texMap = new int[size];
         manager.map.heightMap = new int[size];
         manager.map.insideMap = new int[size];
-        int virtualMap[] = new int[size];
-
+        //int virtualMap[] = new int[size];
+        
         for (int i = 0; i < size; i++) {
-            tokenizer = new StringTokenizer(sc.next(), ",");
-
+            
             int x, y;
 
             x = Integer.parseInt(tokenizer.nextToken());
             y = Integer.parseInt(tokenizer.nextToken());
 
             manager.map.texMap[(y * manager.map.width) + x] = Integer.parseInt(tokenizer.nextToken());
-            manager.map.heightMap[(y * manager.map.width) + x] = Integer.parseInt(tokenizer.nextToken());
             manager.map.insideMap[(y * manager.map.width) + x] = Integer.parseInt(tokenizer.nextToken());
-            virtualMap[(y * manager.map.width) + x] = Integer.parseInt(tokenizer.nextToken());
-            Integer.parseInt(tokenizer.nextToken());
+            manager.map.heightMap[(y * manager.map.width) + x] = Integer.parseInt(tokenizer.nextToken()) == 1 ? SIZE : 0;
+            
+            //virtualMap[(y * manager.map.width) + x] = Integer.parseInt(tokenizer.nextToken());
+            //Integer.parseInt(tokenizer.nextToken());
         }
 
         sc.nextLine();
         sc.nextLine();
 
         // DOORS
-        // x y closed opened id value //
+        // x y closed opened cose (id value) //
         tokenizer = new StringTokenizer(sc.next(), ",");
         current = Integer.parseInt(tokenizer.nextToken());
         System.out.println("<<< Doors: " + current + " >>>");
@@ -142,7 +145,8 @@ public final class TowHandler {
                 int x = Integer.parseInt(tokenizer.nextToken());
                 int y = Integer.parseInt(tokenizer.nextToken());
                 int id = Integer.parseInt(tokenizer.nextToken());
-                int key = Integer.parseInt(tokenizer.nextToken());
+                int key = id;
+                //int key = Integer.parseInt(tokenizer.nextToken());
 
                 manager.doors[i] = new ToggleDoor(
                         manager.map.closedDoor,
@@ -158,7 +162,7 @@ public final class TowHandler {
         sc.nextLine();
 
         // SPRITES
-        // number; texture-id, x, y, id //
+        // amount; x y tile id //
         tokenizer = new StringTokenizer(sc.next(), ",");
         current = Integer.parseInt(tokenizer.nextToken());
 
@@ -184,7 +188,7 @@ public final class TowHandler {
         sc.nextLine();
 
         // ENEMIES
-        // x y tile id type //
+        // x y id type //
         tokenizer = new StringTokenizer(sc.next(), ",");
         current = Integer.parseInt(tokenizer.nextToken());
 
@@ -210,7 +214,7 @@ public final class TowHandler {
         sc.nextLine();
 
         // ITEMS
-        // x y tile id value type //
+        // x y id value type //
         tokenizer = new StringTokenizer(sc.next(), ",");
         current = Integer.parseInt(tokenizer.nextToken());
 
@@ -221,11 +225,11 @@ public final class TowHandler {
             for (int i = 0; i < current; i++) {
                 tokenizer = new StringTokenizer(sc.next(), ",");
 
-                ItemType type = ItemType.values()[Integer.parseInt(tokenizer.nextToken()) - 3];
-                int id = Integer.parseInt(tokenizer.nextToken());
-                int value = Integer.parseInt(tokenizer.nextToken());
                 int x = Integer.parseInt(tokenizer.nextToken());
                 int y = Integer.parseInt(tokenizer.nextToken());
+                int id = Integer.parseInt(tokenizer.nextToken());
+                int value = Integer.parseInt(tokenizer.nextToken());
+                ItemType type = ItemType.values()[Integer.parseInt(tokenizer.nextToken())];
 
                 manager.assumables[i] = new AssumableItem(
                         type, id, value, x, y

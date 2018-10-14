@@ -28,13 +28,23 @@ public class EntityManager implements PlayerWorldConnector {
     // <editor-fold defaultstate="collapsed" desc="variables, constants">
     public MessageProvider msgProvider;
     public Help help;
-
+    
+    // TOW
+    private String actualLevelFileName;
     TowHandler saveLoadHandler;
-
+    
+    // FROM TOW //////////////////////////
+    public int playerX, playerY;
+    public MapData map;
+    
+    public ToggleDoor[] doors; // tow, NEM TESZ BELE ELEMET, CSAK INICIALIZALJA
     public Sprite[] sprites;
-    public ToggleDoor[] doors;
     public Enemy[] enemies;
     public AssumableItem[] assumables;
+    
+    public MessageHandler msgh;     // tow
+    // FROM TOW //////////////////////////
+    
     public ArrayList<MessagePoint> msgp;
 
     private final Player player;
@@ -42,14 +52,8 @@ public class EntityManager implements PlayerWorldConnector {
     public int planeWidth, planeHeight;
 
     public Graphic renderer;
-
-    public MapData map;
+    
     public TextureLibrary texLib;
-    public MessageHandler msgh;
-
-    public int playerX, playerY;
-
-    private String actualLevelFileName;
     // </editor-fold>
 
     public EntityManager(Player player, int planeWidth, int planeHeight,
@@ -65,12 +69,14 @@ public class EntityManager implements PlayerWorldConnector {
 
         this.planeWidth = planeWidth;
         this.planeHeight = planeHeight;
-
-        //LoadLevel("level.tow", rr);
+        
         msgh = new MessageHandler();
+        msgp = new ArrayList<>();
+        /*
         msgp = new ArrayList<>(Arrays.asList(new MessagePoint[]{
-            new MessagePoint("Teszt", "Bemï¿½sz egy ajtï¿½n...", 10, 23, 11),}));
-
+            new MessagePoint("Teszt", "Bemész egy ajtón...", 10, 23, 11),}));
+        */
+        
         player.addItem(
                 new Item(ItemType.ZAPPER, 110, 10)
         );
@@ -83,30 +89,16 @@ public class EntityManager implements PlayerWorldConnector {
 
         //renderer.setPlayerX(playerX);
         //renderer.setPlayerY(playerY);
-        player.x = playerX;
-        player.y = playerY;
-
-        //map.printMatrix(map.texMap, 10);
-        //System.out.println();
-        //map.printMatrix(map.insideMap, 10);
-        //System.out.println();
-        //map.printMatrix(map.heightMap, 10);
-        //System.out.println();
-        //System.out.println();
-        //System.out.println(map.ceiling);
-        //System.out.println();
-        //System.out.println(map.pack);
+        player.x = playerX * 64;
+        player.y = playerY * 64;
     }
 
     private void LoadLevel() {
 
         map = new MapData(this);
 
-        //tower.LoadLevel("C:\\office.tow", false);
-        saveLoadHandler.LoadLevel("test_all.tow", true);
-
-        assumables = new AssumableItem[0];
-        enemies = new Enemy[0];
+        saveLoadHandler.LoadLevel("simplified.tow", true);
+        initSprites();
     }
 
     public BufferedImage getTexture(int id) {
@@ -114,18 +106,7 @@ public class EntityManager implements PlayerWorldConnector {
     }
 
     public void reloadActualLevel() {
-        /*
-            LevelData d = tower.ReadLevel(texs,this.actualLevelFileName, rr);
-
-            initEnemies(d.enemies);
-            initAssumables(d.items);		
-            initInteractives(d.toggledoors);
-            initSprites(d.sprites, d.items, d.enemies);
-            initMessages(d.msg);
-
-            map = new MapData(doors,sprites,enemies,d);
-         */
-        saveLoadHandler.LoadLevel("office.tow", true);
+        LoadLevel();
     }
 
     public void chooseLevel() {
@@ -176,60 +157,23 @@ public class EntityManager implements PlayerWorldConnector {
     /**
      *
      */
-    private void initEnemies(Enemy[] en) {
-//		};
-        enemies = new Enemy[en.length];
-        for (int i = 0; i < enemies.length; i++) {
-            enemies[i] = en[i];
-        }
-    }
-
-    /**
-     *
-     */
-    private void initAssumables(AssumableItem[] as) {
-        assumables = new AssumableItem[as.length];
-        for (int i = 0; i < assumables.length; i++) {
-            assumables[i] = as[i];
-        }
-    }
-
-    /**
-     *
-     */
-    private void initSprites(Sprite[] sp, AssumableItem[] as, Enemy[] en) {
-        sprites = new Sprite[sp.length + as.length + en.length];
+    private void initSprites() {
+        Sprite[] temp = new Sprite[sprites.length + assumables.length + enemies.length];
         int i;
         // Phase 0
-        for (i = 0; i < sp.length; i++) {
-            sprites[i] = sp[i];
+        for (i = 0; i < sprites.length; i++) {
+            temp[i] = sprites[i];
         }
         // Phase 1
-        for (; i < sp.length + as.length; i++) {
-            sprites[i] = new Sprite(as[i - sp.length].sprite, as[i - sp.length].x, as[i - sp.length].y,
-                    as[i - sp.length].id);
+        for (; i < sprites.length + assumables.length; i++) {
+            temp[i] = new Sprite(assumables[i - sprites.length].sprite, assumables[i - sprites.length].x, assumables[i - sprites.length].y,
+                    assumables[i - sprites.length].id);
         }
         // Phase 2
-        for (; i < sp.length + as.length + en.length; i++) {
-            sprites[i] = en[i - sp.length - as.length].frames;
+        for (; i < sprites.length + assumables.length + enemies.length; i++) {
+            temp[i] = enemies[i - sprites.length - assumables.length].frames;
         }
-    }
-
-    /**
-     *
-     */
-    private void initInteractives(ToggleDoor[] in) {
-        doors = new ToggleDoor[in.length];
-        for (int i = 0; i < in.length; i++) {
-            doors[i] = in[i];
-        }
-    }
-
-    private void initMessages(MessagePoint[] msg) {
-        this.msgp = new ArrayList<>();
-        for (int i = 0; i < msg.length; i++) {
-            this.msgp.add(msg[i]);
-        }
+        sprites = temp;
     }
 
     /**
@@ -251,7 +195,7 @@ public class EntityManager implements PlayerWorldConnector {
             return;
         }
 
-        Sprite temp = sprites[0];
+        Sprite temp;
 
         for (int i = 0; i < sprites.length - 1; i++) {
             for (int j = 0; j < sprites.length - i - 1; j++) {
@@ -293,9 +237,10 @@ public class EntityManager implements PlayerWorldConnector {
             return false;
         }
 
-        int tempX = 0, tempY = 0;
-        int angle = 0;
+        int tempX, tempY;
+        int angle;
         int sight = 200;
+        
         for (Enemy en : enemies) {
             if (!en.destroyed) {
                 tempX = en.x * SIZE + (SIZE >> 1);
@@ -323,6 +268,7 @@ public class EntityManager implements PlayerWorldConnector {
                 }
             }
         }
+        
         return false;
     }
 

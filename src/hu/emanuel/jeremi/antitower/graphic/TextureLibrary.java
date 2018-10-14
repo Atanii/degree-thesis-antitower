@@ -144,7 +144,7 @@ public class TextureLibrary implements GetEnemySpriteSequence {
 		return this.tiles[pack].s.getSubimage(col, row, SIZE, SIZE);
 	}
 	
-	public BufferedImage getTexture(int pack, int id) {		
+	public BufferedImage getTexture(int pack, int id) {
 		return img[pack][id];		
 	}
 	

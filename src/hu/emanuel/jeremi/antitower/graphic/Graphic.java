@@ -174,7 +174,6 @@ public class Graphic extends JPanel {
         player.speed = 5;
         player.rotateSpeed = ANGLE5 / 2;
         player.playerPaneDist = (int) ((planeWidth >> 1) / (float) Math.tan(GamePhysicsHelper.toCustomRad(player.FOV >> 1, ANGLE180)));
-        //System.out.println("Player pane dist: " + player.playerPaneDist);
         player.x = SIZE << 1;
         player.y = SIZE << 1;
         player.isInside = false;
@@ -295,7 +294,6 @@ public class Graphic extends JPanel {
      */
     private class RayCastedGridData {
         // WALL
-
         int offset;													// texture offset
         float wallDistHorizontal, wallDistVertical, distance = .0f;	// Horizontal and vertical wall distances:
         float Xa, Ya;												// moving horizontally (vertically) on grid
@@ -569,18 +567,12 @@ public class Graphic extends JPanel {
             float shaderDistance = rc.distance;
 
             ///////////////	WALL DISTANCE AND STARTDRAW VALUE ////////////////////////////////
-            // sliceheight relative to SIZE (64 is the common) is mandatory to determine if the wall sunken or risen
-            //int _64_sliceHeight = (int) ((getPlayerPaneDist() << SIZE_LOG) / rc.distance);
-            // real sliceheight relative to the actual size
             rc.projectedSliceHeight = (int) ((getPlayerPaneDist() * rc.horizontalHeight) / rc.distance);
 
             // "smallest" wall size must be zero
             if (rc.projectedSliceHeight < 0) {
                 rc.projectedSliceHeight = 0;
             }
-
-            // smaller than normal walls are sunken while higher than normal walls are risen (relative to SIZE)
-            //int sunkenOrRisen = (int) ((getPlayerPaneDist() << SIZE_LOG) / rc.distance);
 
             // startDraw is the point on the screen where the wall-drawing starts
             rc.startDraw = ((planeHeight - rc.projectedSliceHeight) >> 1);
@@ -846,7 +838,6 @@ public class Graphic extends JPanel {
         int onscreenY;
         boolean inside;
 
-        //System.out.println("Spritecounter: "+spritesInActualmap.length);
         for (int i = 0; i < manager.sprites.length; i++) {
 
             onscreenX = (int) findXOffsetForSprites(manager.sprites[i].x, manager.sprites[i].y);
@@ -866,12 +857,11 @@ public class Graphic extends JPanel {
             }
 
             manager.getTexture(manager.sprites[i].texture).getRGB(0, 0, SIZE, SIZE, pixels2, 0, SIZE);
-            //pixels3 = new int[projectedSliceHeight * projectedSliceHeight];
             pixels3 = resizePixels(pixels2, SIZE, SIZE, projectedSliceHeight, projectedSliceHeight);
             
             for (int col = 0; col < projectedSliceHeight; col++, onscreenX++) {
                 if( 
-                        (onscreenX < planeWidth) && ( (onscreenX) >= 0) && (col < planeWidth)
+                        (onscreenX < planeWidth) && ( (onscreenX) >= 0) && (col < planeWidth) && zbuffer[onscreenX] > distance
                 ) {
                     for (int a = 0; a < projectedSliceHeight; a++) {
                         int index = (a * projectedSliceHeight + col) % (projectedSliceHeight*projectedSliceHeight);
@@ -879,41 +869,15 @@ public class Graphic extends JPanel {
                           && ((pixels3[index] >> 24) != 0)
                         ) {
                             if (IS_SHADERS_ON && inside) {
-                                //screenBuffer.setRGB(onscreenX + col, temp + a, ImageAndPostProcessHelper.addFogEffect(pixels3[a * projectedSliceHeight + (col % projectedSliceHeight)], distance));
                                 output[ (onscreenX) + planeWidth * (onscreenY + a) ] = ImageAndPostProcessHelper.addFogEffect(pixels3[index], distance);
                             } else {
-                                //screenBuffer.setRGB(onscreenX + col, temp + a, pixels3[a * projectedSliceHeight + (col % projectedSliceHeight)]);
                                 output[ (onscreenX) + planeWidth * (onscreenY + a) ] = pixels3[index];
-                                //frame.setRGB(col, temp + a, pixels3[index]);
                             }
 
                         }
                     }
                 }
             } // for 2
-            /*
-            for (int col = 0; col <= projectedSliceHeight; col++) {
-                if (((onscreenX >= 0) && (col < planeWidth) && (onscreenX + col < planeWidth) && (distance < zbuffer[onscreenX + col]))
-                        ^ ((onscreenX < 0) && (col < planeWidth) && (onscreenX + col < planeWidth) && (distance < zbuffer[0 + col]))) {
-                    for (int a = 0; a < projectedSliceHeight; a++) {
-                        if ((onscreenX + col < planeWidth)
-                                && (onscreenX + col >= 0)
-                                && ((temp + a) < planeHeight)
-                                && (((pixels3[a * projectedSliceHeight + (col % projectedSliceHeight)] >> 24) & 0xff) > 0)) {
-
-                            if (IS_SHADERS_ON && inside) {
-                                //screenBuffer.setRGB(onscreenX + col, temp + a, ImageAndPostProcessHelper.addFogEffect(pixels3[a * projectedSliceHeight + (col % projectedSliceHeight)], distance));
-                                output[ (onscreenX + col) + planeWidth * (temp + a)  ] = ImageAndPostProcessHelper.addFogEffect(pixels3[a * projectedSliceHeight + (col % projectedSliceHeight)], distance);
-                            } else {
-                                //screenBuffer.setRGB(onscreenX + col, temp + a, pixels3[a * projectedSliceHeight + (col % projectedSliceHeight)]);
-                                output[ (onscreenX + col) + planeWidth * (temp + a)  ] = pixels3[a * projectedSliceHeight + (col % projectedSliceHeight)];
-                            }
-
-                        }
-                    }
-                }
-            } // for 2
-            */
         } // for 1
     } // casting
     //</editor-fold>
