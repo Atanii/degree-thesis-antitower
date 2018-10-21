@@ -6,7 +6,7 @@ package hu.emanuel.jeremi.antitower.entity;
  */
 public class Sprite {
     
-        public int texture;
+    public int texture;
 	public int id;
 	public int x,y;
 	public float distanceFromPlayer;

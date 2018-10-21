@@ -148,21 +148,37 @@ public class TextureLibrary implements GetEnemySpriteSequence {
 		return img[pack][id];		
 	}
 	
+    /*
 	public BufferedImage getItem(int id) {
 		int w = this.items.s.getWidth() >> SIZE_LOG;
 		
 		int col = ( id % w ) << SIZE_LOG;
 		int row = (int) Math.floor(id / w) << SIZE_LOG;
+        
+        System.out.println(id + " | " + col + " | " + row);
 		
 		return this.items.s.getSubimage(col, row, SIZE, SIZE);
 	}
-	
-	public BufferedImage getSprite(int id) {
+	*/
+    public BufferedImage getItem(int id) {
 		int w = this.items.s.getWidth() >> SIZE_LOG;
 		
 		int col = ( id % w ) << SIZE_LOG;
 		int row = (int) Math.floor(id / w) << SIZE_LOG;
 		
+		length = col * row;
+        
+        //System.out.println(id + " | " + col + " | " + row + " | " + w);
+		
+		return this.items.s.getSubimage(col, row, SIZE, SIZE);
+	}
+    
+	public BufferedImage getSprite(int id) {
+		int w = this.items.s.getWidth() >> SIZE_LOG;
+		
+		int col = ( id % w ) << SIZE_LOG;
+		int row = (int) Math.floor(id / w) << SIZE_LOG;
+		System.out.println(id + " | " + col + " | " + row + " | " + w);
 		return this.sprites.s.getSubimage(col, row, SIZE, SIZE);
 	}
 	

@@ -29,6 +29,10 @@ public class EntityManager implements PlayerWorldConnector {
     public MessageProvider msgProvider;
     public Help help;
     
+    public static final byte SPRITE = 0;
+    public static final byte ITEM = 1;
+    public static final byte ENEMY = 2;    
+    
     // TOW
     private String actualLevelFileName;
     TowHandler saveLoadHandler;
@@ -41,6 +45,7 @@ public class EntityManager implements PlayerWorldConnector {
     public Sprite[] sprites;
     public Enemy[] enemies;
     public AssumableItem[] assumables;
+    int enemyStartIndex, itemStartIndex;
     
     public MessageHandler msgh;     // tow
     // FROM TOW //////////////////////////
@@ -100,9 +105,25 @@ public class EntityManager implements PlayerWorldConnector {
         saveLoadHandler.LoadLevel("simplified.tow", true);
         initSprites();
     }
-
+    
     public BufferedImage getTexture(int id) {
         return texLib.getTexture(map.pack, id);
+    }
+
+    public BufferedImage getTexture(int id, byte type) {
+        switch(type) {
+            case SPRITE: {
+                return texLib.getTexture(map.pack, id);
+            }
+            case ITEM: {
+                return texLib.getItem(id);
+            }
+            case ENEMY: {
+                return texLib.getSprite(map.pack);
+            }
+            default:
+                return texLib.getTexture(map.pack, id);
+        }        
     }
 
     public void reloadActualLevel() {
@@ -165,11 +186,13 @@ public class EntityManager implements PlayerWorldConnector {
             temp[i] = sprites[i];
         }
         // Phase 1
+        itemStartIndex = sprites.length;
         for (; i < sprites.length + assumables.length; i++) {
             temp[i] = new Sprite(assumables[i - sprites.length].sprite, assumables[i - sprites.length].x, assumables[i - sprites.length].y,
                     assumables[i - sprites.length].id);
         }
         // Phase 2
+        enemyStartIndex = sprites.length + assumables.length;
         for (; i < sprites.length + assumables.length + enemies.length; i++) {
             temp[i] = enemies[i - sprites.length - assumables.length].frames;
         }
@@ -314,6 +337,14 @@ public class EntityManager implements PlayerWorldConnector {
                 }
             }
         }
+    }
+    
+    public int getItemStartIndex() {
+        return itemStartIndex;
+    }
+    
+    public int getEnemyStartIndex() {
+        return enemyStartIndex;
     }
 
     @Override

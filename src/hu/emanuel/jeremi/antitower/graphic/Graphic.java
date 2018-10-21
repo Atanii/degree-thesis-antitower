@@ -837,8 +837,9 @@ public class Graphic extends JPanel {
         float distance;
         int onscreenY;
         boolean inside;
-
-        for (int i = 0; i < manager.sprites.length; i++) {
+        
+        // <editor-fold defaultstate="collapsed" desc="SPRITES">
+        for (int i = 0; i < manager.getItemStartIndex(); i++) {
 
             onscreenX = (int) findXOffsetForSprites(manager.sprites[i].x, manager.sprites[i].y);
 
@@ -856,7 +857,7 @@ public class Graphic extends JPanel {
                 onscreenY = 0;
             }
 
-            manager.getTexture(manager.sprites[i].texture).getRGB(0, 0, SIZE, SIZE, pixels2, 0, SIZE);
+            manager.getTexture(manager.sprites[i].texture, manager.SPRITE).getRGB(0, 0, SIZE, SIZE, pixels2, 0, SIZE);
             pixels3 = resizePixels(pixels2, SIZE, SIZE, projectedSliceHeight, projectedSliceHeight);
             
             for (int col = 0; col < projectedSliceHeight; col++, onscreenX++) {
@@ -879,6 +880,100 @@ public class Graphic extends JPanel {
                 }
             } // for 2
         } // for 1
+        // </editor-fold>
+        
+        /////////////////
+        /*
+        // <editor-fold defaultstate="collapsed" desc="ITEMS">
+        for (int i = manager.getItemStartIndex(); i < manager.getEnemyStartIndex(); i++) {
+
+            onscreenX = (int) findXOffsetForSprites(manager.sprites[i].x, manager.sprites[i].y);
+
+            inside = !map.isOutside(manager.sprites[i].x, manager.sprites[i].y);
+
+            distance = manager.sprites[i].distanceFromPlayer;
+            projectedSliceHeight = (int) ((getPlayerPaneDist() << (SIZE_LOG)) / distance) % planeHeight;
+            
+            if ((distance <= 90) ^ ((onscreenX) >= planeWidth) || projectedSliceHeight <= 0) {
+                continue;
+            }
+
+            onscreenY = ((planeHeight >> 1) - (projectedSliceHeight >> 1));
+            if (onscreenY < 0) {
+                onscreenY = 0;
+            }
+            
+            manager.getTexture(manager.assumables[i - manager.getItemStartIndex()].sprite, manager.ITEM).getRGB(0, 0, SIZE, SIZE, pixels2, 0, SIZE);
+            pixels3 = resizePixels(pixels2, SIZE, SIZE, projectedSliceHeight, projectedSliceHeight);
+            
+            for (int col = 0; col < projectedSliceHeight; col++, onscreenX++) {
+                if( 
+                        (onscreenX < planeWidth) && ( (onscreenX) >= 0) && (col < planeWidth) && zbuffer[onscreenX] > distance
+                ) {
+                    for (int a = 0; a < projectedSliceHeight; a++) {
+                        int index = (a * projectedSliceHeight + col) % (projectedSliceHeight*projectedSliceHeight);
+                        if ( ((onscreenY + a) < planeHeight)
+                          && ((pixels3[index] >> 24) != 0)
+                        ) {
+                            if (IS_SHADERS_ON && inside) {
+                                output[ (onscreenX) + planeWidth * (onscreenY + a) ] = ImageAndPostProcessHelper.addFogEffect(pixels3[index], distance);
+                            } else {
+                                output[ (onscreenX) + planeWidth * (onscreenY + a) ] = pixels3[index];
+                            }
+
+                        }
+                    }
+                }
+            } // for 2
+        } // for 1
+        // </editor-fold>
+        */
+        /////////////////
+        
+        // <editor-fold defaultstate="collapsed" desc="ENEMIES">
+        for (int i = manager.getEnemyStartIndex(); i < manager.sprites.length; i++) {
+
+            onscreenX = (int) findXOffsetForSprites(manager.sprites[i].x, manager.sprites[i].y);
+
+            inside = !map.isOutside(manager.sprites[i].x, manager.sprites[i].y);
+
+            distance = manager.sprites[i].distanceFromPlayer;
+            projectedSliceHeight = (int) ((getPlayerPaneDist() << (SIZE_LOG)) / distance) % planeHeight;
+            
+            if ((distance <= 90) ^ ((onscreenX) >= planeWidth) || projectedSliceHeight <= 0) {
+                continue;
+            }
+
+            onscreenY = ((planeHeight >> 1) - (projectedSliceHeight >> 1));
+            if (onscreenY < 0) {
+                onscreenY = 0;
+            }
+
+            manager.getTexture(manager.enemies[i - manager.getEnemyStartIndex()].frames.getFramePointer(), manager.ENEMY).getRGB(0, 0, SIZE, SIZE, pixels2, 0, SIZE);
+            pixels3 = resizePixels(pixels2, SIZE, SIZE, projectedSliceHeight, projectedSliceHeight);
+            
+            for (int col = 0; col < projectedSliceHeight; col++, onscreenX++) {
+                if( 
+                        (onscreenX < planeWidth) && ( (onscreenX) >= 0) && (col < planeWidth) && zbuffer[onscreenX] > distance
+                ) {
+                    for (int a = 0; a < projectedSliceHeight; a++) {
+                        int index = (a * projectedSliceHeight + col) % (projectedSliceHeight*projectedSliceHeight);
+                        if ( ((onscreenY + a) < planeHeight)
+                          && ((pixels3[index] >> 24) != 0)
+                        ) {
+                            if (IS_SHADERS_ON && inside) {
+                                output[ (onscreenX) + planeWidth * (onscreenY + a) ] = ImageAndPostProcessHelper.addFogEffect(pixels3[index], distance);
+                            } else {
+                                output[ (onscreenX) + planeWidth * (onscreenY + a) ] = pixels3[index];
+                            }
+
+                        }
+                    }
+                }
+            } // for 2
+        } // for 1
+        // </editor-fold>
+        
     } // casting
     //</editor-fold>
 
