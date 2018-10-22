@@ -883,7 +883,6 @@ public class Graphic extends JPanel {
         // </editor-fold>
         
         /////////////////
-        /*
         // <editor-fold defaultstate="collapsed" desc="ITEMS">
         for (int i = manager.getItemStartIndex(); i < manager.getEnemyStartIndex(); i++) {
 
@@ -927,7 +926,7 @@ public class Graphic extends JPanel {
             } // for 2
         } // for 1
         // </editor-fold>
-        */
+        
         /////////////////
         
         // <editor-fold defaultstate="collapsed" desc="ENEMIES">

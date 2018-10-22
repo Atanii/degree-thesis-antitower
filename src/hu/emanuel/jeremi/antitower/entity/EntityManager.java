@@ -102,7 +102,7 @@ public class EntityManager implements PlayerWorldConnector {
 
         map = new MapData(this);
 
-        saveLoadHandler.LoadLevel("simplified.tow", true);
+        saveLoadHandler.LoadLevel("ttest.tow", true);
         initSprites();
     }
     

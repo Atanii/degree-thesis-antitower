@@ -165,6 +165,7 @@ public final class TowHandler {
         // amount; x y tile id //
         tokenizer = new StringTokenizer(sc.next(), ",");
         current = Integer.parseInt(tokenizer.nextToken());
+        System.out.println("<<< Sprites: " + current + " >>>");
 
         manager.sprites = new Sprite[current];
 
@@ -191,7 +192,8 @@ public final class TowHandler {
         // x y id type //
         tokenizer = new StringTokenizer(sc.next(), ",");
         current = Integer.parseInt(tokenizer.nextToken());
-
+        System.out.println("<<< Enemies: " + current + " >>>");
+        
         manager.enemies = new Enemy[current];
 
         if (current > 0) {
@@ -217,6 +219,7 @@ public final class TowHandler {
         // x y id value type //
         tokenizer = new StringTokenizer(sc.next(), ",");
         current = Integer.parseInt(tokenizer.nextToken());
+        System.out.println("<<< Items: " + current + " >>>");
 
         manager.assumables = new AssumableItem[current];
 
@@ -244,6 +247,8 @@ public final class TowHandler {
         // x y time id sendercode stringCode //
         tokenizer = new StringTokenizer(sc.next(), ",");
         current = Integer.parseInt(tokenizer.nextToken());
+        System.out.println("<<< Messages: " + current + " >>>");
+        
         if (current > 0) {
             sc.nextLine();
             for (int i = 0; i < current; i++) {
