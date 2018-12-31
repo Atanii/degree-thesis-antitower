@@ -21,7 +21,14 @@ public class MessageDisplayer {
 	}
     
     public String getMessage() {
-        return msgh.getMessage().toString();
+        if( msgh == null ) {
+            return "ERROR! Missing MessageHandler!";
+        }
+        else if( msgh.getMessage() == null ) {
+            return "@";
+        } else {
+            return msgh.getMessage().toString();
+        }
     }
 	
 }

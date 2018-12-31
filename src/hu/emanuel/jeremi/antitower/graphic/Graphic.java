@@ -252,9 +252,23 @@ public class Graphic extends JPanel {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        //g.drawImage(ImageAndPostProcessHelper.scaleNearest(frame, 4), 0, 0, this);
-        g.drawImage(frame, 0, 0, this);
+        //g.drawImage(ImageAndPostProcessHelper.scaleNearest(frame, 4), 0, 0, this);        
+        // draw current frame
+        g.drawImage(frame, 0, 0, this);        
+        // draw messages currently waiting for drawing
         drawMessages(g);
+        // if the player is inside and rain is turn on, then it renders simple rain effect
+        if (IS_RAIN_ON && !player.isInside) {
+            animateRain(g);
+        }
+        // write help information about the controls
+        if (IS_HELP_ON) {
+            drawHelp(g);
+        }
+        // show player data
+        if (IS_STATUS_ON) {
+            showPlayerData(g);
+        }
     }
     
     /**
@@ -262,8 +276,10 @@ public class Graphic extends JPanel {
      * @param g 
      */
     private void drawMessages(Graphics g) {
-        g.setColor(Color.yellow);
-		g.drawString(msgdisp.getMessage(), 10, 20);
+        if( msgdisp != null ) {
+            g.setColor(Color.yellow);
+            g.drawString(msgdisp.getMessage(), 10, 20);
+        }
     }
 
     /////////////////////////////// RAY-CASTING //////////////////////////////////////////////
@@ -991,7 +1007,7 @@ public class Graphic extends JPanel {
     } // casting
     //</editor-fold>
 
-    private void drawHelp() {
+    private void drawHelp(Graphics gb) {
         String l = this.manager.getHelp();
         gb.setColor(Color.WHITE);
         int y = gb.getFontMetrics().getHeight();
@@ -1026,22 +1042,6 @@ public class Graphic extends JPanel {
         if (IS_RENDER_OVERHEAD_AND_HUD) {
             renderHUDAndOverheadGraphic();
         }
-        
-        // if the player is inside and rain is turn on, then it renders simple rain effect
-        if (IS_RAIN_ON && !player.isInside) {
-            animateRain(gb);
-        }
-        // write help information about the controls
-        if (IS_HELP_ON) {
-            drawHelp();
-        }
-        // if there are active messages, then it shows them
-        msgdisp.showMessage(gb);
-        
-        // show player data
-        if (IS_STATUS_ON) {
-            showPlayerData();
-        }
     }
     
     private void renderSky() {
@@ -1056,7 +1056,7 @@ public class Graphic extends JPanel {
         }
     }
 
-    private void showPlayerData() {
+    private void showPlayerData(Graphics gb) {
         gb.setColor(Color.BLACK);
         gb.fillRect(5, (planeHeight >> 1) + (planeHeight >> 2) - 15, 130, 60);
         gb.setColor(Color.YELLOW);
