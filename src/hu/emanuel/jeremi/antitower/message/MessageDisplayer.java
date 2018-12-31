@@ -19,5 +19,9 @@ public class MessageDisplayer {
 		screen.setColor(Color.yellow);
 		screen.drawString(msgh.getMessage().toString(), 10, 20);
 	}
+    
+    public String getMessage() {
+        return msgh.getMessage().toString();
+    }
 	
 }

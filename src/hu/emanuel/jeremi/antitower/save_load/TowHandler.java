@@ -1,6 +1,7 @@
 package hu.emanuel.jeremi.antitower.save_load;
 
 import static hu.emanuel.jeremi.antitower.common.Tile64.SIZE;
+import static hu.emanuel.jeremi.antitower.common.Tile64.SIZE_LOG;
 import hu.emanuel.jeremi.antitower.entity.Enemy;
 import hu.emanuel.jeremi.antitower.entity.Enemy.EnemyType;
 import java.io.FileNotFoundException;
@@ -180,7 +181,7 @@ public final class TowHandler {
                 int id = Integer.parseInt(tokenizer.nextToken());
 
                 manager.sprites[i] = new Sprite(
-                        tex, x, y, id
+                        manager.texLib.getTexture(manager.map.pack, tex), x, y, id
                 );
             }
         }
@@ -235,7 +236,7 @@ public final class TowHandler {
                 ItemType type = ItemType.values()[Integer.parseInt(tokenizer.nextToken())];
 
                 manager.assumables[i] = new AssumableItem(
-                        type, id, value, x, y
+                        type, id, value, x, y, manager.texLib.getItemSprite(type)
                 );
             }
         }
@@ -265,6 +266,15 @@ public final class TowHandler {
                  */
             }
         }
+        
+        sc.nextLine();
+        sc.nextLine();
+
+        // GOAL DATA
+        tokenizer = new StringTokenizer(sc.next(), ",");
+        manager.goalX = Integer.parseInt(tokenizer.nextToken());
+        manager.goalY = Integer.parseInt(tokenizer.nextToken());
+        System.out.println("<<< Goal X: " + manager.goalX + " | " + "Y: " + manager.goalY + " >>>");
 
         System.out.println("<<< LOADED: " + PATH + " >>>");
     }

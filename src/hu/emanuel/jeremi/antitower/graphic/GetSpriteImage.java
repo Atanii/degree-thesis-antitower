@@ -7,13 +7,18 @@ package hu.emanuel.jeremi.antitower.graphic;
 
 import hu.emanuel.jeremi.antitower.entity.Enemy.EnemyType;
 import hu.emanuel.jeremi.antitower.entity.Sprite.SpriteSequence;
+import hu.emanuel.jeremi.antitower.entity.item.ItemType;
+import java.awt.image.BufferedImage;
 
 /**
  *
  * @author User
  */
-public interface GetEnemySpriteSequence {
+public interface GetSpriteImage {
     
     public SpriteSequence getEnemySprites(EnemyType type, int x, int y, int id);
+    public BufferedImage getItemSprite(ItemType type);
+    public BufferedImage getDecorationSprite(int tileId);
+    public BufferedImage getItemOverheadIcon(ItemType type);
     
 }

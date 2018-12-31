@@ -79,7 +79,13 @@ public class Game extends JFrame implements Runnable, KeyListener {
         player = new Player();
 
         help = new Help(resourceHandler);
-        texLib = new TextureLibrary("sprites.png", "items.png", "mainframe.png", "winter.png", "office.png");
+        texLib = new TextureLibrary(
+                "textures/sprites.png", 
+                "textures/items.png", 
+                "textures/mainframe.png", 
+                "textures/winter.png", 
+                "textures/office.png"
+        );
 
         manager = new EntityManager(player, planeWidth, planeHeight, resourceHandler, help, texLib, saveLoadHandler, renderer);
 
@@ -188,6 +194,7 @@ public class Game extends JFrame implements Runnable, KeyListener {
             delta = (now_fps - last) >> 4;
             manager.attackPlayer();
             player.update(manager, 1);
+            manager.checkGoalPoint();
             renderer.castGraphic();
             if (player.SHOOTING) {
                 renderer.renderBeam();

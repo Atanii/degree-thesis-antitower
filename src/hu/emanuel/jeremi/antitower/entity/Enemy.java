@@ -1,11 +1,11 @@
 package hu.emanuel.jeremi.antitower.entity;
 
 import hu.emanuel.jeremi.antitower.entity.Sprite.SpriteSequence;
-import hu.emanuel.jeremi.antitower.graphic.GetEnemySpriteSequence;
+import hu.emanuel.jeremi.antitower.graphic.GetSpriteImage;
 
 public class Enemy extends Entity {
 	
-        // <editor-fold defaultstate="collapsed" desc="enums, variables, constants">
+    // <editor-fold defaultstate="collapsed" desc="enums, variables, constants">
 	public enum EnemyType {
 		BZZZZ_TOWER, SCOPE_TOWER, RIFLE_TOWER
 	}
@@ -28,21 +28,23 @@ public class Enemy extends Entity {
 	
 	public SpriteSequence frames;
 	public int framePointer;
-        // </editor-fold>
+    // </editor-fold>
 	
+    /*
 	public Enemy(int id, int x, int y, boolean hostile, EnemyType type, int spritesheet[], int sheetWidth) {
 		super(x, y, id);
 		this.now = 0;
 		this.hostile = hostile;
 		setConfiguration(type, spritesheet, sheetWidth);
 	}
+    */
         
-        public Enemy(int id, int x, int y, boolean hostile, EnemyType type, GetEnemySpriteSequence seqGetter) {
-		super(x, y, id);
-		this.now = 0;
-		this.hostile = hostile;
-                this.frames = seqGetter.getEnemySprites(type, x, y, id);
-		setConfiguration(type);
+    public Enemy(int id, int x, int y, boolean hostile, EnemyType type, GetSpriteImage seqGetter) {
+        super(x, y, id);
+        this.now = 0;
+        this.hostile = hostile;
+        this.frames = seqGetter.getEnemySprites(type, x, y, id);
+        setConfiguration(type);
 	}
         
         private void setConfiguration(EnemyType type) {
@@ -50,11 +52,11 @@ public class Enemy extends Entity {
 			case BZZZZ_TOWER: {
 				this.hp = 100;
 				this.dmg = 20;
-				this.timerInSeconds = 0;
+				this.timerInSeconds = 1;
 				this.level = 0;
 				this.xpPerShoot = 20;
 				this.xpcaps = new int[] {
-					1000, 2000	
+					2000, 4000	
 				};
 				break;
 			}
@@ -63,9 +65,9 @@ public class Enemy extends Entity {
 				this.dmg = 200;
 				this.timerInSeconds = 4;
 				this.level = 0;
-				this.xpPerShoot = 500;
+				this.xpPerShoot = 250;
 				this.xpcaps = new int[] {
-					1000, 2000	
+					2000, 4000	
 				};
 				break;
 			}
@@ -76,7 +78,7 @@ public class Enemy extends Entity {
 				this.level = 0;
 				this.xpPerShoot = 40;
 				this.xpcaps = new int[] {
-					1000, 2000	
+					2000, 4000	
 				};
 				break;
 			}
@@ -87,13 +89,14 @@ public class Enemy extends Entity {
 				this.level = 0;
 				this.xpPerShoot = 20;
 				this.xpcaps = new int[] {
-					1000, 2000	
+					2000, 4000	
 				};
 				break;
 			}
 		}
 	}
 	
+    /*
 	private void setConfiguration(EnemyType type, int[] spritesheet, int sheetWidth) {		
 		int temp[] = new int[sheetWidth];
 		
@@ -166,6 +169,7 @@ public class Enemy extends Entity {
 		
 		frames = new SpriteSequence(temp, 0, this.x, this.y, this.id);
 	}
+    */
 	
 	public Sprite getFrame() {
 		return frames;
@@ -207,5 +211,9 @@ public class Enemy extends Entity {
 			return false;
 		}
 	}
+    
+    public SpriteSequence getSpriteSequence() {
+        return this.frames;
+    }
 
 }

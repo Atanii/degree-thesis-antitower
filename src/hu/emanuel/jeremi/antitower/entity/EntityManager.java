@@ -16,6 +16,7 @@ import hu.emanuel.jeremi.antitower.entity.item.ItemType;
 import hu.emanuel.jeremi.antitower.graphic.Graphic;
 import hu.emanuel.jeremi.antitower.graphic.TextureLibrary;
 import hu.emanuel.jeremi.antitower.i18n.MessageProvider;
+import hu.emanuel.jeremi.antitower.message.Message;
 import hu.emanuel.jeremi.antitower.message.MessageHandler;
 import hu.emanuel.jeremi.antitower.message.MessagePoint;
 import hu.emanuel.jeremi.antitower.message.helpmessage.Help;
@@ -28,28 +29,29 @@ public class EntityManager implements PlayerWorldConnector {
     // <editor-fold defaultstate="collapsed" desc="variables, constants">
     public MessageProvider msgProvider;
     public Help help;
-    
+
     public static final byte SPRITE = 0;
     public static final byte ITEM = 1;
-    public static final byte ENEMY = 2;    
-    
+    public static final byte ENEMY = 2;
+
     // TOW
     private String actualLevelFileName;
     TowHandler saveLoadHandler;
-    
+
     // FROM TOW //////////////////////////
     public int playerX, playerY;
+    public int goalX, goalY;
     public MapData map;
-    
+
     public ToggleDoor[] doors; // tow, NEM TESZ BELE ELEMET, CSAK INICIALIZALJA
     public Sprite[] sprites;
     public Enemy[] enemies;
     public AssumableItem[] assumables;
     int enemyStartIndex, itemStartIndex;
-    
+
     public MessageHandler msgh;     // tow
     // FROM TOW //////////////////////////
-    
+
     public ArrayList<MessagePoint> msgp;
 
     private final Player player;
@@ -57,7 +59,7 @@ public class EntityManager implements PlayerWorldConnector {
     public int planeWidth, planeHeight;
 
     public Graphic renderer;
-    
+
     public TextureLibrary texLib;
     // </editor-fold>
 
@@ -74,17 +76,9 @@ public class EntityManager implements PlayerWorldConnector {
 
         this.planeWidth = planeWidth;
         this.planeHeight = planeHeight;
-        
+
         msgh = new MessageHandler();
         msgp = new ArrayList<>();
-        /*
-        msgp = new ArrayList<>(Arrays.asList(new MessagePoint[]{
-            new MessagePoint("Teszt", "Bemész egy ajtón...", 10, 23, 11),}));
-        */
-        
-        player.addItem(
-                new Item(ItemType.ZAPPER, 110, 10)
-        );
 
         this.help = h;
 
@@ -92,8 +86,6 @@ public class EntityManager implements PlayerWorldConnector {
 
         LoadLevel();
 
-        //renderer.setPlayerX(playerX);
-        //renderer.setPlayerY(playerY);
         player.x = playerX * 64;
         player.y = playerY * 64;
     }
@@ -102,16 +94,21 @@ public class EntityManager implements PlayerWorldConnector {
 
         map = new MapData(this);
 
-        saveLoadHandler.LoadLevel("ttest.tow", true);
+        //saveLoadHandler.LoadLevel("ttest.tow", true);
+        saveLoadHandler.LoadLevel("levels/test.tow", true);
         initSprites();
+        
+        //msgp = new ArrayList<>(Arrays.asList(new MessagePoint[]{
+            //new MessagePoint("Teszt", "Bemész egy ajtón...", 10, 23, 11),}));
+        msgh.addMessage("@game", "levels/test.tow loaded", -100, 2);
     }
-    
+
     public BufferedImage getTexture(int id) {
         return texLib.getTexture(map.pack, id);
     }
 
     public BufferedImage getTexture(int id, byte type) {
-        switch(type) {
+        switch (type) {
             case SPRITE: {
                 return texLib.getTexture(map.pack, id);
             }
@@ -123,7 +120,7 @@ public class EntityManager implements PlayerWorldConnector {
             }
             default:
                 return texLib.getTexture(map.pack, id);
-        }        
+        }
     }
 
     public void reloadActualLevel() {
@@ -188,8 +185,11 @@ public class EntityManager implements PlayerWorldConnector {
         // Phase 1
         itemStartIndex = sprites.length;
         for (; i < sprites.length + assumables.length; i++) {
+            temp[i] = assumables[i - sprites.length].sprite;
+            /*
             temp[i] = new Sprite(assumables[i - sprites.length].sprite, assumables[i - sprites.length].x, assumables[i - sprites.length].y,
                     assumables[i - sprites.length].id);
+             */
         }
         // Phase 2
         enemyStartIndex = sprites.length + assumables.length;
@@ -263,7 +263,7 @@ public class EntityManager implements PlayerWorldConnector {
         int tempX, tempY;
         int angle;
         int sight = 200;
-        
+
         for (Enemy en : enemies) {
             if (!en.destroyed) {
                 tempX = en.x * SIZE + (SIZE >> 1);
@@ -291,7 +291,7 @@ public class EntityManager implements PlayerWorldConnector {
                 }
             }
         }
-        
+
         return false;
     }
 
@@ -306,6 +306,13 @@ public class EntityManager implements PlayerWorldConnector {
                 msgh.addMessage(mp);
                 iterator.remove();
             }
+        }
+    }
+
+    public void checkGoalPoint() {
+        if (goalX == (player.x >> SIZE_LOG) && goalY == (player.y >> SIZE_LOG)) {
+            //System.out.println(mp.x+"|"+mp.y+"\n"+(player.x>>SIZE_LOG)+"|"+(player.y>>SIZE_LOG));
+            System.exit(0);
         }
     }
 
@@ -338,11 +345,11 @@ public class EntityManager implements PlayerWorldConnector {
             }
         }
     }
-    
+
     public int getItemStartIndex() {
         return itemStartIndex;
     }
-    
+
     public int getEnemyStartIndex() {
         return enemyStartIndex;
     }

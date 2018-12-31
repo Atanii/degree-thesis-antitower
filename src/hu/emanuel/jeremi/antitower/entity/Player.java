@@ -123,7 +123,7 @@ public class Player extends Entity {
 	}
 	
 	public void takeDamage(int dmg) {
-		if( inventory[actualItemPointer].type == ItemType.SHIELD && 
+		if( inventory[0] != null && inventory[actualItemPointer].type == ItemType.SHIELD && 
 			inventory[actualItemPointer].value > 0 ) {
 			this.inventory[actualItemPointer].value -= (dmg-dp);
 			if( this.inventory[actualItemPointer].value <= 0 ) {

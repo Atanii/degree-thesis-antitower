@@ -20,7 +20,7 @@ public class ToggleDoor extends Entity implements Interactive {
 	
 	public void toggle() {
 		isClosed = isClosed ? false : true;
-		(new Sound("43677__stijn__click11.wav")).play();
+		(new Sound("sound/43677__stijn__click11.wav")).play();
 	}
 	
 	public int getActualTexture() {

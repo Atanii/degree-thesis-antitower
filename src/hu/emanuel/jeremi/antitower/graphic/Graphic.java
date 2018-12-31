@@ -78,12 +78,12 @@ public class Graphic extends JPanel {
     /////////////////////////////// FLAGS ////////////////////////////////////////////////////
     public boolean IS_ANGLE_MARKER_ON = false;
     public boolean IS_SHADERS_ON = false;
-    public boolean IS_RAIN_ON = false;
+    public boolean IS_RAIN_ON = true;
     public boolean IS_SPRITES_ON = true;
     public boolean IS_HELP_ON = false;
     public boolean IS_STATUS_ON = false;
     public boolean IS_SKYBOX_ON = true;
-    public boolean IS_RENDER_OVERHEAD_AND_HUD = false;
+    public boolean IS_RENDER_OVERHEAD_AND_HUD = true;
     //////////////////////////////////////////////////////////////////////////////////////////
     // For program constructor:
     int screenw, screenh;
@@ -174,8 +174,6 @@ public class Graphic extends JPanel {
         player.speed = 5;
         player.rotateSpeed = ANGLE5 / 2;
         player.playerPaneDist = (int) ((planeWidth >> 1) / (float) Math.tan(GamePhysicsHelper.toCustomRad(player.FOV >> 1, ANGLE180)));
-        player.x = SIZE << 1;
-        player.y = SIZE << 1;
         player.isInside = false;
         player.angle = ANGLE0;
         angleBetweenRays = getFOV() / planeWidth;
@@ -223,7 +221,7 @@ public class Graphic extends JPanel {
 
         msgdisp = new MessageDisplayer(manager.msgh);
 
-        skybox = new Skybox(player.FOV, tex.loadAndGetTextureFromImageFile("skybox_2560x240.png", 656345));
+        skybox = new Skybox(player.FOV, tex.loadAndGetTextureFromImageFile("textures/skybox_2560x240.png", 656345));
     }
 
     public void takeScreenshot() {
@@ -256,6 +254,16 @@ public class Graphic extends JPanel {
         super.paintComponent(g);
         //g.drawImage(ImageAndPostProcessHelper.scaleNearest(frame, 4), 0, 0, this);
         g.drawImage(frame, 0, 0, this);
+        drawMessages(g);
+    }
+    
+    /**
+     * Draw the current message.
+     * @param g 
+     */
+    private void drawMessages(Graphics g) {
+        g.setColor(Color.yellow);
+		g.drawString(msgdisp.getMessage(), 10, 20);
     }
 
     /////////////////////////////// RAY-CASTING //////////////////////////////////////////////
@@ -263,16 +271,23 @@ public class Graphic extends JPanel {
      * Renders the overhead graphic ie. HUD, perspective image of the actual
      * item...etc.
      *
-     * @param g
      */
     public final void renderHUDAndOverheadGraphic() {
-        //g.drawImage(tex.getItem(player.getSelectedItem().overheadImg), (screenw >> 1) - SIZE, , SIZE << 1, SIZE << 1, this);
-        //int[] overhead = (  (DataBufferInt) (tex.getItem(player.getSelectedItem().overheadImg).getRaster().getDataBuffer()) ).getData();
+        // Check if player hasn't even selected a weapon:
+        if(player.getSelectedItem() == null) {
+            return;
+        }
+        // If there is a selected weapon, then paint it's overhead image on the hud:
         int[] img = new int[64 * 64];
         tex.getItem(player.getSelectedItem().overheadImg).getRGB(0, 0, 64, 64, img, 0, 64);
-        for(int y = screenh - (SIZE << 1); y < screenh; y++) {
-            for(int x = (screenw >> 1) - SIZE; x < ((screenw >> 1) - SIZE + (SIZE << 1)); x++) {
-                output[y * screenw + x] = img[ (y - screenh - (SIZE << 1)) * (SIZE >> 1) + (x - ((screenw >> 1) - SIZE)) ];
+        for(int y = screenh - SIZE; y < screenh; y++) {
+            for(int x = (screenw >> 1) - (SIZE >> 1); x < ((screenw >> 1) + (SIZE >> 1)); x++) {
+                int index = y * screenw + x;
+                int imageX = x - ( (screenw >> 1) - (SIZE >> 1) );
+                int imageY = y - ( screenh - SIZE );
+                int imageIndex = imageY * SIZE + imageX; // (y - screenh - (SIZE << 1)) * (SIZE >> 1) + (x - ((screenw >> 1) - SIZE));
+                if(img[imageIndex] != 0)
+                    output[index] = img[imageIndex];
             }
         }
     }
@@ -857,7 +872,7 @@ public class Graphic extends JPanel {
                 onscreenY = 0;
             }
 
-            manager.getTexture(manager.sprites[i].texture, manager.SPRITE).getRGB(0, 0, SIZE, SIZE, pixels2, 0, SIZE);
+            manager.sprites[i].texture.getRGB(0, 0, SIZE, SIZE, pixels2, 0, SIZE);
             pixels3 = resizePixels(pixels2, SIZE, SIZE, projectedSliceHeight, projectedSliceHeight);
             
             for (int col = 0; col < projectedSliceHeight; col++, onscreenX++) {
@@ -902,7 +917,7 @@ public class Graphic extends JPanel {
                 onscreenY = 0;
             }
             
-            manager.getTexture(manager.assumables[i - manager.getItemStartIndex()].sprite, manager.ITEM).getRGB(0, 0, SIZE, SIZE, pixels2, 0, SIZE);
+            manager.sprites[i].texture.getRGB(0, 0, SIZE, SIZE, pixels2, 0, SIZE);
             pixels3 = resizePixels(pixels2, SIZE, SIZE, projectedSliceHeight, projectedSliceHeight);
             
             for (int col = 0; col < projectedSliceHeight; col++, onscreenX++) {
@@ -948,7 +963,7 @@ public class Graphic extends JPanel {
                 onscreenY = 0;
             }
 
-            manager.getTexture(manager.enemies[i - manager.getEnemyStartIndex()].frames.getFramePointer(), manager.ENEMY).getRGB(0, 0, SIZE, SIZE, pixels2, 0, SIZE);
+            manager.sprites[i].getImg().getRGB(0, 0, SIZE, SIZE, pixels2, 0, SIZE);
             pixels3 = resizePixels(pixels2, SIZE, SIZE, projectedSliceHeight, projectedSliceHeight);
             
             for (int col = 0; col < projectedSliceHeight; col++, onscreenX++) {
@@ -1010,7 +1025,7 @@ public class Graphic extends JPanel {
         
         if (IS_RENDER_OVERHEAD_AND_HUD) {
             renderHUDAndOverheadGraphic();
-        }        
+        }
         
         // if the player is inside and rain is turn on, then it renders simple rain effect
         if (IS_RAIN_ON && !player.isInside) {

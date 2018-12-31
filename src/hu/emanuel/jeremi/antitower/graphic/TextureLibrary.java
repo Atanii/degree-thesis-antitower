@@ -3,6 +3,7 @@ package hu.emanuel.jeremi.antitower.graphic;
 import static hu.emanuel.jeremi.antitower.common.Tile64.*;
 import hu.emanuel.jeremi.antitower.entity.Enemy.EnemyType;
 import hu.emanuel.jeremi.antitower.entity.Sprite.SpriteSequence;
+import hu.emanuel.jeremi.antitower.entity.item.ItemType;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -10,7 +11,7 @@ import java.net.URL;
 
 import javax.imageio.ImageIO;
 
-public class TextureLibrary implements GetEnemySpriteSequence {
+public class TextureLibrary implements GetSpriteImage {
 	/////////////////////////////// VARIABLES, CONSTS... /////////////////////////////////////
 	public static final boolean DEBUG = true;
 	public static final int startTextureId = START_ID;
@@ -44,7 +45,7 @@ public class TextureLibrary implements GetEnemySpriteSequence {
 	/////////////////////////////// CONSTRUCTORS /////////////////////////////////////////////
 	public TextureLibrary(String spritesheet_filename, String itemsheet_filename, String...texturepacks) {
 		sprites = loadSpriteSheet(spritesheet_filename);
-		items = loadSpriteSheet(itemsheet_filename);
+		items = loadItemSheet(itemsheet_filename);
 		texturePacks = loadTexturePacks(texturepacks);
 		
 		tiles = new Sheet[2 + texturePacks.length];
@@ -87,8 +88,8 @@ public class TextureLibrary implements GetEnemySpriteSequence {
 		try {
 			// getting texture atlas
 			URL url = getClass().getResource("/res/" + filename);
-			sheet = new Sheet(ImageIO.read(url).getSubimage(0, 2 * SIZE, ImageIO.read(url).getWidth(), SIZE),
-					ImageIO.read(url).getWidth() >> SIZE_LOG, 1);
+			sheet = new Sheet(ImageIO.read(url),
+					ImageIO.read(url).getWidth() >> SIZE_LOG, ImageIO.read(url).getHeight() >> SIZE_LOG);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -102,8 +103,11 @@ public class TextureLibrary implements GetEnemySpriteSequence {
 		try {
 			// getting texture atlas
 			URL url = getClass().getResource("/res/" + filename);
-			sheet = new Sheet(ImageIO.read(url).getSubimage(0, 0, SIZE, ImageIO.read(url).getHeight()), 
-					1, ImageIO.read(url).getHeight() >> SIZE_LOG);
+			sheet = new Sheet(
+                    ImageIO.read(url),
+					ImageIO.read(url).getWidth() >> SIZE_LOG,
+                    ImageIO.read(url).getHeight() >> SIZE_LOG
+            );
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -129,16 +133,15 @@ public class TextureLibrary implements GetEnemySpriteSequence {
 	//////////////////////////////////////////////////////////////////////////////////////////
 	
 	/////////////////////////////// IMAGE ////////////////////////////////////////////////////
-	public BufferedImage getTexture2(int pack, int id) {
-		//System.out.println("Pack: " + pack + "\nId: " + id);
-		
+	public BufferedImage getTexture2(int pack, int id) {		
 		int w = this.tiles[pack].s.getWidth() >> SIZE_LOG;
 		
 		int col = ( id % w ) << SIZE_LOG;
 		int row = (int) Math.floor(id / w) << SIZE_LOG;
 		
 		length = col * row;
-		
+        
+		//System.out.println("Pack: " + pack + "\nId: " + id);
 		//System.out.println("\nw: " + w + "\nid: " + id + "\ncol: " + col + "\nrow: " + row);
 		
 		return this.tiles[pack].s.getSubimage(col, row, SIZE, SIZE);
@@ -161,27 +164,26 @@ public class TextureLibrary implements GetEnemySpriteSequence {
 	}
 	*/
     public BufferedImage getItem(int id) {
-        id %= 3;
-        
-		int w = this.items.s.getWidth() >> SIZE_LOG;
+		int w = this.items.w;
 		
 		int col = ( id % w ) << SIZE_LOG;
-		int row = (int) Math.floor(id / w) << SIZE_LOG;
+		int row = (int) Math.floor( id / (w + 0f) ) << SIZE_LOG;
 		
-		length = col * row;
-        
-        System.out.println(id + " | " + col + " | " + row + " | " + w);
+		//length = col * row;        
+		//System.out.println(id + " | " + col + " | " + row + " | " + w + " | " + items.l);
 		
-		return this.items.s.getSubimage(col, row, SIZE, SIZE);
+        return this.items.s.getSubimage(col, row, SIZE, SIZE);
 	}
     
 	public BufferedImage getSprite(int id) {
-		int w = this.items.s.getWidth() >> SIZE_LOG;
+		int w = this.sprites.w;
 		
 		int col = ( id % w ) << SIZE_LOG;
 		int row = (int) Math.floor(id / w) << SIZE_LOG;
-		System.out.println(id + " | " + col + " | " + row + " | " + w);
-		return this.sprites.s.getSubimage(col, row, SIZE, SIZE);
+        
+		//System.out.println(id + " | " + col + " | " + row + " | " + w + " | " + sprites.w + " | " + sprites.h);
+		
+        return this.sprites.s.getSubimage(col, row, SIZE, SIZE);
 	}
 	
 	/**
@@ -228,73 +230,73 @@ public class TextureLibrary implements GetEnemySpriteSequence {
 		
 		return null;
 	}
-        /*
-        public GetEnemySpriteSequence getEnemySeqCallback = (EnemyType type, int x, int y, int id) -> {
-            int temp[] = new int[SPRITES_ROW_LENGTH];
-            
-            switch(type) {
-                case BZZZZ_TOWER: {				
-                        for(int i = 0; i < temp.length; i++) {
-                                temp[i] = i + (0 * SPRITES_ROW_LENGTH);
-                        }				
-                        break;
-                }
-                case SCOPE_TOWER: {
-                        for(int i = 0; i < temp.length; i++) {
-                                temp[i] = i + (1 * SPRITES_ROW_LENGTH);
-                        }				
-                        break;
-                }
-                case RIFLE_TOWER: {
-                        for(int i = 0; i < temp.length; i++) {
-                                temp[i] = i + (2 * SPRITES_ROW_LENGTH);
-                        }				
-                        break;
-                }
-                default: {
-                        for(int i = 0; i < temp.length; i++) {
-                                temp[i] = i + (0 * SPRITES_ROW_LENGTH);
-                        }				
-                        break;
-                }
+    
+    @Override
+    public SpriteSequence getEnemySprites(EnemyType type, int x, int y, int id) {
+        BufferedImage temp[] = new BufferedImage[SPRITES_ROW_LENGTH];
+
+        switch(type) {
+            case BZZZZ_TOWER: {				
+                    for(int i = 0; i < temp.length; i++) {
+                        temp[i] = sprites.s.getSubimage(i * SIZE, 0, SIZE, SIZE);
+                    }				
+                    break;
             }
-            
-            return new SpriteSequence(temp, ENEMY_SPSEQ_START_FRAME, x, y, id);
-        };
-        */
-        @Override
-        public SpriteSequence getEnemySprites(EnemyType type, int x, int y, int id) {
-            int temp[] = new int[SPRITES_ROW_LENGTH];
-            
-            switch(type) {
-                case BZZZZ_TOWER: {				
-                        for(int i = 0; i < temp.length; i++) {
-                                temp[i] = i + (0 * SPRITES_ROW_LENGTH);
-                        }				
-                        break;
-                }
-                case SCOPE_TOWER: {
-                        for(int i = 0; i < temp.length; i++) {
-                                temp[i] = i + (1 * SPRITES_ROW_LENGTH);
-                        }				
-                        break;
-                }
-                case RIFLE_TOWER: {
-                        for(int i = 0; i < temp.length; i++) {
-                                temp[i] = i + (2 * SPRITES_ROW_LENGTH);
-                        }				
-                        break;
-                }
-                default: {
-                        for(int i = 0; i < temp.length; i++) {
-                                temp[i] = i + (0 * SPRITES_ROW_LENGTH);
-                        }				
-                        break;
-                }
+            case SCOPE_TOWER: {
+                    for(int i = 0; i < temp.length; i++) {
+                        temp[i] = sprites.s.getSubimage(i * SIZE, SIZE, SIZE, SIZE);
+                    }				
+                    break;
             }
-            
-            return new SpriteSequence(temp, ENEMY_SPSEQ_START_FRAME, x, y, id);
+            case RIFLE_TOWER: {
+                    for(int i = 0; i < temp.length; i++) {
+                        temp[i] = sprites.s.getSubimage(i * SIZE, 2 * SIZE, SIZE, SIZE);
+                    }				
+                    break;
+            }
+            default: {
+                    for(int i = 0; i < temp.length; i++) {
+                        temp[i] = sprites.s.getSubimage(i * SIZE, 0, SIZE, SIZE);
+                    }				
+                    break;
+            }
         }
+
+        return new SpriteSequence(temp, ENEMY_SPSEQ_START_FRAME, x, y, id);
+    }
+
+    @Override
+    public BufferedImage getItemSprite(ItemType type) {
+        switch(type) {
+            case ZAPPER:
+                return items.s.getSubimage(0, 2 * SIZE, SIZE, SIZE);
+            case KEY_CARD:
+                return items.s.getSubimage(SIZE, 2 * SIZE, SIZE, SIZE);
+            case SHIELD:
+                return items.s.getSubimage(2 * SIZE, 2 * SIZE, SIZE, SIZE);
+            default:
+                return null;            
+        }
+    }
+    
+    @Override
+    public BufferedImage getItemOverheadIcon(ItemType type) {
+        switch(type) {
+            case ZAPPER:
+                return items.s.getSubimage(0, 0 * SIZE, SIZE, SIZE);
+            case KEY_CARD:
+                return items.s.getSubimage(SIZE, 0 * SIZE, SIZE, SIZE);
+            case SHIELD:
+                return items.s.getSubimage(2 * SIZE, 0 * SIZE, SIZE, SIZE);
+            default:
+                return null;            
+        }
+    }
+
+    @Override
+    public BufferedImage getDecorationSprite(int tileId) {
+        return null;
+    }
 	//////////////////////////////////////////////////////////////////////////////////////////
 	
 	/////////////////////////////// MISC. ////////////////////////////////////////////////////
