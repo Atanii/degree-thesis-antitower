@@ -245,6 +245,9 @@ public class EntityManager implements PlayerWorldConnector {
             //System.out.println("x:"+x+"|y:"+y+"|enemy x:"+en.x+"|enemy y:"+en.y);
             if (en != null && x == en.x && y == en.y) {
                 en.takeDamage(10);
+                if(en.isDestroyed()) {
+                    msgh.addMessage("@", msgProvider.get("tower_neutralized"), 2, 1);
+                }
                 return true;
             }
         }
@@ -316,33 +319,44 @@ public class EntityManager implements PlayerWorldConnector {
         }
     }
 
+    /**
+     * Check if the player's colliding with an assumable in which case it'll added to the inventory.
+     */
     public void checkAssumableCollision() {
         if (assumables.length == 0) {
             return;
         }
         Sprite[] temp = null;
         int l = 0;
+        int minTemp = -1;
+        float minDistance = Float.MAX_VALUE;
+        float distance = Float.MAX_VALUE;
         for (int i = 0; i < assumables.length; i++) {
             if (assumables[i] != null) {
-                if (assumables[i].x == (player.x >> SIZE_LOG) && assumables[i].y == (player.y >> SIZE_LOG)) {
-                    player.addItem(assumables[i]);
-                    // TODO: -1 id eset�n nullpointer exp. messagedisplayerben...megakad�lyozni
-                    msgh.addMessage("@", msgProvider.get("player_item_gained"), 2, 3);
-                    for (int j = 0; j < sprites.length; j++) {
-                        if (sprites[j].id == assumables[i].id) {
-                            temp = new Sprite[sprites.length - 1];
-                            for (int k = 0; k < sprites.length; k++) {
-                                if (sprites[k].id != assumables[i].id) {
-                                    // TODO: jav�tani
-                                    temp[l++] = sprites[k];
-                                }
-                            }
-                            sprites = temp;
-                        }
-                    }
-                    assumables[i] = null;
+                distance = GamePhysicsHelper.getDistance(assumables[i].x, assumables[i].y, player.x, player.y);
+                if (distance <= minDistance) {
+                    minDistance = distance;
+                    minTemp = i;
                 }
             }
+        }
+        if (minDistance <= 100.0) {
+            player.addItem(assumables[minTemp]);
+            // TODO: -1 id eset�n nullpointer exp. messagedisplayerben...megakad�lyozni
+            msgh.addMessage("@", msgProvider.get("player_item_gained"), 2, 3);
+            for (int j = 0; j < sprites.length; j++) {
+                if (sprites[j].id == assumables[minTemp].id) {
+                    temp = new Sprite[sprites.length - 1];
+                    for (int k = 0; k < sprites.length; k++) {
+                        if (sprites[k].id != assumables[minTemp].id) {
+                            // TODO: jav�tani
+                            temp[l++] = sprites[k];
+                        }
+                    }
+                    sprites = temp;
+                }
+            }
+            assumables[minTemp] = null;
         }
     }
 
