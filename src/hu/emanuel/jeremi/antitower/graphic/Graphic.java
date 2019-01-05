@@ -20,6 +20,7 @@ import hu.emanuel.jeremi.antitower.physics.GamePhysicsHelper;
 import hu.emanuel.jeremi.antitower.world.MapData;
 import hu.emanuel.jeremi.antitower.world.Skybox;
 import java.awt.image.DataBufferInt;
+import java.util.Random;
 
 public class Graphic extends JPanel {
 
@@ -78,7 +79,7 @@ public class Graphic extends JPanel {
     /////////////////////////////// FLAGS ////////////////////////////////////////////////////
     public boolean IS_ANGLE_MARKER_ON = false;
     public boolean IS_SHADERS_ON = false;
-    public boolean IS_RAIN_ON = true;
+    public boolean IS_RAIN_ON = false;
     public boolean IS_SPRITES_ON = true;
     public boolean IS_HELP_ON = false;
     public boolean IS_STATUS_ON = false;
@@ -254,6 +255,9 @@ public class Graphic extends JPanel {
         super.paintComponent(g);
         //g.drawImage(ImageAndPostProcessHelper.scaleNearest(frame, 4), 0, 0, this);        
         // draw current frame
+        
+        castGraphic();
+        
         g.drawImage(frame, 0, 0, this);        
         // draw messages currently waiting for drawing
         drawMessages(g);
@@ -277,7 +281,7 @@ public class Graphic extends JPanel {
      */
     private void drawMessages(Graphics g) {
         if( msgdisp != null ) {
-            g.setColor(Color.yellow);
+            g.setColor(Color.blue);
             g.drawString(msgdisp.getMessage(), 10, 20);
         }
     }
@@ -1009,8 +1013,8 @@ public class Graphic extends JPanel {
 
     private void drawHelp(Graphics gb) {
         String l = this.manager.getHelp();
-        gb.setColor(Color.WHITE);
-        int y = gb.getFontMetrics().getHeight();
+        gb.setColor(Color.BLUE);
+        int y = gb.getFontMetrics().getHeight() + 10;
         int x = gb.getFontMetrics().getHeight();
         for (String line : l.split("\n")) {
             gb.drawString(line, x, y += gb.getFontMetrics().getHeight());
@@ -1042,6 +1046,8 @@ public class Graphic extends JPanel {
         if (IS_RENDER_OVERHEAD_AND_HUD) {
             renderHUDAndOverheadGraphic();
         }
+        
+        //repaint();
     }
     
     private void renderSky() {
@@ -1055,9 +1061,36 @@ public class Graphic extends JPanel {
             }
         }
     }
+    
+    private void renderNightSky() {
+        /*
+        int[] img = new int[360 * 240]; // 2560 x 240
+        skybox.getImage(360, 240).getRGB(0, 0, 360, 240, img, 0, 1);
+        final float xW = 360 / planeWidth;
+        final float yW = 240 / (planeHeight >> 1);
+        for(int y = 0; y < (planeHeight >> 1); y++) {
+            for(int x = 0; x < planeWidth; x++) {
+                output[y * planeWidth + x] = img[(int)(y * yW) * 360 + (int)(x * xW)];
+            }
+        }
+        */
+        int[] img = new int[360 * 240]; // 2560 x 240
+        final float xW = 360 / planeWidth;
+        final float yW = 240 / (planeHeight >> 1);
+        
+        Random rand = new Random(10);
+        int n = rand.nextInt(500) + 1;
+        
+        for(int y = 0; y < (planeHeight >> 1); y++) {
+            for(int x = 0; x < planeWidth; x++) {
+                output[y * planeWidth + x] = n > 10 ? 0xff000000 : 0xffffffff;
+                n = rand.nextInt(500) + 1;
+            }
+        }
+    }
 
     private void showPlayerData(Graphics gb) {
-        gb.setColor(Color.BLACK);
+        gb.setColor(Color.BLUE);
         gb.fillRect(5, (planeHeight >> 1) + (planeHeight >> 2) - 15, 130, 60);
         gb.setColor(Color.YELLOW);
         gb.drawString("HP: " + player.getHp(), 10, (planeHeight >> 1) + (planeHeight >> 2));
