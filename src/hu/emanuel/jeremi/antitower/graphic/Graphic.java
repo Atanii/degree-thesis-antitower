@@ -256,8 +256,6 @@ public class Graphic extends JPanel {
         //g.drawImage(ImageAndPostProcessHelper.scaleNearest(frame, 4), 0, 0, this);        
         // draw current frame
         
-        castGraphic();
-        
         g.drawImage(frame, 0, 0, this);        
         // draw messages currently waiting for drawing
         drawMessages(g);
@@ -1047,7 +1045,6 @@ public class Graphic extends JPanel {
             renderHUDAndOverheadGraphic();
         }
         
-        //repaint();
     }
     
     private void renderSky() {
