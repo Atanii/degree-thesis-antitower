@@ -215,5 +215,9 @@ public class Enemy extends Entity {
     public SpriteSequence getSpriteSequence() {
         return this.frames;
     }
+    
+    public boolean isDestroyed() {
+        return destroyed;
+    }
 
 }
