@@ -199,7 +199,7 @@ public class Player extends Entity {
 	}
 	
 	public void update(PlayerWorldConnector pwc, long delta) {
-		int speed =  (int) (this.speed * delta);
+		int speed =  (int) (this.speed * delta) * 2;
 		
 		float dx = pwc.getCosTable()[angle]*speed;
 		float dy = pwc.getSinTable()[angle]*speed;

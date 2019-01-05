@@ -61,6 +61,9 @@ public class EntityManager implements PlayerWorldConnector {
     public Graphic renderer;
 
     public TextureLibrary texLib;
+    
+    private String leveltitles[] = {"mainframe.tow", "wintertime.tow", "officemaze.tow"};
+    private int levelpointer = 0;
     // </editor-fold>
 
     public EntityManager(Player player, int planeWidth, int planeHeight,
@@ -85,22 +88,42 @@ public class EntityManager implements PlayerWorldConnector {
         this.renderer = renderer;
 
         LoadLevel();
-
-        player.x = playerX * 64;
-        player.y = playerY * 64;
     }
 
     private void LoadLevel() {
-
         map = new MapData(this);
 
         //saveLoadHandler.LoadLevel("ttest.tow", true);
-        saveLoadHandler.LoadLevel("levels/test.tow", true);
+        saveLoadHandler.LoadLevel("levels/" + leveltitles[levelpointer++], true);
         initSprites();
         
         //msgp = new ArrayList<>(Arrays.asList(new MessagePoint[]{
             //new MessagePoint("Teszt", "Bemész egy ajtón...", 10, 23, 11),}));
-        msgh.addMessage("@game", "levels/test.tow loaded", -100, 2);
+        //msgh.addMessage("@game", "levels/test.tow loaded", -100, 2);
+        
+        player.x = playerX * 64;
+        player.y = playerY * 64;
+    }
+    
+    private void loadNextLevelOrExit() {
+        if(levelpointer + 1 > leveltitles.length) {
+            System.exit(0);
+        }
+
+        map = new MapData(this);
+
+        //saveLoadHandler.LoadLevel("ttest.tow", true);
+        saveLoadHandler.LoadLevel("levels/" + leveltitles[levelpointer++], true);
+        initSprites();
+        
+        //msgp = new ArrayList<>(Arrays.asList(new MessagePoint[]{
+            //new MessagePoint("Teszt", "Bemész egy ajtón...", 10, 23, 11),}));
+        //msgh.addMessage("@game", "levels/test.tow loaded", -100, 2);
+        
+        player.x = playerX * 64;
+        player.y = playerY * 64;
+        
+        renderer.updateMap();
     }
 
     public BufferedImage getTexture(int id) {
@@ -315,7 +338,8 @@ public class EntityManager implements PlayerWorldConnector {
     public void checkGoalPoint() {
         if (goalX == (player.x >> SIZE_LOG) && goalY == (player.y >> SIZE_LOG)) {
             //System.out.println(mp.x+"|"+mp.y+"\n"+(player.x>>SIZE_LOG)+"|"+(player.y>>SIZE_LOG));
-            System.exit(0);
+            //System.exit(0);
+            loadNextLevelOrExit();
         }
     }
 
@@ -340,7 +364,7 @@ public class EntityManager implements PlayerWorldConnector {
                 }
             }
         }
-        if (minDistance <= 100.0) {
+        if (minDistance <= 80.0) {
             player.addItem(assumables[minTemp]);
             // TODO: -1 id esetï¿½n nullpointer exp. messagedisplayerben...megakadï¿½lyozni
             msgh.addMessage("@", msgProvider.get("player_item_gained"), 2, 3);

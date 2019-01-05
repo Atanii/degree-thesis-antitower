@@ -189,7 +189,6 @@ public class Game extends JFrame implements Runnable, KeyListener {
                 times.poll();
             }
             times.add(now_fps);
-            //System.out.println(times.size());
 
             delta = (now_fps - last) >> 4;
             manager.attackPlayer();
@@ -199,7 +198,6 @@ public class Game extends JFrame implements Runnable, KeyListener {
             if (player.SHOOTING) {
                 renderer.renderBeam();
             }
-            //renderer.paintImmediately(0, 0, planeWidth, planeHeight);
             renderer.repaint();
             /*
             try {
