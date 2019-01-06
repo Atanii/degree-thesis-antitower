@@ -38,12 +38,16 @@ public class TextureLibrary implements GetSpriteImage {
 	public Sheet[] tiles;
 	
 	public BufferedImage img[][];
+    
+    public BufferedImage menu;
 	
 	public int length;
 	//////////////////////////////////////////////////////////////////////////////////////////
 	
 	/////////////////////////////// CONSTRUCTORS /////////////////////////////////////////////
 	public TextureLibrary(String spritesheet_filename, String itemsheet_filename, String...texturepacks) {
+        loadMenuImage();
+        
 		sprites = loadSpriteSheet(spritesheet_filename);
 		items = loadItemSheet(itemsheet_filename);
 		texturePacks = loadTexturePacks(texturepacks);
@@ -133,6 +137,20 @@ public class TextureLibrary implements GetSpriteImage {
 	//////////////////////////////////////////////////////////////////////////////////////////
 	
 	/////////////////////////////// IMAGE ////////////////////////////////////////////////////
+    public BufferedImage getMenuBufferedImage() {
+        return this.menu;
+    }
+    
+    private final void loadMenuImage() {
+        try {
+			// getting texture atlas
+			URL url = getClass().getResource("/res/main_menu.png");
+            menu = ImageIO.read(url);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+    }
+    
 	public BufferedImage getTexture2(int pack, int id) {		
 		int w = this.tiles[pack].s.getWidth() >> SIZE_LOG;
 		

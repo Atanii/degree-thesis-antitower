@@ -7,6 +7,9 @@ import hu.emanuel.jeremi.antitower.entity.item.ItemType;
 import hu.emanuel.jeremi.antitower.physics.GamePhysicsHelper;
 
 import static hu.emanuel.jeremi.antitower.common.Tile64.SIZE_LOG;
+import hu.emanuel.jeremi.antitower.effect.Sound;
+import java.time.LocalDateTime;
+import java.util.Calendar;
 
 public class Player extends Entity {
 
@@ -18,6 +21,7 @@ public class Player extends Entity {
 	public int FOV;
 	public int playerPaneDist;
 	public boolean isInside;
+    public int lastStepTime = 0;
 	
 	public boolean LEFT = false; 
 	public boolean RIGHT = false; 
@@ -53,8 +57,14 @@ public class Player extends Entity {
 		actualItemPointer = -1;
 		actualItemPointer = 0;
 	}
+    
+    public void clearIntentory() {
+        inventory = new Item[INVENTORY_SIZE];
+		actualItemPointer = -1;
+		actualItemPointer = 0;
+    }
 	
-	public Player() {		
+	public Player() {	
 		initPlayer();
 	}
 	
@@ -197,6 +207,13 @@ public class Player extends Entity {
 		if(code == KeyEvent.VK_D)			STEPRIGHT = false;
 		if(code == KeyEvent.VK_SPACE)		setShooting(false);
 	}
+    
+    private final void playStepSound() {
+        if(lastStepTime != LocalDateTime.now().getSecond()) {
+            (new Sound("sound/step.wav")).play();
+            lastStepTime = LocalDateTime.now().getSecond();
+        }
+    }
 	
 	public void update(PlayerWorldConnector pwc, long delta) {
 		int speed =  (int) (this.speed * delta) * 2;
@@ -208,6 +225,7 @@ public class Player extends Entity {
 			if( pwc.isCollision(x, y, dx, dy) ) {
 				x += (int) dx;
 				y += (int) dy;
+                playStepSound();
 			}		
 			if( pwc.isOutside((x >> SIZE_LOG), (y >> SIZE_LOG)) ) {
 				isInside = false;
@@ -218,7 +236,8 @@ public class Player extends Entity {
 		if(DOWN) {
 			if( pwc.isCollision(x, y, -dx, -dy) ) {
 				x -= (int) dx;
-				y -= (int) dy;				
+				y -= (int) dy;
+                playStepSound();
 			}			
 			if( pwc.isOutside((x >> SIZE_LOG), (y >> SIZE_LOG)) ) {
 				isInside = false;
@@ -248,6 +267,7 @@ public class Player extends Entity {
 			if( pwc.isCollision( x, y, dx, dy ) ) {
 				y += (int) dy;
 				x += (int) dx;
+                playStepSound();
 			}
 			if( pwc.isOutside((x >> SIZE_LOG),(y >> SIZE_LOG)) ) {
 				isInside = false;
@@ -265,6 +285,7 @@ public class Player extends Entity {
 			if( pwc.isCollision(x, y, dx, dy) ) {
 				y += (int) dy;
 				x += (int) dx;
+                playStepSound();
 			}
 			if( pwc.isOutside((x >> SIZE_LOG),(y >> SIZE_LOG)) ) {
 				isInside = false;
@@ -279,6 +300,7 @@ public class Player extends Entity {
 		
 		if(SHOOTING) {
 			pwc.handleShoot(x, y, angle);
+            (new Sound("sound/my_laser.wav")).play();
 		}
 		
 		pwc.updateRendererPlayerReference(x, y, angle, FOV, playerPaneDist);

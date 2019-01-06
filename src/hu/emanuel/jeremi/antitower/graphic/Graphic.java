@@ -1,5 +1,6 @@
 package hu.emanuel.jeremi.antitower.graphic;
 
+import hu.emanuel.jeremi.antitower.Game.GameState;
 import static hu.emanuel.jeremi.antitower.common.Tile64.*;
 import static hu.emanuel.jeremi.antitower.graphic.ImageAndPostProcessHelper.*;
 
@@ -12,7 +13,9 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
-import hu.emanuel.jeremi.antitower.effect.RainEffect;
+import hu.emanuel.jeremi.antitower.effect.Rain;
+import hu.emanuel.jeremi.antitower.effect.Snow;
+import hu.emanuel.jeremi.antitower.effect.Weather;
 import hu.emanuel.jeremi.antitower.entity.EntityManager;
 import hu.emanuel.jeremi.antitower.entity.Player;
 import hu.emanuel.jeremi.antitower.message.MessageDisplayer;
@@ -78,12 +81,12 @@ public class Graphic extends JPanel {
 
     /////////////////////////////// FLAGS ////////////////////////////////////////////////////
     public boolean IS_ANGLE_MARKER_ON = false;
-    public boolean IS_SHADERS_ON = true;
+    public boolean IS_SHADERS_ON = false;
+    public boolean IS_SKYBOX_ON = true;
     public boolean IS_RAIN_ON = false;
     public boolean IS_SPRITES_ON = true;
     public boolean IS_HELP_ON = false;
     public boolean IS_STATUS_ON = false;
-    public boolean IS_SKYBOX_ON = true;
     public boolean IS_RENDER_OVERHEAD_AND_HUD = true;
     //////////////////////////////////////////////////////////////////////////////////////////
     // For program constructor:
@@ -98,10 +101,17 @@ public class Graphic extends JPanel {
     MapData map;
     TextureLibrary tex;
     MessageDisplayer msgdisp;
+    GameState mode;
+        
+    // WEATHER
+    public enum WeatherType { NORMAL, SNOW, RAIN };
+    public WeatherType weather;
+    private Weather snow;
+    private Weather rain;
 
     // OBJECTS FOR EFFECTS: SKYBOX, RAIN
     public Skybox skybox;
-    RainEffect rain = new RainEffect(planeWidth, planeHeight);
+    
 
     private final RayCastedGridData rc = new RayCastedGridData();
     // </editor-fold>
@@ -173,7 +183,8 @@ public class Graphic extends JPanel {
         player.FOV = ANGLE60;
         setFOV(player.FOV);
         player.speed = 5;
-        player.rotateSpeed = ANGLE5 / 2;
+        //player.rotateSpeed = ANGLE5 / 2;
+        player.rotateSpeed = ANGLE5;
         player.playerPaneDist = (int) ((planeWidth >> 1) / (float) Math.tan(GamePhysicsHelper.toCustomRad(player.FOV >> 1, ANGLE180)));
         player.isInside = false;
         player.angle = ANGLE0;
@@ -194,28 +205,35 @@ public class Graphic extends JPanel {
      */
     public Graphic(int planeWidth, int planeHeight, Player player, EntityManager manager) {
         super();
+        
+        // GAME STATE
+        mode = GameState.MENU;
 
+        // EntityManager, TextureLibrary, Map
         this.manager = manager;
         this.tex = manager.texLib;
-        this.map = manager.map;
 
-        mapWidth = map.width;
-        mapHeight = map.height;
-
+        // Frame initialization:
         frame = new BufferedImage(planeWidth, planeHeight, BufferedImage.TYPE_INT_ARGB);
         output = ( (DataBufferInt) (frame.getRaster().getDataBuffer()) ).getData();
         this.setIgnoreRepaint(true);
 
+        // Screen data:
         this.screenw = planeWidth;
         this.screenh = planeHeight;
         this.planeWidth = planeWidth;
         this.planeHeight = planeHeight;
-        //this.planeWidth = planeWidth >> 2;
-        //this.planeHeight = planeHeight >> 2;
-        //this.planeWidth = 320;
-        //this.planeHeight = 200;
+        
+        // Player:
         this.player = player;
 
+        // Weather:
+        weather = WeatherType.NORMAL;
+        snow = Weather.getSnow(planeWidth, planeHeight);
+        snow.generate();
+        rain = Weather.getRain(planeWidth, planeHeight);
+        rain.generate();
+        
         preCalculateTablesAndValues();
         setupPlayer();
         initBuffersForSpriteCasting();
@@ -227,7 +245,6 @@ public class Graphic extends JPanel {
     
     public void updateMap() {
         this.map = manager.map;
-
         mapWidth = map.width;
         mapHeight = map.height;
     }
@@ -263,20 +280,40 @@ public class Graphic extends JPanel {
         //g.drawImage(ImageAndPostProcessHelper.scaleNearest(frame, 4), 0, 0, this);        
         // draw current frame
         
-        g.drawImage(frame, 0, 0, this);        
-        // draw messages currently waiting for drawing
-        drawMessages(g);
-        // if the player is inside and rain is turn on, then it renders simple rain effect
-        if (IS_RAIN_ON && !player.isInside) {
-            animateRain(g);
+        if(mode == GameState.MENU) {
+            //System.out.println(planeWidth + 'x' + planeHeight);
+            g.drawImage(manager.getMenuImage(), 0, 0, this);
+        } else {
+            g.drawImage(frame, 0, 0, this);        
+            // draw messages currently waiting for drawing
+            drawMessages(g);
+            // if the player is inside and rain is turn on, then it renders simple rain effect
+            if (weather == WeatherType.SNOW && !player.isInside) {
+                snow.render(g, player.angle);
+            }
+            if (weather == WeatherType.RAIN && !player.isInside) {
+                rain.render(g, player.angle);
+            }
+            // write help information about the controls
+            if (IS_HELP_ON) {
+                drawHelp(g);
+            }
+            // show player data
+            if (IS_STATUS_ON) {
+                showPlayerData(g);
+            }
         }
-        // write help information about the controls
-        if (IS_HELP_ON) {
-            drawHelp(g);
+    }
+    
+    public void updateWeather(long delta) {
+        if(weather == weather.NORMAL) {
+            return;
         }
-        // show player data
-        if (IS_STATUS_ON) {
-            showPlayerData(g);
+        else if(weather == weather.RAIN) {
+            rain.update(delta);
+        }
+        else if(weather == weather.SNOW) {
+            snow.update(delta);
         }
     }
     
@@ -289,6 +326,10 @@ public class Graphic extends JPanel {
             g.setColor(Color.blue);
             g.drawString(msgdisp.getMessage(), 10, 20);
         }
+    }
+    
+    public void setState(GameState mode) {
+        this.mode = mode;
     }
 
     /////////////////////////////// RAY-CASTING //////////////////////////////////////////////
@@ -852,7 +893,9 @@ public class Graphic extends JPanel {
         }
 
         // theta - player.angle
-        float yTmp = theta + (fov / 2) - thetaTemp;
+        
+        float yTmp;
+        yTmp = theta + (fov / 2) - thetaTemp;
         if (thetaTemp > 270 && theta < 90) {
            yTmp = theta + (fov / 2) - thetaTemp + 360;
         }
@@ -862,6 +905,11 @@ public class Graphic extends JPanel {
 
         float xTmp = (float) (yTmp * planeWidth / fov);
 
+        
+        System.out.println(player.angle + "|" 
+                         + theta + "|" 
+                         + thetaTemp + "|" + yTmp);
+        
         return planeWidth - xTmp + 32;
     }
 
@@ -1045,13 +1093,17 @@ public class Graphic extends JPanel {
         
         if (IS_SKYBOX_ON) {
             //renderSky();
-            renderNightSky();
+            renderScrollableNightSky();
         }
         
         render();
         
         if (IS_SPRITES_ON) {
             castSprites();
+        }
+        
+        if (player.SHOOTING) {
+            renderBeam();
         }
         
         if (IS_RENDER_OVERHEAD_AND_HUD) {
@@ -1087,7 +1139,31 @@ public class Graphic extends JPanel {
             }
         }
     }
-
+    
+    public int skyOffset = 0;
+    private void renderScrollableNightSky() {
+        int[] img = new int[2160 * 240]; // 2560 x 240
+        final float xW = 360 / planeWidth;
+        final float yW = 240 / (planeHeight >> 1);
+        Random rand = new Random(10);
+        int n = rand.nextInt(500) + 1;
+        int startX = player.angle;
+        
+        for(int y = 0; y < (planeHeight >> 1); y++) {
+            for(int x = 0; x < 2160; x++) {
+                img[y * 2160 + x] = n > 10 ? 0xff000000 : 0xffffffff;
+                n = rand.nextInt(500) + 1;
+            }
+        }
+        
+        
+        for(int y = 0; y < (planeHeight >> 1); y++) {
+            for(int x = 0; x < planeWidth; x++) {
+                output[y * planeWidth + x] = img[y * 2160 + ((startX+x)%2160)];
+            }
+        }
+    }
+    
     private void showPlayerData(Graphics gb) {
         gb.setColor(Color.BLUE);
         gb.fillRect(5, (planeHeight >> 1) + (planeHeight >> 2) - 15, 130, 60);
@@ -1096,19 +1172,9 @@ public class Graphic extends JPanel {
         gb.drawString("DP: " + player.getDp(), 10, (planeHeight >> 1) + (planeHeight >> 2) + 20);
         gb.drawString("Active inventory slot: " + player.getActualItemPointer(), 10, (planeHeight >> 1) + (planeHeight >> 2) + 40);
     }
-
-    /**
-     * Draws raindropps on the screen based on the private RainEffect object.
-     *
-     * @param g
-     */
-    private void animateRain(Graphics g) {
-        rain.generateDrops();
-        g.setColor(Color.GRAY);
-        for (int i = 0; i < rain.dropCount - 1; i += 2) {
-            g.drawLine(rain.drops[i], rain.drops[i + 1], rain.drops[i], rain.drops[i + 1] + 5);
-        }
-        rain.fall();
+    
+    public void drawMenu() {
+        //g.drawImage(manager.getMenuImage(), 0, 0, this);
     }
     //////////////////////////////////////////////////////////////////////////////////////////
 

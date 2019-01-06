@@ -2,21 +2,19 @@ package hu.emanuel.jeremi.antitower.entity;
 
 import static hu.emanuel.jeremi.antitower.common.Tile64.SIZE;
 import static hu.emanuel.jeremi.antitower.common.Tile64.SIZE_LOG;
+import hu.emanuel.jeremi.antitower.effect.Sound;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 
 import javax.swing.JFileChooser;
 
 import hu.emanuel.jeremi.antitower.entity.item.AssumableItem;
-import hu.emanuel.jeremi.antitower.entity.item.Item;
-import hu.emanuel.jeremi.antitower.entity.item.ItemType;
 import hu.emanuel.jeremi.antitower.graphic.Graphic;
+import hu.emanuel.jeremi.antitower.graphic.Graphic.WeatherType;
 import hu.emanuel.jeremi.antitower.graphic.TextureLibrary;
 import hu.emanuel.jeremi.antitower.i18n.MessageProvider;
-import hu.emanuel.jeremi.antitower.message.Message;
 import hu.emanuel.jeremi.antitower.message.MessageHandler;
 import hu.emanuel.jeremi.antitower.message.MessagePoint;
 import hu.emanuel.jeremi.antitower.message.helpmessage.Help;
@@ -62,14 +60,12 @@ public class EntityManager implements PlayerWorldConnector {
 
     public TextureLibrary texLib;
     
-    private String leveltitles[] = {"mainframe.tow", "wintertime.tow", "officemaze.tow"};
+    private String leveltitles[] = {"hit_test_bzzz_tower.tow", "mainframe.tow", "wintertime.tow", "officemaze.tow"};
     private int levelpointer = 0;
     // </editor-fold>
 
     public EntityManager(Player player, int planeWidth, int planeHeight,
-            MessageProvider rr, Help h, TextureLibrary texLib, TowHandler saveLoadHandler, Graphic renderer) {
-        this.saveLoadHandler = saveLoadHandler;
-        this.saveLoadHandler.manager = this;
+            MessageProvider rr, Help h, TextureLibrary texLib) {
 
         this.player = player;
 
@@ -84,22 +80,41 @@ public class EntityManager implements PlayerWorldConnector {
         msgp = new ArrayList<>();
 
         this.help = h;
-
+    }
+    
+    public void setRenderer(Graphic renderer) {
         this.renderer = renderer;
-
-        LoadLevel();
+    }
+    
+    public void setTowHandler(TowHandler saveLoadHandler) {
+        this.saveLoadHandler = saveLoadHandler;
+    }
+    
+    public void setWeather() {
+        if(renderer == null) {
+            return;
+        }
+        
+        if(levelpointer == 0) {
+            renderer.weather = WeatherType.RAIN;
+        }
+        if(levelpointer == 1) {
+            renderer.weather = WeatherType.SNOW;
+        }
+        if(levelpointer == 2) {
+            renderer.weather = WeatherType.NORMAL;
+        }
     }
 
-    private void LoadLevel() {
+    public void LoadLevel() {
+        if(saveLoadHandler == null) {
+            return;
+        }
+        
         map = new MapData(this);
 
-        //saveLoadHandler.LoadLevel("ttest.tow", true);
         saveLoadHandler.LoadLevel("levels/" + leveltitles[levelpointer++], true);
         initSprites();
-        
-        //msgp = new ArrayList<>(Arrays.asList(new MessagePoint[]{
-            //new MessagePoint("Teszt", "Bemész egy ajtón...", 10, 23, 11),}));
-        //msgh.addMessage("@game", "levels/test.tow loaded", -100, 2);
         
         player.x = playerX * 64;
         player.y = playerY * 64;
@@ -109,19 +124,26 @@ public class EntityManager implements PlayerWorldConnector {
         if(levelpointer + 1 > leveltitles.length) {
             System.exit(0);
         }
+        
+        if(levelpointer == 0) {
+            renderer.weather = WeatherType.RAIN;
+        }
+        if(levelpointer == 1) {
+            renderer.weather = WeatherType.SNOW;
+        }
+        if(levelpointer == 2) {
+            renderer.weather = WeatherType.NORMAL;
+        }
 
         map = new MapData(this);
 
-        //saveLoadHandler.LoadLevel("ttest.tow", true);
         saveLoadHandler.LoadLevel("levels/" + leveltitles[levelpointer++], true);
         initSprites();
         
-        //msgp = new ArrayList<>(Arrays.asList(new MessagePoint[]{
-            //new MessagePoint("Teszt", "Bemész egy ajtón...", 10, 23, 11),}));
-        //msgh.addMessage("@game", "levels/test.tow loaded", -100, 2);
-        
         player.x = playerX * 64;
         player.y = playerY * 64;
+        
+        player.clearIntentory();
         
         renderer.updateMap();
     }
@@ -147,7 +169,15 @@ public class EntityManager implements PlayerWorldConnector {
     }
 
     public void reloadActualLevel() {
-        LoadLevel();
+        map = new MapData(this);
+        
+        saveLoadHandler.LoadLevel("levels/" + leveltitles[levelpointer - 1], true);
+        initSprites();
+        
+        player.x = playerX * 64;
+        player.y = playerY * 64;
+        
+        player.clearIntentory();
     }
 
     public void chooseLevel() {
@@ -167,6 +197,10 @@ public class EntityManager implements PlayerWorldConnector {
 
     public String getHelp() {
         return this.help.getHelp();
+    }
+    
+    public BufferedImage getMenuImage() {
+        return texLib.getMenuBufferedImage();
     }
 
     /**
@@ -311,6 +345,7 @@ public class EntityManager implements PlayerWorldConnector {
                     if ((int) Math.floor(tempX >> SIZE_LOG) == en.x
                             && (int) Math.floor(tempY >> SIZE_LOG) == en.y) {
                         en.gainXP();
+                        en.playLaserSound();
                         player.takeDamage(en.dmg);
                         return true;
                     }
@@ -366,6 +401,7 @@ public class EntityManager implements PlayerWorldConnector {
         }
         if (minDistance <= 80.0) {
             player.addItem(assumables[minTemp]);
+            (new Sound("sound/pickup_item.wav")).play();
             // TODO: -1 id esetï¿½n nullpointer exp. messagedisplayerben...megakadï¿½lyozni
             msgh.addMessage("@", msgProvider.get("player_item_gained"), 2, 3);
             for (int j = 0; j < sprites.length; j++) {

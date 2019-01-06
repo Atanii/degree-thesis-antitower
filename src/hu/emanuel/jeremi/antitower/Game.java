@@ -33,6 +33,10 @@ public class Game extends JFrame implements Runnable, KeyListener {
 
     // <editor-fold defaultstate="collapsed" desc="variables, constants">
     public final boolean DEBUG = true;
+    
+    public enum GameState {
+        MENU, GAME
+    } GameState mode;
 
     ResourceHandler resourceHandler;
     EntityManager manager;
@@ -70,7 +74,8 @@ public class Game extends JFrame implements Runnable, KeyListener {
     public Game() {
         super("Fallen Towers v0.7");
 
-        this.saveLoadHandler = new TowHandler();
+        mode = GameState.MENU;
+        
         this.resourceHandler = new ResourceHandler("hu");
 
         // Thread for the game:
@@ -87,7 +92,8 @@ public class Game extends JFrame implements Runnable, KeyListener {
                 "textures/office.png"
         );
 
-        manager = new EntityManager(player, planeWidth, planeHeight, resourceHandler, help, texLib, saveLoadHandler, renderer);
+        manager = new EntityManager(player, planeWidth, planeHeight, resourceHandler, help, texLib);
+        this.saveLoadHandler = new TowHandler(manager);
 
         // Adding listeners:
         addKeyListener(this);
@@ -139,7 +145,11 @@ public class Game extends JFrame implements Runnable, KeyListener {
             pack();
         }
 
-        manager.renderer = renderer;
+        manager.setRenderer(renderer);
+        manager.setTowHandler(saveLoadHandler);
+        manager.setWeather();
+        manager.LoadLevel();
+        renderer.updateMap();
 
         setVisible(true);
 
@@ -166,8 +176,6 @@ public class Game extends JFrame implements Runnable, KeyListener {
 
     @Override
     public synchronized void run() {
-        // GAMELOOP
-
         long now;
         long lastTime;
         final long ns = 1000000000 / 60;
@@ -189,26 +197,32 @@ public class Game extends JFrame implements Runnable, KeyListener {
                 times.poll();
             }
             times.add(now_fps);
-
-            delta = (now_fps - last) >> 4;
-            manager.attackPlayer();
-            player.update(manager, 1);
-            manager.checkGoalPoint();
-            renderer.castGraphic();
-            if (player.SHOOTING) {
-                renderer.renderBeam();
-            }
-            renderer.repaint();
-            /*
-            try {
-                Thread.sleep((long) ((lastTime - System.nanoTime() + ns) / 1000000));
-            } catch (InterruptedException e) {
-            }
-            */
-            last = now_fps;
-        }
-
-    }
+            
+            switch(mode) {
+                case MENU:
+                    renderer.repaint();
+                    break;
+                case GAME:
+                    delta = (now_fps - last) >> 4;
+                    manager.attackPlayer();
+                    player.update(manager, 1);
+                    manager.checkGoalPoint();
+                    renderer.updateWeather(delta);
+                    renderer.castGraphic();
+                    renderer.repaint();
+                    /*
+                    try {
+                        Thread.sleep((long) ((lastTime - System.nanoTime() + ns) / 1000000));
+                    } catch (InterruptedException e) {
+                    }
+                    */
+                    last = now_fps;                    
+                    break;
+                default:
+                    break;
+            } // switch
+        } // while
+    } // run
 
     public void toggleFullScreen() {
         IS_FULLSCREEN = !IS_FULLSCREEN;
@@ -236,6 +250,17 @@ public class Game extends JFrame implements Runnable, KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         int code = e.getKeyCode();
+        
+        if(mode == GameState.MENU) {
+            if (code == KeyEvent.VK_ESCAPE) {
+                System.exit(0);
+            }
+            else if (code == KeyEvent.VK_SPACE) {
+                mode = GameState.GAME;
+                renderer.setState(mode);
+            }
+            return;
+        }
 
         player.keyPressed(e);
 
@@ -257,7 +282,8 @@ public class Game extends JFrame implements Runnable, KeyListener {
             renderer.IS_HELP_ON = true;
         }
         if (code == KeyEvent.VK_ESCAPE) {
-            System.exit(0);
+            mode = GameState.MENU;
+            renderer.setState(mode);
         }
         if (code == KeyEvent.VK_F11) {
             toggleFullScreen();
