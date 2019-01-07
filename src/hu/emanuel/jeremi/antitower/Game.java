@@ -147,7 +147,7 @@ public class Game extends JFrame implements Runnable, KeyListener {
 
         manager.setRenderer(renderer);
         manager.setTowHandler(saveLoadHandler);
-        manager.setWeather();
+        manager.setWeatherAndDayTime();
         manager.LoadLevel();
         renderer.updateMap();
 

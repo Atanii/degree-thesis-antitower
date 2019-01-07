@@ -12,6 +12,7 @@ import javax.swing.JFileChooser;
 
 import hu.emanuel.jeremi.antitower.entity.item.AssumableItem;
 import hu.emanuel.jeremi.antitower.graphic.Graphic;
+import hu.emanuel.jeremi.antitower.graphic.Graphic.DayTime;
 import hu.emanuel.jeremi.antitower.graphic.Graphic.WeatherType;
 import hu.emanuel.jeremi.antitower.graphic.TextureLibrary;
 import hu.emanuel.jeremi.antitower.i18n.MessageProvider;
@@ -60,7 +61,8 @@ public class EntityManager implements PlayerWorldConnector {
 
     public TextureLibrary texLib;
     
-    private String leveltitles[] = {"hit_test_bzzz_tower.tow", "mainframe.tow", "wintertime.tow", "officemaze.tow"};
+    //private String leveltitles[] = {"hit_test_bzzz_tower.tow", "mainframe.tow", "wintertime.tow", "officemaze.tow"};
+    private String leveltitles[] = {"mainframe.tow", "wintertime.tow", "officemaze.tow"};
     private int levelpointer = 0;
     // </editor-fold>
 
@@ -90,19 +92,22 @@ public class EntityManager implements PlayerWorldConnector {
         this.saveLoadHandler = saveLoadHandler;
     }
     
-    public void setWeather() {
+    public void setWeatherAndDayTime() {
         if(renderer == null) {
             return;
         }
         
         if(levelpointer == 0) {
             renderer.weather = WeatherType.RAIN;
+            renderer.setDayTime(DayTime.NIGHT);
         }
         if(levelpointer == 1) {
             renderer.weather = WeatherType.SNOW;
+            renderer.setDayTime(DayTime.AFTERNOON);
         }
         if(levelpointer == 2) {
             renderer.weather = WeatherType.NORMAL;
+            renderer.setDayTime(DayTime.NIGHT);
         }
     }
 
@@ -125,15 +130,7 @@ public class EntityManager implements PlayerWorldConnector {
             System.exit(0);
         }
         
-        if(levelpointer == 0) {
-            renderer.weather = WeatherType.RAIN;
-        }
-        if(levelpointer == 1) {
-            renderer.weather = WeatherType.SNOW;
-        }
-        if(levelpointer == 2) {
-            renderer.weather = WeatherType.NORMAL;
-        }
+        setWeatherAndDayTime();
 
         map = new MapData(this);
 
@@ -401,7 +398,7 @@ public class EntityManager implements PlayerWorldConnector {
         }
         if (minDistance <= 80.0) {
             player.addItem(assumables[minTemp]);
-            (new Sound("sound/pickup_item.wav")).play();
+            (new Sound("sound/door.wav")).play();
             // TODO: -1 id eset�n nullpointer exp. messagedisplayerben...megakad�lyozni
             msgh.addMessage("@", msgProvider.get("player_item_gained"), 2, 3);
             for (int j = 0; j < sprites.length; j++) {

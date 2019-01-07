@@ -81,7 +81,7 @@ public class Graphic extends JPanel {
 
     /////////////////////////////// FLAGS ////////////////////////////////////////////////////
     public boolean IS_ANGLE_MARKER_ON = false;
-    public boolean IS_SHADERS_ON = false;
+    public boolean IS_SHADERS_ON = true;
     public boolean IS_SKYBOX_ON = true;
     public boolean IS_RAIN_ON = false;
     public boolean IS_SPRITES_ON = true;
@@ -105,6 +105,8 @@ public class Graphic extends JPanel {
         
     // WEATHER
     public enum WeatherType { NORMAL, SNOW, RAIN };
+    public enum DayTime { AFTERNOON, NIGHT };
+    public DayTime dtime;
     public WeatherType weather;
     private Weather snow;
     private Weather rain;
@@ -229,6 +231,7 @@ public class Graphic extends JPanel {
 
         // Weather:
         weather = WeatherType.NORMAL;
+        dtime = DayTime.NIGHT;
         snow = Weather.getSnow(planeWidth, planeHeight);
         snow.generate();
         rain = Weather.getRain(planeWidth, planeHeight);
@@ -256,6 +259,15 @@ public class Graphic extends JPanel {
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        }
+    }
+    
+    public void setDayTime(DayTime dt) {
+        dtime = dt;
+        if (dt == DayTime.NIGHT) {
+            IS_SHADERS_ON = true;
+        } else {
+            IS_SHADERS_ON = false;
         }
     }
 
@@ -692,19 +704,11 @@ public class Graphic extends JPanel {
                     // outside or inside
                     // x & 63 = x % 64 and x & 63 = x % 64, texture offset
                     // TODO: x&63 helyett x&(SIZE-1)-el ekvivalens ?ltal?nos?t?s
-                    if (!map.isOutside(mapX, mapY)) {
-                        if (IS_SHADERS_ON) {
-                           output[raysCasted + i * planeWidth] = addFogEffect(manager.getTexture(map.texMap[mapY * mapWidth + mapX]).getRGB(x & 63, y & 63), rc.distance);
-                        } else {
-                            //screenBuffer.setRGB(raysCasted, i, manager.getTexture(map.texMap[mapY * mapWidth + mapX]).getRGB(x & 63, y & 63));
-                            output[raysCasted + i * planeWidth] = manager.getTexture(map.texMap[mapY * mapWidth + mapX]).getRGB(x & 63, y & 63);
-                        }
+                    if (IS_SHADERS_ON) {
+                       output[raysCasted + i * planeWidth] = addFogEffect(manager.getTexture(map.texMap[mapY * mapWidth + mapX]).getRGB(x & 63, y & 63), rc.distance);
                     } else {
-                        output[raysCasted + i * planeWidth] = addFogEffect(manager.getTexture(map.texMap[mapY * mapWidth + mapX]).getRGB(x & 63, y & 63), rc.distance);
-                        //screenBuffer.setRGB(raysCasted, i, manager.getTexture(map.texMap[mapY * mapWidth + mapX]).getRGB(x & 63, y & 63));
-                        //output[raysCasted + i * planeWidth] = manager.getTexture(map.texMap[mapY * mapWidth + mapX]).getRGB(x & 63, y & 63);
+                       output[raysCasted + i * planeWidth] = manager.getTexture(map.texMap[mapY * mapWidth + mapX]).getRGB(x & 63, y & 63);
                     }
-
                 }
             }
             //////////////////////////////////////////////////////////////////////////////////
@@ -735,12 +739,9 @@ public class Graphic extends JPanel {
                     // TODO: megjav?tani
                     if (!map.isOutside(mapX, mapY)) {
                         if (IS_SHADERS_ON) {
-                            //screenBuffer.setRGB(raysCasted, i, addFogEffect(manager.getTexture(map.ceiling).getRGB(x & 63, y & 63), rc.distance));
                             output[raysCasted + i * planeWidth] = addFogEffect(manager.getTexture(map.ceiling).getRGB(x & 63, y & 63), rc.distance);
                         } else {
-                            //screenBuffer.setRGB(raysCasted, i, manager.getTexture(map.ceiling).getRGB(x & 63, y & 63));
-                            output[raysCasted + i * planeWidth] = addFogEffect(manager.getTexture(map.ceiling).getRGB(x & 63, y & 63), rc.distance);
-                            //output[raysCasted + i * planeWidth] = manager.getTexture(map.ceiling).getRGB(x & 63, y & 63);
+                            output[raysCasted + i * planeWidth] = manager.getTexture(map.ceiling).getRGB(x & 63, y & 63);
                         }
                     }
                 }
@@ -766,18 +767,15 @@ public class Graphic extends JPanel {
             
             ///////////////	DRAWING WALL SLICE ///////////////////////////////////////////////
             // <editor-fold defaultstate="collapsed" desc="drawing wall">
-            rc.slicePixels = addFogEffect(rc.slicePixels, shaderDistance);
-            if (!rc.isClosedDoor && rc.isHorizontalWallInside && IS_SHADERS_ON) {
-                //rc.slicePixels = addFogEffect(rc.slicePixels, shaderDistance);
+            if (IS_SHADERS_ON) {
+                rc.slicePixels = addFogEffect(rc.slicePixels, shaderDistance);
             }
             for (int wy = rc.startDraw, index = 0;
                     wy <= rc.startDraw + rc.projectedSliceHeight - 1; wy++, index++) {
                 if (wy >= 0 && wy < planeHeight) {
                     if (IS_ANGLE_MARKER_ON && rayAngle == (player.angle)) {
-                        //screenBuffer.setRGB(raysCasted, wy, 0xffffff);
                         output[raysCasted + wy * planeWidth] = 0xffffff;
                     } else {
-                        //screenBuffer.setRGB(raysCasted, wy, rc.slicePixels[index]);
                         output[raysCasted + wy * planeWidth] = rc.slicePixels[index];
                     }
 
@@ -845,7 +843,6 @@ public class Graphic extends JPanel {
 
                     for (int wy = rc.startDraw, index = 0; wy <= rc.startDraw + rc.projectedSliceHeight - 1; wy++, index++) {
                         if (wy >= 0 && wy < planeHeight && ((rc.slicePixels[index] >> 24) & 0xff) != 0) {
-                            //screenBuffer.setRGB(raysCasted, wy, rc.slicePixels[index]);
                             output[raysCasted + wy * planeWidth] = rc.slicePixels[index];
                         }
                     }
@@ -906,9 +903,9 @@ public class Graphic extends JPanel {
         float xTmp = (float) (yTmp * planeWidth / fov);
 
         
-        System.out.println(player.angle + "|" 
-                         + theta + "|" 
-                         + thetaTemp + "|" + yTmp);
+        //System.out.println(player.angle + "|" 
+          //               + theta + "|" 
+            //             + thetaTemp + "|" + yTmp);
         
         return planeWidth - xTmp + 32;
     }
@@ -959,11 +956,10 @@ public class Graphic extends JPanel {
                         if ( ((onscreenY + a) < planeHeight)
                           && ((pixels3[index] >> 24) != 0)
                         ) {
-                            if (IS_SHADERS_ON && inside) {
+                            if (IS_SHADERS_ON) {
                                 output[ (onscreenX) + planeWidth * (onscreenY + a) ] = ImageAndPostProcessHelper.addFogEffect(pixels3[index], distance);
                             } else {
-                                //output[ (onscreenX) + planeWidth * (onscreenY + a) ] = pixels3[index];
-                                output[ (onscreenX) + planeWidth * (onscreenY + a) ] = ImageAndPostProcessHelper.addFogEffect(pixels3[index], distance);
+                                output[ (onscreenX) + planeWidth * (onscreenY + a) ] = pixels3[index];
                             }
 
                         }
@@ -1005,11 +1001,10 @@ public class Graphic extends JPanel {
                         if ( ((onscreenY + a) < planeHeight)
                           && ((pixels3[index] >> 24) != 0)
                         ) {
-                            if (IS_SHADERS_ON && inside) {
+                            if (IS_SHADERS_ON) {
                                 output[ (onscreenX) + planeWidth * (onscreenY + a) ] = ImageAndPostProcessHelper.addFogEffect(pixels3[index], distance);
                             } else {
-                                //output[ (onscreenX) + planeWidth * (onscreenY + a) ] = pixels3[index];
-                                output[ (onscreenX) + planeWidth * (onscreenY + a) ] = ImageAndPostProcessHelper.addFogEffect(pixels3[index], distance);
+                                output[ (onscreenX) + planeWidth * (onscreenY + a) ] = pixels3[index];
                             }
 
                         }
@@ -1052,11 +1047,10 @@ public class Graphic extends JPanel {
                         if ( ((onscreenY + a) < planeHeight)
                           && ((pixels3[index] >> 24) != 0)
                         ) {
-                            if (IS_SHADERS_ON && inside) {
+                            if (IS_SHADERS_ON) {
                                 output[ (onscreenX) + planeWidth * (onscreenY + a) ] = ImageAndPostProcessHelper.addFogEffect(pixels3[index], distance);
                             } else {
-                                //output[ (onscreenX) + planeWidth * (onscreenY + a) ] = pixels3[index];
-                                output[ (onscreenX) + planeWidth * (onscreenY + a) ] = ImageAndPostProcessHelper.addFogEffect(pixels3[index], distance);
+                                output[ (onscreenX) + planeWidth * (onscreenY + a) ] = pixels3[index];
                             }
 
                         }
@@ -1092,8 +1086,15 @@ public class Graphic extends JPanel {
         // rendering walls, floor, ceiling, sprites, shaders
         
         if (IS_SKYBOX_ON) {
-            //renderSky();
-            renderScrollableNightSky();
+            switch(dtime) {
+                case NIGHT:
+                    renderScrollableNightSky();
+                    break;
+                case AFTERNOON:
+                default:
+                    renderSky();
+                    break;
+            }
         }
         
         render();
@@ -1120,22 +1121,6 @@ public class Graphic extends JPanel {
         for(int y = 0; y < (planeHeight >> 1); y++) {
             for(int x = 0; x < planeWidth; x++) {
                 output[y * planeWidth + x] = img[(int)(y * yW) * 360 + (int)(x * xW)];
-            }
-        }
-    }
-    
-    private void renderNightSky() {
-        int[] img = new int[360 * 240]; // 2560 x 240
-        final float xW = 360 / planeWidth;
-        final float yW = 240 / (planeHeight >> 1);
-        
-        Random rand = new Random(10);
-        int n = rand.nextInt(500) + 1;
-        
-        for(int y = 0; y < (planeHeight >> 1); y++) {
-            for(int x = 0; x < planeWidth; x++) {
-                output[y * planeWidth + x] = n > 10 ? 0xff000000 : 0xffffffff;
-                n = rand.nextInt(500) + 1;
             }
         }
     }
