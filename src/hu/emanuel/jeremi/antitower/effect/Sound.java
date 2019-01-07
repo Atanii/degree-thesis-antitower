@@ -54,8 +54,8 @@ public class Sound {
      * Playing the sound.
      */
     public void play() {
-       // clip.setFramePosition(0);			// it'd be good to start from the beginning
-        //clip.start();
+       clip.setFramePosition(0);			// it'd be good to start from the beginning
+       clip.start();
     }
     /**
      * Making the song looping.
