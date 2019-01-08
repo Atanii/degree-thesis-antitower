@@ -4,6 +4,10 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 
+/**
+ * Helper class for image and graphic manipulation such as scaling, fog effect..etc.
+ * @author Jeremi
+ */
 public final class ImageAndPostProcessHelper {
 
 	/////////////////////////////// POST PROCESS /////////////////////////////////////////////
@@ -122,13 +126,39 @@ public final class ImageAndPostProcessHelper {
 	}
 	
 	// https://stackoverflow.com/questions/4216123/how-to-scale-a-bufferedimage
-	
+	/**
+     * Nearest neighbour scaling. Scales by the value of scale variable.
+     * @param before
+     * @param scale
+     * @return 
+     */
 	public static BufferedImage scaleNearest(BufferedImage before, double scale) {
 	    final int interpolation = AffineTransformOp.TYPE_NEAREST_NEIGHBOR;
 	    //return scale(before, scale, interpolation);
 	    return scale(before, scale, interpolation);
 	}
+    
+    /**
+     * Nearest neighbour scaling to given width and height.
+     * @see ImageAndPostProcessHelper#scaleNearest(java.awt.image.BufferedImage, double) 
+     * @param before
+     * @param w2
+     * @param h2
+     * @return 
+     */
+	public static BufferedImage scaleNearest(BufferedImage before, final int w2, final int h2) {
+	    final int interpolation = AffineTransformOp.TYPE_NEAREST_NEIGHBOR;
+	    //return scale(before, scale, interpolation);
+	    return scale(before, w2, h2, interpolation);
+	}
 
+    /**
+     * Image scaling using the given type of scaling.
+     * @param before
+     * @param scale
+     * @param type
+     * @return 
+     */
 	private static BufferedImage scale(final BufferedImage before, final double scale, final int type) {
 	    int w = before.getWidth();
 	    int h = before.getHeight();
@@ -140,14 +170,16 @@ public final class ImageAndPostProcessHelper {
 	    scaleOp.filter(before, after);
 	    return after;
 	}
-	
-	public static BufferedImage scaleNearest(BufferedImage before, final int w2, final int h2) {
-	    final int interpolation = AffineTransformOp.TYPE_NEAREST_NEIGHBOR;
-	    //return scale(before, scale, interpolation);
-	    return scale(before, w2, h2, interpolation);
-	}
-	
-	private static BufferedImage scale(final BufferedImage before, final int w2, final int h2, final int type) {
+    
+    /**
+     * Image scaling to given width and height using the given type of scaling.
+     * @see ImageAndPostProcessHelper#scale(java.awt.image.BufferedImage, double, int) 
+     * @param before
+     * @param scale
+     * @param type
+     * @return 
+     */
+    private static BufferedImage scale(final BufferedImage before, final int w2, final int h2, final int type) {
 	    int w = before.getWidth();
 	    int h = before.getHeight();
 	    BufferedImage after = new BufferedImage(w2, h2, before.getType());
@@ -157,5 +189,4 @@ public final class ImageAndPostProcessHelper {
 	    return after;
 	}
 	//////////////////////////////////////////////////////////////////////////////////////////
-
 }
