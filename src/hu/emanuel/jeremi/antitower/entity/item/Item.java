@@ -1,6 +1,7 @@
 package hu.emanuel.jeremi.antitower.entity.item;;
 
 import hu.emanuel.jeremi.antitower.entity.Sprite;
+import java.awt.image.BufferedImage;
 
 /**
  * This class represents all the usable and assumable items in the game such as weapons, keycards, shields...etc.
@@ -16,9 +17,7 @@ import hu.emanuel.jeremi.antitower.entity.Sprite;
  */
 public class Item {
 	
-	private class UndeFinedWeaponType extends Exception {
-		
-	}
+	private class UndeFinedWeaponType extends Exception {}
 	
 	public ItemType type;
 	
@@ -28,6 +27,48 @@ public class Item {
 	public Sprite sprite;
 	public int icon;
 	public int overheadImg;
+    
+    public int x,y;
+    
+    public final static int[][] KC_Z_S_ids = {
+			{7,4,1},
+			{6,3,0},
+			{8,5,2}	
+	};	
+	
+	public Item(ItemType type, int id, int value, int x, int y, BufferedImage img) {
+		this.x = x;
+		this.y = y;
+        
+        this.type = type;
+		this.id = id;
+		this.value = value;
+		
+		try {
+			switch(type) {
+			case ZAPPER:
+				overheadImg = 0; 
+				icon = 3;
+				this.sprite = new Sprite(img, x, y, id);
+				break;
+			case KEY_CARD:
+				overheadImg = 1; 
+				icon = 4;
+				this.sprite = new Sprite(img, x, y, id);
+				break;
+			case SHIELD:
+				overheadImg = 2; 
+				icon = 5;
+				this.sprite = new Sprite(img, x, y, id);
+				break;
+			default:
+				throw new UndeFinedWeaponType();
+			}
+		} catch (UndeFinedWeaponType e) {
+			System.out.println("Undefined weapon type! Could not be created. Zapper instance created instead.");
+			this.type = ItemType.ZAPPER;
+		}
+	}
 	
 	public Item(ItemType type, int id, int value, Sprite sprite) {
 		this.type = type;

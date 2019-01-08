@@ -3,9 +3,6 @@ package hu.emanuel.jeremi.antitower.entity;
 import hu.emanuel.jeremi.antitower.graphic.Graphic;
 
 public interface PlayerWorldConnector {
-
-	public void synchSkyboxWithRotation(boolean left, int rotateSpeed);
-	
 	public float[] getSinTable();
 	public float[] getCosTable();
 	
@@ -31,5 +28,4 @@ public interface PlayerWorldConnector {
 	public void handleShoot(int x, int y, int angle);
 
 	public void updateRendererPlayerReference(int x, int y, int angle, int fOV, int playerPaneDist);
-	
 }

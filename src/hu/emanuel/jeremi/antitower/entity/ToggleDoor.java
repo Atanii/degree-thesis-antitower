@@ -2,14 +2,16 @@ package hu.emanuel.jeremi.antitower.entity;
 
 import hu.emanuel.jeremi.antitower.effect.Sound;
 
-public class ToggleDoor extends Entity implements Interactive {
+public class ToggleDoor implements Interactive {
 	
-	private int key;
+    public int x, y;
+	private final int key;
 	public boolean isClosed;
 	public int closed, opened;
 	
 	public ToggleDoor(int closed, int opened, int x, int y, int key, boolean isClosed) {
-		super(x, y, key);
+		this.x = x;
+		this.y = y;
 		this.x = x;
 		this.y = y;
 		this.closed = closed;
@@ -19,7 +21,7 @@ public class ToggleDoor extends Entity implements Interactive {
 	}
 	
 	public void toggle() {
-		isClosed = isClosed ? false : true;
+		isClosed = !isClosed;
 		(new Sound("sound/door.wav")).play();
 	}
 	

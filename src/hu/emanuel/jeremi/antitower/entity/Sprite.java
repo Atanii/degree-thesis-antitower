@@ -15,7 +15,7 @@ public class Sprite {
 	
 	public static class SpriteSequence extends Sprite {
 
-		private BufferedImage frames[];
+		private final BufferedImage frames[];
 		private int framePointer;
 		
 		public SpriteSequence(BufferedImage tex[], int actualFrame, int x, int y, int id) {

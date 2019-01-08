@@ -23,6 +23,7 @@ public final class GamePhysicsHelper {
 	/**
 	 * It converts a (double) degree into (double) radian. It uses ANGLE180 as 180°.
 	 * @param degrees
+     * @param custom180degree
 	 * @return radian value
 	 */
 	public static final double toCustomRad(final double degrees, final int custom180degree) {
@@ -33,6 +34,7 @@ public final class GamePhysicsHelper {
 	/**
 	 * It converts a (float) degree into (float) radian. It uses ANGLE180 as 180°.
 	 * @param degrees
+     * @param custom180degree
 	 * @return radian value
 	 */
 	public static final float toCustomRad(final float degrees, final int custom180degree) {
@@ -86,6 +88,7 @@ public final class GamePhysicsHelper {
 	 * @param cos
 	 * @param sin
 	 * @param angle
+     * @param en
 	 */
 	public static final void traceBeamTillHitsEnemy
 	(
@@ -109,6 +112,7 @@ public final class GamePhysicsHelper {
 	 * @param y1
 	 * @param x2
 	 * @param y2
+     * @param FOV
 	 * @return angle between two points
 	 */
 	public static final float rotatePlayerAngleToTarget(float targetX, float targetY, float originX, float originY, int originAngle, int planeWidth, int FOV) {

@@ -14,7 +14,7 @@ import javax.swing.JOptionPane;
 import hu.emanuel.jeremi.antitower.entity.EntityManager;
 import hu.emanuel.jeremi.antitower.entity.Sprite;
 import hu.emanuel.jeremi.antitower.entity.ToggleDoor;
-import hu.emanuel.jeremi.antitower.entity.item.AssumableItem;
+import hu.emanuel.jeremi.antitower.entity.item.Item;
 import hu.emanuel.jeremi.antitower.entity.item.ItemType;
 
 /**
@@ -221,7 +221,7 @@ public final class TowHandler {
         current = Integer.parseInt(tokenizer.nextToken());
         System.out.println("<<< Items: " + current + " >>>");
 
-        manager.assumables = new AssumableItem[current];
+        manager.assumables = new Item[current];
 
         if (current > 0) {
             sc.nextLine();
@@ -234,7 +234,7 @@ public final class TowHandler {
                 int value = Integer.parseInt(tokenizer.nextToken());
                 ItemType type = ItemType.values()[Integer.parseInt(tokenizer.nextToken())];
 
-                manager.assumables[i] = new AssumableItem(
+                manager.assumables[i] = new Item(
                         type, id, value, x, y, manager.texLib.getItemSprite(type)
                 );
             }

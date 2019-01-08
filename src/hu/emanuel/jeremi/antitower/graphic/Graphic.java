@@ -13,15 +13,12 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
-import hu.emanuel.jeremi.antitower.effect.Rain;
-import hu.emanuel.jeremi.antitower.effect.Snow;
 import hu.emanuel.jeremi.antitower.effect.Weather;
 import hu.emanuel.jeremi.antitower.entity.EntityManager;
 import hu.emanuel.jeremi.antitower.entity.Player;
 import hu.emanuel.jeremi.antitower.message.MessageDisplayer;
 import hu.emanuel.jeremi.antitower.physics.GamePhysicsHelper;
 import hu.emanuel.jeremi.antitower.world.MapData;
-import hu.emanuel.jeremi.antitower.world.Skybox;
 import java.awt.image.DataBufferInt;
 import java.util.Random;
 
@@ -39,8 +36,8 @@ public class Graphic extends JPanel {
 
     /////////////////////////////// GRAPHICS FOR DRAWING ON SCREEN ///////////////////////////
     private Graphics gb;			// for the graphics buffer and drawing
-    private BufferedImage frame;	// image for the actual frame
-    private int[] output;
+    private final BufferedImage frame;	// image for the actual frame
+    private final int[] output;
     //////////////////////////////////////////////////////////////////////////////////////////
 
     /////////////////////////////// ANGLES DEPENDING ON THE PLANEWIDTH ///////////////////////
@@ -72,7 +69,7 @@ public class Graphic extends JPanel {
     //////////////////////////////////////////////////////////////////////////////////////////
 
     /////////////////////////////// PLAYER LOCAL DATA ////////////////////////////////////////
-    private Player player;
+    private final Player player;
     private int FOV;
     private int playerPaneDist;
     private int playerX, playerY;
@@ -83,11 +80,11 @@ public class Graphic extends JPanel {
     public boolean IS_ANGLE_MARKER_ON = false;
     public boolean IS_SHADERS_ON = true;
     public boolean IS_SKYBOX_ON = true;
-    public boolean IS_RAIN_ON = false;
+    public boolean IS_WEATHER_ON = true;
     public boolean IS_SPRITES_ON = true;
     public boolean IS_HELP_ON = false;
-    public boolean IS_STATUS_ON = false;
-    public boolean IS_RENDER_OVERHEAD_AND_HUD = true;
+    public boolean IS_STATUS_ON = true;
+    public boolean IS_RENDERING_WEAPON_ON = true;
     //////////////////////////////////////////////////////////////////////////////////////////
     // For program constructor:
     int screenw, screenh;
@@ -105,15 +102,11 @@ public class Graphic extends JPanel {
         
     // WEATHER
     public enum WeatherType { NORMAL, SNOW, RAIN };
-    public enum DayTime { AFTERNOON, NIGHT };
-    public DayTime dtime;
     public WeatherType weather;
-    private Weather snow;
-    private Weather rain;
-
-    // OBJECTS FOR EFFECTS: SKYBOX, RAIN
-    public Skybox skybox;
-    
+    private final Weather snow;
+    private final Weather rain;
+    // Sky    
+    private StellarSky sk;
 
     private final RayCastedGridData rc = new RayCastedGridData();
     // </editor-fold>
@@ -204,6 +197,10 @@ public class Graphic extends JPanel {
      * Setup: jframe and gameField It calls the function for filling the
      * sinTable, cosTable, ...etc. Hide cursor by make it equal with the
      * transparentCursor. It starts the gameThread.
+     * @param planeWidth
+     * @param planeHeight
+     * @param manager
+     * @param player
      */
     public Graphic(int planeWidth, int planeHeight, Player player, EntityManager manager) {
         super();
@@ -226,12 +223,14 @@ public class Graphic extends JPanel {
         this.planeWidth = planeWidth;
         this.planeHeight = planeHeight;
         
+        // Sky init and generate (it's in the constructor)
+        sk = new StellarSky(planeWidth, planeHeight, 500);
+        
         // Player:
         this.player = player;
 
         // Weather:
         weather = WeatherType.NORMAL;
-        dtime = DayTime.NIGHT;
         snow = Weather.getSnow(planeWidth, planeHeight);
         snow.generate();
         rain = Weather.getRain(planeWidth, planeHeight);
@@ -242,8 +241,6 @@ public class Graphic extends JPanel {
         initBuffersForSpriteCasting();
 
         msgdisp = new MessageDisplayer(manager.msgh);
-
-        skybox = new Skybox(player.FOV, tex.loadAndGetTextureFromImageFile("textures/skybox_2560x240.png", 656345));
     }
     
     public void updateMap() {
@@ -259,15 +256,6 @@ public class Graphic extends JPanel {
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        }
-    }
-    
-    public void setDayTime(DayTime dt) {
-        dtime = dt;
-        if (dt == DayTime.NIGHT) {
-            IS_SHADERS_ON = true;
-        } else {
-            IS_SHADERS_ON = false;
         }
     }
 
@@ -299,11 +287,13 @@ public class Graphic extends JPanel {
             // draw messages currently waiting for drawing
             drawMessages(g);
             // if the player is inside and rain is turn on, then it renders simple rain effect
-            if (weather == WeatherType.SNOW && !player.isInside) {
-                snow.render(g, player.angle);
-            }
-            if (weather == WeatherType.RAIN && !player.isInside) {
-                rain.render(g, player.angle);
+            if(IS_WEATHER_ON) {
+                if (weather == WeatherType.SNOW && !player.isInside) {
+                    snow.render(g, player.angle);
+                }
+                if (weather == WeatherType.RAIN && !player.isInside) {
+                    rain.render(g, player.angle);
+                }
             }
             // write help information about the controls
             if (IS_HELP_ON) {
@@ -317,13 +307,10 @@ public class Graphic extends JPanel {
     }
     
     public void updateWeather(long delta) {
-        if(weather == weather.NORMAL) {
-            return;
-        }
-        else if(weather == weather.RAIN) {
+        if(weather == WeatherType.RAIN) {
             rain.update(delta);
         }
-        else if(weather == weather.SNOW) {
+        else if(weather == WeatherType.SNOW) {
             snow.update(delta);
         }
     }
@@ -469,7 +456,7 @@ public class Graphic extends JPanel {
      * When all rays are casted, the screenbuffer will be drawn onto screen.
      */
     public final void render() {
-
+        
         rc.hardReset();
 
         // The angle of the angle to be casted:
@@ -632,15 +619,6 @@ public class Graphic extends JPanel {
                 zbuffer[raysCasted] = rc.distance;
                 rc.offset = 63 - (((int) rc.tempAx) & 63);
                     manager.getTexture(rc.tileIndexHor).getRGB(rc.offset, 0, 1, SIZE, rc.pixels, 0, 1);
-                    /*
-                if (rc.DOWN) {
-                    rc.offset = 63 - (((int) rc.tempAx) & 63);
-                    manager.getTexture(rc.tileIndexHor).getRGB(rc.offset, 0, 1, SIZE, rc.pixels, 0, 1);
-                } else {
-                    rc.offset = (((int) rc.tempAx) & 63);
-                    manager.getTexture(rc.tileIndexHor).getRGB(rc.offset, 0, 1, SIZE, rc.pixels, 0, 1);
-                }
-                    */
                 // VERTICAL
             } else {
                 rc.isHorizontalWallInside = rc.isVerticalWallInside;
@@ -742,6 +720,8 @@ public class Graphic extends JPanel {
                         } else {
                             output[raysCasted + i * planeWidth] = manager.getTexture(map.ceiling).getRGB(x & 63, y & 63);
                         }
+                    } else if (IS_SKYBOX_ON) {
+                        output[raysCasted + i * planeWidth] = sk.getSkyPixel(raysCasted, i, player.angle);
                     }
                 }
             }
@@ -865,7 +845,7 @@ public class Graphic extends JPanel {
      * @param spriteY
      * @return x screen-coordinate of sprite
      */
-    private final float findXOffsetForSprites(int spriteX, int spriteY) {
+    private float findXOffsetForSprites(int spriteX, int spriteY) {
         float theta = (player.angle * 60f / planeWidth);
         float fov = getFOV() * 60f / planeWidth;
 
@@ -900,11 +880,6 @@ public class Graphic extends JPanel {
         }
 
         float xTmp = (float) (yTmp * planeWidth / fov);
-
-        
-        //System.out.println(player.angle + "|" 
-          //               + theta + "|" 
-            //             + thetaTemp + "|" + yTmp);
         
         return planeWidth - xTmp + 32;
     }
@@ -915,7 +890,7 @@ public class Graphic extends JPanel {
      *
      * @param screenBuffer
      */
-    private final void castSprites() {
+    private void castSprites() {
         int[] pixels2 = new int[SIZE << SIZE_LOG];
         int[] pixels3;
         int projectedSliceHeight;
@@ -1081,19 +1056,12 @@ public class Graphic extends JPanel {
     /**
      * The function handling, calling the casting, drawing functions.
      */
-    public void castGraphic() {
+    public void castGraphic(long delta) {
+        
         // rendering walls, floor, ceiling, sprites, shaders
         
         if (IS_SKYBOX_ON) {
-            switch(dtime) {
-                case NIGHT:
-                    renderScrollableNightSky();
-                    break;
-                case AFTERNOON:
-                default:
-                    renderSky();
-                    break;
-            }
+            //renderScrollableNightSky();
         }
         
         render();
@@ -1106,45 +1074,8 @@ public class Graphic extends JPanel {
             renderBeam();
         }
         
-        if (IS_RENDER_OVERHEAD_AND_HUD) {
+        if (IS_RENDERING_WEAPON_ON) {
             renderHUDAndOverheadGraphic();
-        }
-        
-    }
-    
-    private void renderSky() {
-        int[] img = new int[360 * 240]; // 2560 x 240
-        skybox.getImage(360, 240).getRGB(0, 0, 360, 240, img, 0, 1);
-        final float xW = 360 / planeWidth;
-        final float yW = 240 / (planeHeight >> 1);
-        for(int y = 0; y < (planeHeight >> 1); y++) {
-            for(int x = 0; x < planeWidth; x++) {
-                output[y * planeWidth + x] = img[(int)(y * yW) * 360 + (int)(x * xW)];
-            }
-        }
-    }
-    
-    public int skyOffset = 0;
-    private void renderScrollableNightSky() {
-        int[] img = new int[2160 * (planeHeight >> 1)]; // 2560 x 240
-        final float xW = 360 / planeWidth;
-        final float yW = 240 / (planeHeight >> 1);
-        Random rand = new Random(10);
-        int n = rand.nextInt(500) + 1;
-        int startX = player.angle;
-        
-        for(int y = 0; y < (planeHeight >> 1); y++) {
-            for(int x = 0; x < 2160; x++) {
-                img[y * 2160 + x] = n > 10 ? 0xff000000 : 0xffffffff;
-                n = rand.nextInt(500) + 1;
-            }
-        }
-        
-        
-        for(int y = 0; y < (planeHeight >> 1); y++) {
-            for(int x = 0; x < planeWidth; x++) {
-                output[y * planeWidth + x] = img[y * 2160 + ((startX+x)%2160)];
-            }
         }
     }
     
@@ -1152,25 +1083,13 @@ public class Graphic extends JPanel {
         gb.setColor(Color.BLUE);
         gb.fillRect(5, (planeHeight >> 1) + (planeHeight >> 2) - 15, 130, 60);
         gb.setColor(Color.YELLOW);
-        gb.drawString("HP: " + player.getHp(), 10, (planeHeight >> 1) + (planeHeight >> 2));
-        gb.drawString("DP: " + player.getDp(), 10, (planeHeight >> 1) + (planeHeight >> 2) + 20);
+        gb.drawString("Score: " + player.getScore(), 10, (planeHeight >> 1) + (planeHeight >> 2));
+        //gb.drawString("HP: " + player.getHp(), 10, (planeHeight >> 1) + (planeHeight >> 2));
+        //gb.drawString("DP: " + player.getDp(), 10, (planeHeight >> 1) + (planeHeight >> 2) + 20);
+        gb.drawString("+++++++++++++++++", 10, (planeHeight >> 1) + (planeHeight >> 2) + 20);
         gb.drawString("Active inventory slot: " + player.getActualItemPointer(), 10, (planeHeight >> 1) + (planeHeight >> 2) + 40);
     }
-    
-    public void drawMenu() {
-        //g.drawImage(manager.getMenuImage(), 0, 0, this);
-    }
     //////////////////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Depending on the actual rotation of the player it rotate the skybox to
-     * the opposite.
-     *
-     * @param LEFT
-     */
-    public final synchronized void synchSkyboxWithPlayer(boolean LEFT) {
-        skybox.rotate(!LEFT, player.rotateSpeed);
-    }
 
     public int getPlayerX() {
         return playerX;

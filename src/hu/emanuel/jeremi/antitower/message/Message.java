@@ -1,12 +1,13 @@
 package hu.emanuel.jeremi.antitower.message;
 
+import java.util.Objects;
+
 public class Message {
 
-	private int id;
-	private String sender;
-	private String message;
-	
-	private int timeInSecundum;
+	private final int id;
+	private final String sender;
+	private final String message;
+	private final int timeInSecundum;
 	
 	public Message(String sender, String message, int id) {
 		this.sender = sender;
@@ -34,6 +35,14 @@ public class Message {
 		else
 			return false;
 	}
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 19 * hash + Objects.hashCode(this.sender);
+        hash = 19 * hash + Objects.hashCode(this.message);
+        return hash;
+    }
 	
 	public String getSender() {
 		return this.sender;

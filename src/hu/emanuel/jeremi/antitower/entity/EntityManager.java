@@ -5,19 +5,15 @@ import static hu.emanuel.jeremi.antitower.common.Tile64.SIZE_LOG;
 import hu.emanuel.jeremi.antitower.effect.Sound;
 
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.Iterator;
 
 import javax.swing.JFileChooser;
 
-import hu.emanuel.jeremi.antitower.entity.item.AssumableItem;
+import hu.emanuel.jeremi.antitower.entity.item.Item;
 import hu.emanuel.jeremi.antitower.graphic.Graphic;
-import hu.emanuel.jeremi.antitower.graphic.Graphic.DayTime;
 import hu.emanuel.jeremi.antitower.graphic.Graphic.WeatherType;
 import hu.emanuel.jeremi.antitower.graphic.TextureLibrary;
 import hu.emanuel.jeremi.antitower.i18n.MessageProvider;
 import hu.emanuel.jeremi.antitower.message.MessageHandler;
-import hu.emanuel.jeremi.antitower.message.helpmessage.Help;
 import hu.emanuel.jeremi.antitower.physics.GamePhysicsHelper;
 import hu.emanuel.jeremi.antitower.save_load.TowHandler;
 import hu.emanuel.jeremi.antitower.world.MapData;
@@ -26,14 +22,12 @@ public class EntityManager implements PlayerWorldConnector {
 
     // <editor-fold defaultstate="collapsed" desc="variables, constants">
     public MessageProvider msgProvider;
-    public Help help;
 
     public static final byte SPRITE = 0;
     public static final byte ITEM = 1;
     public static final byte ENEMY = 2;
 
     // TOW
-    private String actualLevelFileName;
     TowHandler saveLoadHandler;
 
     // FROM TOW //////////////////////////
@@ -44,7 +38,7 @@ public class EntityManager implements PlayerWorldConnector {
     public ToggleDoor[] doors; // tow, NEM TESZ BELE ELEMET, CSAK INICIALIZALJA
     public Sprite[] sprites;
     public Enemy[] enemies;
-    public AssumableItem[] assumables;
+    public Item[] assumables;
     int enemyStartIndex, itemStartIndex;
 
     public MessageHandler msgh;     // tow
@@ -58,13 +52,12 @@ public class EntityManager implements PlayerWorldConnector {
 
     public TextureLibrary texLib;
     
-    //private String leveltitles[] = {"hit_test_bzzz_tower.tow", "mainframe.tow", "wintertime.tow", "officemaze.tow"};
-    private String leveltitles[] = {"mainframe.tow", "wintertime.tow", "officemaze.tow"};
+    private final String leveltitles[] = {"mainframe.tow", "wintertime.tow", "officemaze.tow"};
     private int levelpointer = 0;
     // </editor-fold>
 
     public EntityManager(Player player, int planeWidth, int planeHeight,
-            MessageProvider rr, Help h, TextureLibrary texLib) {
+            MessageProvider rr, TextureLibrary texLib) {
 
         this.player = player;
 
@@ -76,8 +69,6 @@ public class EntityManager implements PlayerWorldConnector {
         this.planeHeight = planeHeight;
 
         msgh = new MessageHandler();
-
-        this.help = h;
     }
     
     public void setRenderer(Graphic renderer) {
@@ -89,21 +80,16 @@ public class EntityManager implements PlayerWorldConnector {
     }
     
     public void setWeatherAndDayTime() {
-        if(renderer == null) {
-            return;
-        }
-        
-        if(levelpointer == 0) {
+        if(renderer != null) {
+            if(levelpointer == 0) {
             renderer.weather = WeatherType.RAIN;
-            renderer.setDayTime(DayTime.NIGHT);
-        }
-        if(levelpointer == 1) {
-            renderer.weather = WeatherType.SNOW;
-            renderer.setDayTime(DayTime.AFTERNOON);
-        }
-        if(levelpointer == 2) {
-            renderer.weather = WeatherType.NORMAL;
-            renderer.setDayTime(DayTime.NIGHT);
+            }
+            if(levelpointer == 1) {
+                renderer.weather = WeatherType.SNOW;
+            }
+            if(levelpointer == 2) {
+                renderer.weather = WeatherType.NORMAL;
+            }
         }
     }
 
@@ -173,23 +159,8 @@ public class EntityManager implements PlayerWorldConnector {
         player.clearIntentory();
     }
 
-    public void chooseLevel() {
-        JFileChooser j = new JFileChooser();
-
-        j.setCurrentDirectory(new java.io.File("."));
-        j.setDialogTitle("Choose level");
-        j.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-        j.setAcceptAllFileFilterUsed(false);
-
-        if (j.showOpenDialog(renderer) == JFileChooser.APPROVE_OPTION) {
-            saveLoadHandler.LoadLevel(j.getSelectedFile().getPath(), false);
-        } else {
-            saveLoadHandler.LoadLevel("office.tow", true);
-        }
-    }
-
     public String getHelp() {
-        return this.help.getHelp();
+        return this.msgProvider.getHelp();
     }
     
     public BufferedImage getMenuImage() {
@@ -202,7 +173,7 @@ public class EntityManager implements PlayerWorldConnector {
     public void makePlayerInteractWithClosestInteractive() {
         Interactive minTemp = null;
         float minDistance = Float.MAX_VALUE;
-        float distance = Float.MAX_VALUE;
+        float distance;
         for (Interactive i : doors) {
             distance = GamePhysicsHelper.getDistance(i.getMapX(), i.getMapY(), player.x, player.y);
             if (distance <= minDistance) {
@@ -214,7 +185,6 @@ public class EntityManager implements PlayerWorldConnector {
             player.INTERACTING = false;
             return;
         }
-        //if(minDistance < )
         if (!player.interact(minTemp)) {
             msgh.addMessage("@", msgProvider.get("need_keycard"), 1, 1);
         } else {
@@ -236,10 +206,6 @@ public class EntityManager implements PlayerWorldConnector {
         itemStartIndex = sprites.length;
         for (; i < sprites.length + assumables.length; i++) {
             temp[i] = assumables[i - sprites.length].sprite;
-            /*
-            temp[i] = new Sprite(assumables[i - sprites.length].sprite, assumables[i - sprites.length].x, assumables[i - sprites.length].y,
-                    assumables[i - sprites.length].id);
-             */
         }
         // Phase 2
         enemyStartIndex = sprites.length + assumables.length;
@@ -292,11 +258,11 @@ public class EntityManager implements PlayerWorldConnector {
             return false;
         }
         for (Enemy en : enemies) {
-            //System.out.println("x:"+x+"|y:"+y+"|enemy x:"+en.x+"|enemy y:"+en.y);
             if (en != null && x == en.x && y == en.y) {
                 en.takeDamage(10);
                 if(en.isDestroyed()) {
                     msgh.addMessage("@", msgProvider.get("tower_neutralized"), 2, 1);
+                    player.earnScore( (en.type.ordinal() + 1) * 20 );
                 }
                 return true;
             }
@@ -351,8 +317,6 @@ public class EntityManager implements PlayerWorldConnector {
 
     public void checkGoalPoint() {
         if (goalX == (player.x >> SIZE_LOG) && goalY == (player.y >> SIZE_LOG)) {
-            //System.out.println(mp.x+"|"+mp.y+"\n"+(player.x>>SIZE_LOG)+"|"+(player.y>>SIZE_LOG));
-            //System.exit(0);
             loadNextLevelOrExit();
         }
     }
@@ -360,15 +324,16 @@ public class EntityManager implements PlayerWorldConnector {
     /**
      * Check if the player's colliding with an assumable in which case it'll added to the inventory.
      */
+    @Override
     public void checkAssumableCollision() {
         if (assumables.length == 0) {
             return;
         }
-        Sprite[] temp = null;
+        Sprite[] temp;
         int l = 0;
         int minTemp = -1;
         float minDistance = Float.MAX_VALUE;
-        float distance = Float.MAX_VALUE;
+        float distance;
         for (int i = 0; i < assumables.length; i++) {
             if (assumables[i] != null) {
                 distance = GamePhysicsHelper.getDistance(assumables[i].x, assumables[i].y, player.x, player.y);
@@ -405,11 +370,6 @@ public class EntityManager implements PlayerWorldConnector {
 
     public int getEnemyStartIndex() {
         return enemyStartIndex;
-    }
-
-    @Override
-    public void synchSkyboxWithRotation(boolean left, int rotateSpeed) {
-        renderer.skybox.rotate(left, rotateSpeed);
     }
 
     @Override

@@ -15,7 +15,7 @@ public class ResourceHandler implements MessageProvider {
 		res = ResourceBundle.getBundle("hu.emanuel.jeremi.antitower.i18n.GameTexts", loc);
 	} 
 	
-	private final void setLocale() {
+	private void setLocale() {
 		if( lang.equalsIgnoreCase("HU") ) {
 			loc = new Locale("hu", "HU");			 
 		}
@@ -34,6 +34,22 @@ public class ResourceHandler implements MessageProvider {
 	@Override
 	public final String get(final int key) {
 		return res.getString(String.valueOf(key));
+	}
+    
+    @Override
+    public final String getHelp() {
+        String msg = 
+				get("move_forward") + "\n" +
+				get("move_backward") + "\n" +
+				get("move_left") + "\n" +
+				get("move_right") + "\n" +
+				get("turn_left") + "\n" +
+				get("turn_right") + "\n" +
+				get("shoot") + "\n" +
+				get("inventory_slots") + "\n" +
+				get("toggle_rain") + "\n" +
+				get("use") + "\n";
+        return msg;
 	}
 
 }

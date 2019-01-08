@@ -86,7 +86,7 @@ public class TextureLibrary implements GetSpriteImage {
 	//////////////////////////////////////////////////////////////////////////////////////////
 
 	/////////////////////////////// SHEET PROCESSING /////////////////////////////////////////
-	private final Sheet loadItemSheet(String filename) {
+	private Sheet loadItemSheet(String filename) {
 		Sheet sheet = null;
 		
 		try {
@@ -101,7 +101,7 @@ public class TextureLibrary implements GetSpriteImage {
 		return sheet;
 	}
 	
-	private final Sheet loadSpriteSheet(String filename) {
+	private Sheet loadSpriteSheet(String filename) {
 		Sheet sheet = null;
 		
 		try {
@@ -119,7 +119,7 @@ public class TextureLibrary implements GetSpriteImage {
 		return sheet;
 	}
 	
-	private final Sheet[] loadTexturePacks(String...filenames) {
+	private Sheet[] loadTexturePacks(String...filenames) {
 		Sheet[] sheets = new Sheet[filenames.length];
 		
 		try {
@@ -141,7 +141,7 @@ public class TextureLibrary implements GetSpriteImage {
         return this.menu;
     }
     
-    private final void loadMenuImage() {
+    private void loadMenuImage() {
         try {
 			// getting texture atlas
 			URL url = getClass().getResource("/res/main_menu.png");

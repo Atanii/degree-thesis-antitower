@@ -5,7 +5,7 @@ import java.awt.Graphics;
 
 public class MessageDisplayer {
 	
-	private MessageHandler msgh;
+	private final MessageHandler msgh;
 	
 	public MessageDisplayer(MessageHandler msgh) {
 		this.msgh = msgh;

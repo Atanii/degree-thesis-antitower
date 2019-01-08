@@ -4,17 +4,19 @@ import java.awt.event.KeyEvent;
 
 import hu.emanuel.jeremi.antitower.entity.item.Item;
 import hu.emanuel.jeremi.antitower.entity.item.ItemType;
-import hu.emanuel.jeremi.antitower.physics.GamePhysicsHelper;
 
 import static hu.emanuel.jeremi.antitower.common.Tile64.SIZE_LOG;
 import hu.emanuel.jeremi.antitower.effect.Sound;
 import java.time.LocalDateTime;
-import java.util.Calendar;
 
-public class Player extends Entity {
+public class Player {
 
+    public int x, y, id;
+    
 	int hp;
 	int dp;
+    
+    int score;
 	
 	public int speed;
 	public int rotateSpeed;
@@ -56,6 +58,8 @@ public class Player extends Entity {
 		inventory = new Item[INVENTORY_SIZE];
 		actualItemPointer = -1;
 		actualItemPointer = 0;
+        
+        score = 0;
 	}
     
     public void clearIntentory() {
@@ -141,21 +145,25 @@ public class Player extends Entity {
 				removeItem( this.inventory[actualItemPointer].id );
 				chooseItem( actualItemPointer - 1 );
 				DEFENSE_MODE = false;
-				return;
 			}
 		}
 		else if( hp >= 0 ) {
 			this.hp -= (dmg - dp) >= 0 ? (dmg - dp) : 0;
-			return;
+            score -= dmg;
 		}			
 	}
+    
+    public void earnScore(int scr) {
+        if( scr >= 0 )
+            this.score += scr;
+    }
 	
+    public int getScore() {
+        return this.score;
+    }
+    
 	public void setShooting(boolean to) {
-		if(to && (inventory[actualItemPointer].type == ItemType.ZAPPER) ) {
-			SHOOTING = true;
-		} else {
-			SHOOTING = false;
-		}
+        SHOOTING = to && (inventory[actualItemPointer].type == ItemType.ZAPPER);
 	}
 	
 	public int getHp() {
@@ -208,7 +216,7 @@ public class Player extends Entity {
 		if(code == KeyEvent.VK_SPACE)		setShooting(false);
 	}
     
-    private final void playStepSound() {
+    private void playStepSound() {
         if(lastStepTime != LocalDateTime.now().getSecond()) {
             (new Sound("sound/step.wav")).play();
             lastStepTime = LocalDateTime.now().getSecond();
@@ -227,11 +235,7 @@ public class Player extends Entity {
 				y += (int) dy;
                 playStepSound();
 			}		
-			if( pwc.isOutside((x >> SIZE_LOG), (y >> SIZE_LOG)) ) {
-				isInside = false;
-			} else {
-				isInside = true;
-			}
+            isInside = !pwc.isOutside((x >> SIZE_LOG), (y >> SIZE_LOG));
 		}
 		if(DOWN) {
 			if( pwc.isCollision(x, y, -dx, -dy) ) {
@@ -239,20 +243,14 @@ public class Player extends Entity {
 				y -= (int) dy;
                 playStepSound();
 			}			
-			if( pwc.isOutside((x >> SIZE_LOG), (y >> SIZE_LOG)) ) {
-				isInside = false;
-			} else {
-				isInside = true;
-			}
+            isInside = !pwc.isOutside((x >> SIZE_LOG), (y >> SIZE_LOG));
 		}
 		if(LEFT) {
-			pwc.synchSkyboxWithRotation(true, rotateSpeed);
 			if( (angle -= rotateSpeed) < pwc.g().ANGLE0 ) {
 				angle += pwc.g().ANGLE360;
 			}
 		}
 		if(RIGHT) {
-			pwc.synchSkyboxWithRotation(false, rotateSpeed);
 			if( (angle += rotateSpeed) >= pwc.g().ANGLE360 ) {
 				angle -= pwc.g().ANGLE360;
 			}
@@ -269,11 +267,7 @@ public class Player extends Entity {
 				x += (int) dx;
                 playStepSound();
 			}
-			if( pwc.isOutside((x >> SIZE_LOG),(y >> SIZE_LOG)) ) {
-				isInside = false;
-			} else {
-				isInside = true;
-			}
+            isInside = !pwc.isOutside((x >> SIZE_LOG),(y >> SIZE_LOG));
 		}
 		if(STEPRIGHT) {
 			int temp = angle + pwc.g().ANGLE90;
@@ -287,11 +281,7 @@ public class Player extends Entity {
 				x += (int) dx;
                 playStepSound();
 			}
-			if( pwc.isOutside((x >> SIZE_LOG),(y >> SIZE_LOG)) ) {
-				isInside = false;
-			} else {
-				isInside = true;
-			}
+            isInside = !pwc.isOutside((x >> SIZE_LOG),(y >> SIZE_LOG));
 		}
 		
 		if(INTERACTING) {
@@ -306,8 +296,5 @@ public class Player extends Entity {
 		pwc.updateRendererPlayerReference(x, y, angle, FOV, playerPaneDist);
 		pwc.updateDistBetweenndSprites();
 		pwc.checkAssumableCollision();
-		
-		//if( UP || DOWN )
-			//System.out.println("X: " + x + "\nY: " + y + "\nAngle: " + angle + "\n======================");
 	}
 }

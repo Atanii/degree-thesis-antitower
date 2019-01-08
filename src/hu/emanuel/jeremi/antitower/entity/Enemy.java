@@ -4,13 +4,14 @@ import hu.emanuel.jeremi.antitower.effect.Sound;
 import hu.emanuel.jeremi.antitower.entity.Sprite.SpriteSequence;
 import hu.emanuel.jeremi.antitower.graphic.GetSpriteImage;
 
-public class Enemy extends Entity {
+public class Enemy {
 	
     // <editor-fold defaultstate="collapsed" desc="enums, variables, constants">
 	public enum EnemyType {
 		BZZZZ_TOWER, SCOPE_TOWER, RIFLE_TOWER
 	}
 	
+    public int x, y, id;
 	public boolean hostile;
 	public boolean standing;
 	public boolean destroyed;
@@ -32,18 +33,11 @@ public class Enemy extends Entity {
 	public SpriteSequence frames;
 	public int framePointer;
     // </editor-fold>
-	
-    /*
-	public Enemy(int id, int x, int y, boolean hostile, EnemyType type, int spritesheet[], int sheetWidth) {
-		super(x, y, id);
-		this.now = 0;
-		this.hostile = hostile;
-		setConfiguration(type, spritesheet, sheetWidth);
-	}
-    */
         
     public Enemy(int id, int x, int y, boolean hostile, EnemyType type, GetSpriteImage seqGetter) {
-        super(x, y, id);
+        this.x = x;
+		this.y = y;
+		this.id = id;
         this.now = 0;
         this.hostile = hostile;
         this.frames = seqGetter.getEnemySprites(type, x, y, id);
@@ -134,7 +128,6 @@ public class Enemy extends Entity {
 		if(level < xpcaps.length && level < 3 && xp >= xpcaps[level]) {
 			level++;
 			frames.setActualFrame(frames.getFramePointer() + 2);
-			//System.out.println("[Enemy] New level: "+level);
 			syncAttributesWithNewLevel();
 		}
 	}

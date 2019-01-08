@@ -50,7 +50,6 @@ public class MessageHandler {
 		}
 		if(activeTemp == null) {
 			if(msgToPlay.size() == 0) {
-				return;
 			} else {
 				activeTemp = msgToPlay.poll();
 				startTime = System.currentTimeMillis();

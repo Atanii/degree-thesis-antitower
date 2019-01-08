@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
@@ -20,9 +19,10 @@ import hu.emanuel.jeremi.antitower.entity.Player;
 import hu.emanuel.jeremi.antitower.graphic.Graphic;
 import hu.emanuel.jeremi.antitower.graphic.TextureLibrary;
 import hu.emanuel.jeremi.antitower.i18n.ResourceHandler;
-import hu.emanuel.jeremi.antitower.message.helpmessage.Help;
 import hu.emanuel.jeremi.antitower.save_load.TowHandler;
 import hu.emanuel.jeremi.antitower.world.MapData;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Game extends JFrame implements Runnable, KeyListener {
 
@@ -42,7 +42,6 @@ public class Game extends JFrame implements Runnable, KeyListener {
     EntityManager manager;
     TextureLibrary texLib;
     MapData map;
-    Help help;
     TowHandler saveLoadHandler;
 
     // Thread for the game.
@@ -81,8 +80,7 @@ public class Game extends JFrame implements Runnable, KeyListener {
         gameThread = new Thread(this, "game_thread");
 
         player = new Player();
-
-        help = new Help(resourceHandler);
+        
         texLib = new TextureLibrary(
                 "textures/sprites.png", 
                 "textures/items.png", 
@@ -91,7 +89,7 @@ public class Game extends JFrame implements Runnable, KeyListener {
                 "textures/office.png"
         );
 
-        manager = new EntityManager(player, planeWidth, planeHeight, resourceHandler, help, texLib);
+        manager = new EntityManager(player, planeWidth, planeHeight, resourceHandler, texLib);
         this.saveLoadHandler = new TowHandler(manager);
 
         // Adding listeners:
@@ -150,9 +148,6 @@ public class Game extends JFrame implements Runnable, KeyListener {
 
     @Override
     public synchronized void run() {
-        long now;
-        long lastTime;
-        final long ns = 1000000000 / 60;
         requestFocus();
 
         long last = 0l;
@@ -162,9 +157,6 @@ public class Game extends JFrame implements Runnable, KeyListener {
 
         // GAMELOOP
         while (running) {
-            now = System.nanoTime();
-            lastTime = now;
-
             now_fps = System.currentTimeMillis();
 
             while (times.size() > 0 && times.peek() <= now_fps - 1000l) {
@@ -182,7 +174,14 @@ public class Game extends JFrame implements Runnable, KeyListener {
                     player.update(manager, delta);
                     manager.checkGoalPoint();
                     renderer.updateWeather(delta);
-                    renderer.castGraphic();
+                    renderer.castGraphic(delta);
+                    /*{
+                        try {
+                            Thread.sleep(delta * 10);
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }*/
                     renderer.repaint();
                     break;
                 default:
@@ -216,7 +215,7 @@ public class Game extends JFrame implements Runnable, KeyListener {
         player.keyPressed(e);
 
         if (code == KeyEvent.VK_F1) {
-            renderer.IS_RAIN_ON = !renderer.IS_RAIN_ON;
+            renderer.IS_WEATHER_ON = !renderer.IS_WEATHER_ON;
         }
         if (code == KeyEvent.VK_F2) {
             renderer.IS_SHADERS_ON = !renderer.IS_SHADERS_ON;
@@ -225,9 +224,17 @@ public class Game extends JFrame implements Runnable, KeyListener {
             renderer.IS_SPRITES_ON = !renderer.IS_SPRITES_ON;
         }
         if (code == KeyEvent.VK_F4) {
+            renderer.IS_STATUS_ON = !renderer.IS_STATUS_ON;
+        }
+        if (code == KeyEvent.VK_F5) {
+            renderer.IS_SKYBOX_ON = !renderer.IS_SKYBOX_ON;
+        }
+        if (code == KeyEvent.VK_F6) {
+            renderer.IS_RENDERING_WEAPON_ON = !renderer.IS_RENDERING_WEAPON_ON;
+        }
+        if (code == KeyEvent.VK_F7) {
             renderer.IS_ANGLE_MARKER_ON = !renderer.IS_ANGLE_MARKER_ON;
         }
-        
         
         if (code == KeyEvent.VK_H) {
             renderer.IS_HELP_ON = true;
@@ -243,9 +250,6 @@ public class Game extends JFrame implements Runnable, KeyListener {
         if (DEBUG) {
             if (code == KeyEvent.VK_F9) {
                 manager.reloadActualLevel();
-            }
-            if (code == KeyEvent.VK_F10) {
-                manager.chooseLevel();
             }
         }
     }
