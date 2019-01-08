@@ -1,3 +1,8 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package hu.emanuel.jeremi.antitower.effect;
 
 import java.awt.Color;
@@ -5,24 +10,24 @@ import java.awt.Graphics;
 import java.util.Random;
 
 /**
- * Class representing the rain weather effect.
+ * Class representing the snow weather effect.
  * @see Weather
  * @author Jeremi
  */
-public class Rain extends Weather {
+public class Snow extends Weather {
     
-    public Rain(final int screenW, final int screenH) {
+    public Snow(final int screenW, final int screenH) {
         super(screenW, screenH);
         config();
     }
     
     /**
-     * @see Weather#config() 
+     * @see Weather#config()
      */
     @Override
     public void config() {
         amount = 200;
-        particleSize = 6;
+        particleSize = 10;
         seed = 10;
 
         xcoo = new int[amount];
@@ -32,11 +37,11 @@ public class Rain extends Weather {
         xcoo3 = new int[amount];
         ycoo3 = new int[amount];
         iterator = 0;
-        speed = 10;
+        speed = 5;
     }
-    
+   
     /**
-     * @see Weather#generate() 
+     * @see Weather#generate()
      */
     @Override
     public final void generate() {
@@ -62,7 +67,7 @@ public class Rain extends Weather {
     }
     
     /**
-     * @see Weather#update(long) 
+     * @see Weather#update(long)
      * @param delta 
      */
     @Override
@@ -70,16 +75,19 @@ public class Rain extends Weather {
         int speed = (int) (this.speed * delta);
         for(int i = 0; i < amount; i++) {
             // first layer
+            xcoo[i] += (int) (Math.sin(iterator) * 10);
             ycoo[i] += speed;
             if(ycoo[i] >= screenH) {
                 ycoo[i] = 0;
             }
             // second layer
+            xcoo2[i] += (int) (Math.sin(iterator) * 5);
             ycoo2[i] += speed >> 1;
             if(ycoo2[i] >= screenH) {
                 ycoo2[i] = 0;
             }
             // third layer
+            xcoo3[i] += (int) (Math.sin(iterator++) * 2);
             ycoo3[i] += speed >> 2;
             if(ycoo3[i] >= screenH) {
                 ycoo3[i] = 0;
@@ -94,19 +102,19 @@ public class Rain extends Weather {
     @Override
     public final void render(Graphics g) {
         // first layer
-        g.setColor(Color.BLUE);
+        g.setColor(Color.WHITE);
         for(int i = 0; i < amount; i++) {
-            g.fillRect(xcoo[i], ycoo[i], particleSize >> 1, particleSize);
+            g.fillRect(xcoo[i], ycoo[i], particleSize, particleSize);
         }
         // second layer
-        g.setColor(Color.MAGENTA);
+        g.setColor(Color.GRAY);
         for(int i = 0; i < amount; i++) {
-            g.fillRect(xcoo2[i], ycoo2[i], (particleSize >> 1) - 1, (particleSize >> 1) - 1);
+            g.fillRect(xcoo2[i], ycoo2[i], particleSize >> 1, particleSize >> 1);
         }
         // third layer
         g.setColor(Color.DARK_GRAY);
         for(int i = 0; i < amount; i++) {
-            g.fillRect(xcoo3[i], ycoo3[i], (particleSize >> 2) - 2, (particleSize >> 2) - 2);
+            g.fillRect(xcoo3[i], ycoo3[i], particleSize >> 2, particleSize >> 2);
         }
     }
     
@@ -118,20 +126,20 @@ public class Rain extends Weather {
     @Override
     public final void render(Graphics g, int offscreenX) {
         // first layer
-        g.setColor(Color.BLUE);
+        g.setColor(Color.WHITE);
         for(int i = 0; i < amount; i++) {
-            g.fillRect((xcoo[i] + offscreenX) % screenW, ycoo[i], particleSize >> 1, particleSize);
+            g.fillRect((xcoo[i] + offscreenX) % screenW, ycoo[i], particleSize, particleSize);
         }
         // second layer
-        g.setColor(Color.MAGENTA);
+        g.setColor(Color.GRAY);
         for(int i = 0; i < amount; i++) {
-            g.fillRect((xcoo2[i] + offscreenX) % screenW, ycoo2[i], (particleSize >> 1) - 1, (particleSize >> 1) - 1);
+            g.fillRect((xcoo2[i] + offscreenX) % screenW, ycoo2[i], (particleSize >> 1), (particleSize >> 1));
         }
         // third layer
         g.setColor(Color.DARK_GRAY);
         for(int i = 0; i < amount; i++) {
-            g.fillRect((xcoo3[i] + offscreenX) % screenW, ycoo3[i], (particleSize >> 2) - 2, (particleSize >> 2) - 2);
+            g.fillRect((xcoo3[i] + offscreenX) % screenW, ycoo3[i], (particleSize >> 2), (particleSize >> 2));
         }
     }
-	
+    
 }
