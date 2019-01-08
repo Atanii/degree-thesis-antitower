@@ -293,10 +293,9 @@ public class Graphic extends JPanel {
         // draw current frame
         
         if(mode == GameState.MENU) {
-            //System.out.println(planeWidth + 'x' + planeHeight);
             g.drawImage(manager.getMenuImage(), 0, 0, this);
         } else {
-            g.drawImage(frame, 0, 0, this);        
+            g.drawImage(frame, 0, 0, this);
             // draw messages currently waiting for drawing
             drawMessages(g);
             // if the player is inside and rain is turn on, then it renders simple rain effect
@@ -1127,7 +1126,7 @@ public class Graphic extends JPanel {
     
     public int skyOffset = 0;
     private void renderScrollableNightSky() {
-        int[] img = new int[2160 * 240]; // 2560 x 240
+        int[] img = new int[2160 * (planeHeight >> 1)]; // 2560 x 240
         final float xW = 360 / planeWidth;
         final float yW = 240 / (planeHeight >> 1);
         Random rand = new Random(10);
