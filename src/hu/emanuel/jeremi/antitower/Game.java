@@ -54,7 +54,6 @@ public class Game extends JFrame implements Runnable, KeyListener {
     Player player;
 
     public static int planeWidth = 640, planeHeight = 480;
-    public static boolean IS_FULLSCREEN = false;
     // </editor-fold>
 
     // transparent cursor
@@ -98,52 +97,27 @@ public class Game extends JFrame implements Runnable, KeyListener {
         // Adding listeners:
         addKeyListener(this);
 
-        if (IS_FULLSCREEN) {
-            // getting resolution, screensize
-            planeWidth = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getWidth();
-            planeHeight = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getHeight();
+        // Adding JPanel (gameField):
+        setLayout(new FlowLayout());
+        renderer = new Graphic(planeWidth, planeHeight, player, manager);
+        renderer.setLayout(null);
+        setMinimumSize(new Dimension(planeWidth + 20, planeHeight + 20));
+        renderer.setPreferredSize(new Dimension(planeWidth, planeHeight));
+        add(renderer);
 
-            // Adding JPanel (gameField):
-            //setLayout(new FlowLayout());		
-            renderer = new Graphic(planeWidth, planeHeight, player, manager);
-            renderer.setLayout(null);
-            renderer.setPreferredSize(new Dimension(planeWidth, planeHeight));
-            add(renderer);
+        // not needed because the program uses ESC to exit
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-            // hidden (transparent) cursor
-            getContentPane().setCursor(TRANSPARENT_CURSOR);
-            // black background
-            setBackground(Color.BLACK);
-            renderer.setBackground(Color.BLACK);
+        // hidden (transparent) cursor
+        getContentPane().setCursor(TRANSPARENT_CURSOR);
+        // black background
+        setBackground(Color.BLACK);
 
-            // fulscreen
-            setLocationRelativeTo(null);
-            setExtendedState(JFrame.MAXIMIZED_BOTH);
-            setUndecorated(true);
-            setResizable(false);
-        } else {
-            // Adding JPanel (gameField):
-            setLayout(new FlowLayout());
-            renderer = new Graphic(planeWidth, planeHeight, player, manager);
-            renderer.setLayout(null);
-            setMinimumSize(new Dimension(planeWidth + 20, planeHeight + 20));
-            renderer.setPreferredSize(new Dimension(planeWidth, planeHeight));
-            add(renderer);
+        // not fullscreen
+        setLocationRelativeTo(null);
+        setResizable(false);
 
-            // not needed because the program uses ESC to exit
-            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-            // hidden (transparent) cursor
-            getContentPane().setCursor(TRANSPARENT_CURSOR);
-            // black background
-            setBackground(Color.BLACK);
-
-            // not fullscreen
-            setLocationRelativeTo(null);
-            setResizable(false);
-
-            pack();
-        }
+        pack();
 
         manager.setRenderer(renderer);
         manager.setTowHandler(saveLoadHandler);
@@ -198,48 +172,25 @@ public class Game extends JFrame implements Runnable, KeyListener {
             }
             times.add(now_fps);
             
+            delta = (now_fps - last) >> 4;
             switch(mode) {
                 case MENU:
                     renderer.repaint();
                     break;
                 case GAME:
-                    delta = (now_fps - last) >> 4;
                     manager.attackPlayer();
-                    player.update(manager, 1);
+                    player.update(manager, delta);
                     manager.checkGoalPoint();
                     renderer.updateWeather(delta);
                     renderer.castGraphic();
                     renderer.repaint();
-                    /*
-                    try {
-                        Thread.sleep((long) ((lastTime - System.nanoTime() + ns) / 1000000));
-                    } catch (InterruptedException e) {
-                    }
-                    */
-                    last = now_fps;                    
                     break;
                 default:
                     break;
             } // switch
+            last = now_fps;
         } // while
     } // run
-
-    public void toggleFullScreen() {
-        IS_FULLSCREEN = !IS_FULLSCREEN;
-
-        if (IS_FULLSCREEN) {
-            planeWidth = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getWidth();
-            planeHeight = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getHeight();
-        } else {
-            planeWidth = 1024;
-            planeHeight = 768;
-        }
-
-        setSize(planeWidth, planeHeight);
-        renderer.setResolution(planeWidth, planeHeight);
-        renderer.setSize(planeWidth, planeHeight);
-        setLocationRelativeTo(null);
-    }
 
     // KEYBOARD
     @Override
@@ -284,9 +235,6 @@ public class Game extends JFrame implements Runnable, KeyListener {
         if (code == KeyEvent.VK_ESCAPE) {
             mode = GameState.MENU;
             renderer.setState(mode);
-        }
-        if (code == KeyEvent.VK_F11) {
-            toggleFullScreen();
         }
         if (code == KeyEvent.VK_F12) {
             renderer.takeScreenshot();
