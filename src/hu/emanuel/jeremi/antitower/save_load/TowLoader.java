@@ -2,13 +2,10 @@ package hu.emanuel.jeremi.antitower.save_load;
 
 import static hu.emanuel.jeremi.antitower.common.Tile64.INSIDE;
 import static hu.emanuel.jeremi.antitower.common.Tile64.OUTSIDE;
-import static hu.emanuel.jeremi.antitower.common.Tile64.VIRTUAL;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Paths;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
@@ -19,9 +16,7 @@ import hu.emanuel.jeremi.antitower.entity.Enemy.EnemyType;
 import hu.emanuel.jeremi.antitower.entity.item.AssumableItem;
 import hu.emanuel.jeremi.antitower.entity.item.ItemType;
 import hu.emanuel.jeremi.antitower.graphic.TextureLibrary;
-import hu.emanuel.jeremi.antitower.graphic.TextureLibrary.Texture;
 import hu.emanuel.jeremi.antitower.i18n.MessageProvider;
-import hu.emanuel.jeremi.antitower.message.MessagePoint;
 
 /**
  * 
@@ -55,8 +50,6 @@ public final class TowLoader {
 		
 		public int playerx, playery;
 		
-		public MessagePoint[] msg;
-		
 		public void initMapArrays(int size) {
 			insideMap = new int[size];
 			texMap = new int[size];
@@ -81,10 +74,6 @@ public final class TowLoader {
 		
 		public void initSpriteArray(int size) {
 			sprites = new Sprite[size];
-		}
-		
-		public void initMsgArray(int size) {
-			msg = new MessagePoint[size];
 		}
 	}
 	
@@ -296,8 +285,6 @@ public final class TowLoader {
 			
 			System.out.println("messages: " + current);
 			
-			d.msg = new MessagePoint[current];
-			
 			for(int i = 0; i < current; i++) {
 				tokenizer = new StringTokenizer(sc.next(), ",");
 				
@@ -307,8 +294,6 @@ public final class TowLoader {
 				msg_id = Integer.parseInt(tokenizer.nextToken());
 				msg_senderCode = Integer.parseInt(tokenizer.nextToken());
 				msg_resCode = Integer.parseInt(tokenizer.nextToken());
-				
-				d.msg[i] = new MessagePoint(rr.get(msg_senderCode), rr.get(msg_resCode), msg_time, msg_id, msg_x, msg_y);
 				
 //				System.out.print(msg_time + "|");
 //				System.out.print(msg_x + "|");

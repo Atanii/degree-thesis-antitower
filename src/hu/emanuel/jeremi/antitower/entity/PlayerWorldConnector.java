@@ -24,8 +24,6 @@ public interface PlayerWorldConnector {
 
 	public void updateDistBetweenndSprites();
 
-	public void checkMessagePoint();
-
 	public void checkAssumableCollision();
 
 	public EntityManager getManager();

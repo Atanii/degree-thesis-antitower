@@ -305,7 +305,6 @@ public class Player extends Entity {
 		
 		pwc.updateRendererPlayerReference(x, y, angle, FOV, playerPaneDist);
 		pwc.updateDistBetweenndSprites();
-		pwc.checkMessagePoint();
 		pwc.checkAssumableCollision();
 		
 		//if( UP || DOWN )

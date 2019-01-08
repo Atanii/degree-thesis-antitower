@@ -17,7 +17,6 @@ import hu.emanuel.jeremi.antitower.graphic.Graphic.WeatherType;
 import hu.emanuel.jeremi.antitower.graphic.TextureLibrary;
 import hu.emanuel.jeremi.antitower.i18n.MessageProvider;
 import hu.emanuel.jeremi.antitower.message.MessageHandler;
-import hu.emanuel.jeremi.antitower.message.MessagePoint;
 import hu.emanuel.jeremi.antitower.message.helpmessage.Help;
 import hu.emanuel.jeremi.antitower.physics.GamePhysicsHelper;
 import hu.emanuel.jeremi.antitower.save_load.TowHandler;
@@ -51,8 +50,6 @@ public class EntityManager implements PlayerWorldConnector {
     public MessageHandler msgh;     // tow
     // FROM TOW //////////////////////////
 
-    public ArrayList<MessagePoint> msgp;
-
     private final Player player;
 
     public int planeWidth, planeHeight;
@@ -79,7 +76,6 @@ public class EntityManager implements PlayerWorldConnector {
         this.planeHeight = planeHeight;
 
         msgh = new MessageHandler();
-        msgp = new ArrayList<>();
 
         this.help = h;
     }
@@ -351,20 +347,6 @@ public class EntityManager implements PlayerWorldConnector {
         }
 
         return false;
-    }
-
-    public void checkMessagePoint() {
-        if (msgp.size() == 0) {
-            return;
-        }
-        for (Iterator<MessagePoint> iterator = msgp.iterator(); iterator.hasNext();) {
-            MessagePoint mp = iterator.next();
-            if (mp.x == (player.x >> SIZE_LOG) && mp.y == (player.y >> SIZE_LOG)) {
-                //System.out.println(mp.x+"|"+mp.y+"\n"+(player.x>>SIZE_LOG)+"|"+(player.y>>SIZE_LOG));
-                msgh.addMessage(mp);
-                iterator.remove();
-            }
-        }
     }
 
     public void checkGoalPoint() {

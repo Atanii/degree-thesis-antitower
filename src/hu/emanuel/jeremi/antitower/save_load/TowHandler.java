@@ -1,7 +1,6 @@
 package hu.emanuel.jeremi.antitower.save_load;
 
 import static hu.emanuel.jeremi.antitower.common.Tile64.SIZE;
-import static hu.emanuel.jeremi.antitower.common.Tile64.SIZE_LOG;
 import hu.emanuel.jeremi.antitower.entity.Enemy;
 import hu.emanuel.jeremi.antitower.entity.Enemy.EnemyType;
 import java.io.FileNotFoundException;
@@ -243,29 +242,6 @@ public final class TowHandler {
 
         sc.nextLine();
         sc.nextLine();
-
-        // MESSAGES
-        // x y time id sendercode stringCode //
-        tokenizer = new StringTokenizer(sc.next(), ",");
-        current = Integer.parseInt(tokenizer.nextToken());
-        System.out.println("<<< Messages: " + current + " >>>");
-        
-        if (current > 0) {
-            sc.nextLine();
-            for (int i = 0; i < current; i++) {
-                tokenizer = new StringTokenizer(sc.next(), ",");
-                /*
-                            manager.msgh.add( new MessagePoint(
-                                    Integer.parseInt(tokenizer.nextToken()),
-                                    Integer.parseInt(tokenizer.nextToken()),
-                                    Integer.parseInt(tokenizer.nextToken()),
-                                    Integer.parseInt(tokenizer.nextToken()),
-                                    Integer.parseInt(tokenizer.nextToken()),
-                                    Integer.parseInt(tokenizer.nextToken())
-                            ));
-                 */
-            }
-        }
         
         sc.nextLine();
         sc.nextLine();
