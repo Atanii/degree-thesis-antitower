@@ -42,11 +42,9 @@ public class Sound {
 			clip.open(AudioSystem.getAudioInputStream(Sound.class.getResource(PATH_TO_RESOURCES + fileName)));
         } catch (MalformedURLException e) {
             e.printStackTrace();
-        } catch (UnsupportedAudioFileException e) {
+        } catch (UnsupportedAudioFileException | LineUnavailableException e) {
             e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
-        } catch (LineUnavailableException e) {
             e.printStackTrace();
         }
     } // constr. Sound
