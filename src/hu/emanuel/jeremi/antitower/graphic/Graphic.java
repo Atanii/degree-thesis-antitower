@@ -1071,13 +1071,6 @@ public class Graphic extends JPanel {
      * The function handling, calling the casting, drawing functions.
      */
     public void castGraphic(long delta) {
-        
-        // rendering walls, floor, ceiling, sprites, shaders
-        
-        if (IS_SKYBOX_ON) {
-            //renderScrollableNightSky();
-        }
-        
         render();
         
         if (IS_SPRITES_ON) {
@@ -1091,6 +1084,8 @@ public class Graphic extends JPanel {
         if (IS_RENDERING_WEAPON_ON) {
             renderHUDAndOverheadGraphic();
         }
+        
+        paintImmediately(0, 0, planeWidth, planeHeight);
     }
     
     private void showPlayerData(Graphics gb) {

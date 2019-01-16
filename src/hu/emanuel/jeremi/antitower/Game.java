@@ -182,7 +182,6 @@ public class Game extends JFrame implements Runnable, KeyListener {
                             Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }*/
-                    renderer.repaint();
                     break;
                 default:
                     break;
