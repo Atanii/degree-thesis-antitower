@@ -848,6 +848,7 @@ public class Graphic extends JPanel {
     private float findXOffsetForSprites(int spriteX, int spriteY) {
         float theta = (player.angle * 60f / planeWidth);
         float fov = getFOV() * 60f / planeWidth;
+        int xInc, yInc;
 
         if (theta < 0) {
             theta += 360;
@@ -855,10 +856,19 @@ public class Graphic extends JPanel {
         if (theta >= 360) {
             theta -= 360;
         }
+        
+        int x = (spriteX << SIZE_LOG), y = (spriteY << SIZE_LOG);
 
-        int xInc = (int) ((spriteX << SIZE_LOG) - player.x);
-        int yInc = (int) ((spriteY << SIZE_LOG) - player.y);
-
+        if(theta >= 25f && theta <= 170f) {
+            x += SIZE;
+        }
+        if(theta >= 120f && theta <= 260f) { // y+ 64
+            y += SIZE;
+        }
+        
+        xInc = (int) (x - player.x);
+        yInc = (int) (y - player.y);
+        
         // radian = degree * PI / 180?
         // degree = radian / PI * 180?
         float thetaTemp = (float) Math.atan2(yInc, xInc);
@@ -884,6 +894,10 @@ public class Graphic extends JPanel {
         return planeWidth - xTmp + 32;
     }
 
+    private final void pr(Object s) {
+        System.out.println(s);
+    }
+    
     /**
      * Examine the existing sprites and draw slice-by-slice the ones visible in
      * the player's FOV (Field Of View).
@@ -901,7 +915,7 @@ public class Graphic extends JPanel {
         
         // <editor-fold defaultstate="collapsed" desc="SPRITES">
         for (int i = 0; i < manager.getItemStartIndex(); i++) {
-
+            
             onscreenX = (int) findXOffsetForSprites(manager.sprites[i].x, manager.sprites[i].y);
 
             inside = !map.isOutside(manager.sprites[i].x, manager.sprites[i].y);
@@ -917,7 +931,7 @@ public class Graphic extends JPanel {
             if (onscreenY < 0) {
                 onscreenY = 0;
             }
-
+            
             manager.sprites[i].texture.getRGB(0, 0, SIZE, SIZE, pixels2, 0, SIZE);
             pixels3 = resizePixels(pixels2, SIZE, SIZE, projectedSliceHeight, projectedSliceHeight);
             
@@ -990,9 +1004,9 @@ public class Graphic extends JPanel {
         
         /////////////////
         
-        // <editor-fold defaultstate="collapsed" desc="ENEMIES">
+        // <editor-fold defaultstate="collapsed" desc="SPRITES">
         for (int i = manager.getEnemyStartIndex(); i < manager.sprites.length; i++) {
-
+            
             onscreenX = (int) findXOffsetForSprites(manager.sprites[i].x, manager.sprites[i].y);
 
             inside = !map.isOutside(manager.sprites[i].x, manager.sprites[i].y);
@@ -1008,8 +1022,8 @@ public class Graphic extends JPanel {
             if (onscreenY < 0) {
                 onscreenY = 0;
             }
-
-            manager.sprites[i].getImg().getRGB(0, 0, SIZE, SIZE, pixels2, 0, SIZE);
+            
+            manager.sprites[i].texture.getRGB(0, 0, SIZE, SIZE, pixels2, 0, SIZE);
             pixels3 = resizePixels(pixels2, SIZE, SIZE, projectedSliceHeight, projectedSliceHeight);
             
             for (int col = 0; col < projectedSliceHeight; col++, onscreenX++) {
