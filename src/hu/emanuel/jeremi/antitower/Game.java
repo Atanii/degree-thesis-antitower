@@ -70,7 +70,7 @@ public class Game extends JFrame implements Runnable, KeyListener {
      */
     @SuppressWarnings({"OverridableMethodCallInConstructor", "LeakingThisInConstructor"})
     public Game() {
-        super("Fallen Towers v0.7");
+        super("Fallen Towers v0.8.5");
 
         mode = GameState.MENU;
         

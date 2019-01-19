@@ -87,7 +87,7 @@ public class Graphic extends JPanel {
     public boolean IS_RENDERING_WEAPON_ON = true;
     //////////////////////////////////////////////////////////////////////////////////////////
     // For program constructor:
-    int screenw, screenh;
+    int screenw, screenh, screenProd;
     /////////////////////////////// map LOCAL DATA ///////////////////////////////////////////
     private int mapWidth;
     private int mapHeight;
@@ -222,6 +222,7 @@ public class Graphic extends JPanel {
         this.screenh = planeHeight;
         this.planeWidth = planeWidth;
         this.planeHeight = planeHeight;
+        screenProd = planeWidth * planeHeight;
         
         // Sky init and generate (it's in the constructor)
         sk = new StellarSky(planeWidth, planeHeight, 500);
@@ -728,39 +729,76 @@ public class Graphic extends JPanel {
             //////////////////////////////////////////////////////////////////////////////////
             // </editor-fold>
 
-            ///////////////	SCALING TEXTURE SLICE ////////////////////////////////////////////
+            ///////////////	SCALING TEXTURE SLICE, DRAWING WALL //////////////////////////////
             int y_ratio;
             // Scaling function simplified to handle one pixel wide images better. Inlined for better perfomance.
             if (rc.projectedSliceHeight == 0) {
                 rc.projectedSliceHeight = 1;
             }
-            rc.slicePixels = new int[rc.projectedSliceHeight];
-            y_ratio = (int) ((SIZE << 16) / rc.projectedSliceHeight) + 1;
-            for (int i = 0; i < rc.projectedSliceHeight; i++) {
-                if (((i * y_ratio) >> 16) < SIZE) {
-                    // wall
-                    rc.slicePixels[i] = rc.pixels[((i * y_ratio) >> 16)];
-                }
-            }
-            //////////////////////////////////////////////////////////////////////////////////
-            
-            ///////////////	DRAWING WALL SLICE ///////////////////////////////////////////////
-            // <editor-fold defaultstate="collapsed" desc="drawing wall">
-            if (IS_SHADERS_ON) {
-                rc.slicePixels = addFogEffect(rc.slicePixels, shaderDistance);
-            }
-            for (int wy = rc.startDraw, index = 0;
-                    wy <= rc.startDraw + rc.projectedSliceHeight - 1; wy++, index++) {
-                if (wy >= 0 && wy < planeHeight) {
-                    if (IS_ANGLE_MARKER_ON && rayAngle == (player.angle)) {
-                        output[raysCasted + wy * planeWidth] = 0xffffff;
-                    } else {
-                        output[raysCasted + wy * planeWidth] = rc.slicePixels[index];
+            if(rc.projectedSliceHeight >= planeHeight) {
+                int d2 = (rc.projectedSliceHeight - planeHeight) >> 1;
+                //rc.projectedSliceHeight = planeHeight;
+                //pr(raysCasted + " | " + rc.projectedSliceHeight + " | " + d2);
+                rc.slicePixels = new int[planeHeight];
+                y_ratio = (int) ((SIZE << 16) / rc.projectedSliceHeight) + 1;
+                for (int i = 0; i < planeHeight; i++) {
+                    if ((((i + d2) * y_ratio) >> 16) < SIZE) {
+                        // wall
+                        rc.slicePixels[i] = rc.pixels[(((i + d2) * y_ratio) >> 16)];
                     }
-
                 }
-            }
-            // </editor-fold>
+                ///////////////	DRAWING WALL SLICE ///////////////////////////////////////////
+                // <editor-fold defaultstate="collapsed" desc="drawing wall">
+                if (IS_SHADERS_ON) {
+                    rc.slicePixels = addFogEffect(rc.slicePixels, shaderDistance);
+                }
+                for (int wy = 0, index = 0;
+                        wy <= rc.projectedSliceHeight - 1; wy++, index++) {
+                    if (wy >= 0 && wy < planeHeight) {
+                        if(index >= rc.slicePixels.length) {
+                            break;
+                        }
+                        if (IS_ANGLE_MARKER_ON && rayAngle == (player.angle)) {
+                            output[raysCasted + wy * planeWidth] = 0xffffff;
+                        } else {
+                            output[raysCasted + wy * planeWidth] = rc.slicePixels[index];
+                        }
+
+                    }
+                }
+                // </editor-fold>
+                //////////////////////////////////////////////////////////////////////////////
+            } else {
+                rc.slicePixels = new int[rc.projectedSliceHeight];
+                y_ratio = (int) ((SIZE << 16) / rc.projectedSliceHeight) + 1;
+                for (int i = 0; i < rc.projectedSliceHeight; i++) {
+                    if (((i * y_ratio) >> 16) < SIZE) {
+                        // wall
+                        rc.slicePixels[i] = rc.pixels[((i * y_ratio) >> 16)];
+                    }
+                }
+                ///////////////	DRAWING WALL SLICE ///////////////////////////////////////////
+                // <editor-fold defaultstate="collapsed" desc="drawing wall">
+                if (IS_SHADERS_ON) {
+                    rc.slicePixels = addFogEffect(rc.slicePixels, shaderDistance);
+                }
+                for (int wy = rc.startDraw, index = 0;
+                        wy <= rc.startDraw + rc.projectedSliceHeight - 1; wy++, index++) {
+                    if (wy >= 0 && wy < planeHeight) {
+                        if(index >= rc.slicePixels.length) {
+                            break;
+                        }
+                        if (IS_ANGLE_MARKER_ON && rayAngle == (player.angle)) {
+                            output[raysCasted + wy * planeWidth] = 0xffffff;
+                        } else {
+                            output[raysCasted + wy * planeWidth] = rc.slicePixels[index];
+                        }
+
+                    }
+                }
+                // </editor-fold>
+                //////////////////////////////////////////////////////////////////////////////
+            }            
             //////////////////////////////////////////////////////////////////////////////////
             
             ///////////////	SCALING AND DRAWING THIN WALL ////////////////////////////////////
