@@ -6,7 +6,6 @@ import hu.emanuel.jeremi.antitower.effect.Sound;
 
 import java.awt.image.BufferedImage;
 
-import javax.swing.JFileChooser;
 
 import hu.emanuel.jeremi.antitower.entity.item.Item;
 import hu.emanuel.jeremi.antitower.graphic.Graphic;

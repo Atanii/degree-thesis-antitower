@@ -21,8 +21,6 @@ import hu.emanuel.jeremi.antitower.graphic.TextureLibrary;
 import hu.emanuel.jeremi.antitower.i18n.ResourceHandler;
 import hu.emanuel.jeremi.antitower.save_load.TowHandler;
 import hu.emanuel.jeremi.antitower.world.MapData;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Game extends JFrame implements Runnable, KeyListener {
 
