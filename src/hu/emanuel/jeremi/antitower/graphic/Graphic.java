@@ -20,7 +20,6 @@ import hu.emanuel.jeremi.antitower.message.MessageDisplayer;
 import hu.emanuel.jeremi.antitower.physics.GamePhysicsHelper;
 import hu.emanuel.jeremi.antitower.world.MapData;
 import java.awt.image.DataBufferInt;
-import java.util.Random;
 
 public class Graphic extends JPanel {
 
@@ -343,7 +342,7 @@ public class Graphic extends JPanel {
             return;
         }
         // If there is a selected weapon, then paint it's overhead image on the hud:
-        int[] img = new int[64 * 64];
+        int[] img = new int[SIZE << SIZE_LOG];
         tex.getItem(player.getSelectedItem().overheadImg).getRGB(0, 0, 64, 64, img, 0, 64);
         for(int y = screenh - SIZE; y < screenh; y++) {
             for(int x = (screenw >> 1) - (SIZE >> 1); x < ((screenw >> 1) + (SIZE >> 1)); x++) {
