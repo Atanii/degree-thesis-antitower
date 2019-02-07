@@ -104,7 +104,7 @@ public class Game extends JFrame implements Runnable, KeyListener {
         // not needed because the program uses ESC to exit
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // hidden (transparent) cursor
+        // setting hidden (transparent) cursor
         getContentPane().setCursor(TRANSPARENT_CURSOR);
         // black background
         setBackground(Color.BLACK);
