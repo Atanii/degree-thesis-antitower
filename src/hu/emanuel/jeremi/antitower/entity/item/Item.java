@@ -41,24 +41,26 @@ public class Item {
 		this.y = y;
         
         this.type = type;
-		this.id = id;
-		this.value = value;
+        this.id = id;
 		
 		try {
 			switch(type) {
 			case ZAPPER:
 				overheadImg = 0; 
 				icon = 3;
+                this.value = 20;
 				this.sprite = new Sprite(img, x, y, id);
 				break;
 			case KEY_CARD:
 				overheadImg = 1; 
 				icon = 4;
+                this.value = value;
 				this.sprite = new Sprite(img, x, y, id);
 				break;
 			case SHIELD:
 				overheadImg = 2; 
 				icon = 5;
+                this.value = 2000;
 				this.sprite = new Sprite(img, x, y, id);
 				break;
 			default:
