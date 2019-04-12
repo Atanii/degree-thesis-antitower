@@ -12,7 +12,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 /**
  * Simple class playing sound.
  * 
- * @author Kï¿½dï¿½r Jeremi Emï¿½nuel
+ * @author Kádár Jeremi Emánuel
  *
  */
 public class Sound {
