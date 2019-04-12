@@ -32,6 +32,15 @@ public class Enemy {
 	
 	public SpriteSequence frames;
 	public int framePointer;
+    
+    // Hangok:
+    public static final Sound BZZZ_TOWER_LASER = new Sound("sound/bzzz_tower_dest.wav");
+    public static final Sound SCOPE_TOWER_LASER = new Sound("sound/sniper_break.wav");
+    public static final Sound RIFLE_TOWER_LASER = new Sound("sound/tower_break.wav");
+    
+    public static final Sound BZZZ_TOWER_DESTROYED = new Sound("sound/bzzz_tower_dest.wav");
+    public static final Sound SCOPE_TOWER_DESTROYED = new Sound("sound/sniper_break.wav");
+    public static final Sound RIFLE_TOWER_DESTROYED = new Sound("sound/tower_break.wav");
     // </editor-fold>
         
     public Enemy(int id, int x, int y, boolean hostile, EnemyType type, GetSpriteImage seqGetter) {
@@ -105,15 +114,15 @@ public class Enemy {
 			frames.setActualFrame(frames.getFramePointer() + 1);
             switch(type) {
                 case BZZZZ_TOWER: {
-                    (new Sound("sound/bzzz_tower_dest.wav")).play();
+                    BZZZ_TOWER_DESTROYED.play();
                     break;
                 }
                 case SCOPE_TOWER: {
-                    (new Sound("sound/sniper_break.wav")).play();
+                    SCOPE_TOWER_DESTROYED.play();
                     break;
                 }
                 case RIFLE_TOWER: {
-                    (new Sound("sound/tower_break.wav")).play();
+                    RIFLE_TOWER_DESTROYED.play();
                     break;
                 }
                 default: {
@@ -140,15 +149,15 @@ public class Enemy {
     public void playLaserSound() {
         switch(type) {
             case BZZZZ_TOWER: {
-                (new Sound("sound/tower_laser.wav")).play();
+                BZZZ_TOWER_LASER.play();
                 break;
             }
             case SCOPE_TOWER: {
-                (new Sound("sound/tower_laser.wav")).play();
+                SCOPE_TOWER_LASER.play();
                 break;
             }
             case RIFLE_TOWER: {
-                (new Sound("sound/tower_laser.wav")).play();
+                RIFLE_TOWER_LASER.play();
                 break;
             }
             default: {
