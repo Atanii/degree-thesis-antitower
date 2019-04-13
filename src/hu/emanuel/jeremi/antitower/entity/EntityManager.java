@@ -6,7 +6,6 @@ import hu.emanuel.jeremi.antitower.effect.Sound;
 
 import java.awt.image.BufferedImage;
 
-
 import hu.emanuel.jeremi.antitower.entity.item.Item;
 import hu.emanuel.jeremi.antitower.graphic.Graphic;
 import hu.emanuel.jeremi.antitower.graphic.Graphic.WeatherType;
@@ -50,7 +49,7 @@ public class EntityManager implements PlayerWorldConnector {
     public Graphic renderer;
 
     public TextureLibrary texLib;
-    
+
     private final String leveltitles[] = {"mainframe.tow", "wintertime.tow", "officemaze.tow"};
     private int levelpointer = 0;
     // </editor-fold>
@@ -69,60 +68,60 @@ public class EntityManager implements PlayerWorldConnector {
 
         msgh = new MessageHandler();
     }
-    
+
     public void setRenderer(Graphic renderer) {
         this.renderer = renderer;
     }
-    
+
     public void setTowHandler(TowHandler saveLoadHandler) {
         this.saveLoadHandler = saveLoadHandler;
     }
-    
+
     public void setWeatherAndDayTime() {
-        if(renderer != null) {
-            if(levelpointer == 0) {
-            renderer.weather = WeatherType.RAIN;
+        if (renderer != null) {
+            if (levelpointer == 0) {
+                renderer.weather = WeatherType.RAIN;
             }
-            if(levelpointer == 1) {
+            if (levelpointer == 1) {
                 renderer.weather = WeatherType.SNOW;
             }
-            if(levelpointer == 2) {
+            if (levelpointer == 2) {
                 renderer.weather = WeatherType.NORMAL;
             }
         }
     }
 
     public void LoadLevel() {
-        if(saveLoadHandler == null) {
+        if (saveLoadHandler == null) {
             return;
         }
-        
+
         map = new MapData(this);
 
         saveLoadHandler.LoadLevel("levels/" + leveltitles[levelpointer++], true);
         initSprites();
-        
+
         player.x = playerX * 64;
         player.y = playerY * 64;
     }
-    
+
     private void loadNextLevelOrExit() {
-        if(levelpointer + 1 > leveltitles.length) {
+        if (levelpointer + 1 > leveltitles.length) {
             System.exit(0);
         }
-        
+
         setWeatherAndDayTime();
 
         map = new MapData(this);
 
         saveLoadHandler.LoadLevel("levels/" + leveltitles[levelpointer++], true);
         initSprites();
-        
+
         player.x = playerX * 64;
         player.y = playerY * 64;
-        
+
         player.clearIntentory();
-        
+
         renderer.updateMap();
     }
 
@@ -148,20 +147,20 @@ public class EntityManager implements PlayerWorldConnector {
 
     public void reloadActualLevel() {
         map = new MapData(this);
-        
+
         saveLoadHandler.LoadLevel("levels/" + leveltitles[levelpointer - 1], true);
         initSprites();
-        
+
         player.x = playerX * 64;
         player.y = playerY * 64;
-        
+
         player.clearIntentory();
     }
 
     public String getHelp() {
         return this.msgProvider.getHelp();
     }
-    
+
     public BufferedImage getMenuImage() {
         return texLib.getMenuBufferedImage();
     }
@@ -259,9 +258,9 @@ public class EntityManager implements PlayerWorldConnector {
         for (Enemy en : enemies) {
             if (en != null && x == en.x && y == en.y) {
                 en.takeDamage(10);
-                if(en.isDestroyed()) {
+                if (en.isDestroyed()) {
                     msgh.addMessage("@", msgProvider.get("tower_neutralized"), 2, 1);
-                    player.earnScore( (en.type.ordinal() + 1) * 20 );
+                    player.earnScore((en.type.ordinal() + 1) * 20);
                 }
                 return true;
             }
@@ -321,7 +320,8 @@ public class EntityManager implements PlayerWorldConnector {
     }
 
     /**
-     * Check if the player's colliding with an assumable in which case it'll added to the inventory.
+     * Check if the player's colliding with an assumable in which case it'll
+     * added to the inventory.
      */
     @Override
     public void checkAssumableCollision() {

@@ -15,10 +15,13 @@ import java.awt.image.BufferedImage;
  * @author User
  */
 public interface GetSpriteImage {
-    
+
     public SpriteSequence getEnemySprites(EnemyType type, int x, int y, int id);
+
     public BufferedImage getItemSprite(ItemType type);
+
     public BufferedImage getDecorationSprite(int tileId);
+
     public BufferedImage getItemOverheadIcon(ItemType type);
-    
+
 }

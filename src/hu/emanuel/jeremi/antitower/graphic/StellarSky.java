@@ -9,43 +9,44 @@ import java.util.Random;
 
 /**
  * Stellar, scrollable night sky.
+ *
  * @author Jeremi
  */
 public class StellarSky {
-    
+
     int[] skyImage;
     int planeWidth, planeHeight;
     final int w, h, seed;
     final int num = 500;
     final Random rand;
     int n;
-    
+
     public StellarSky(int planeWidth, int planeHeight, int seed) {
         this.planeWidth = planeWidth;
         this.planeHeight = planeHeight;
-        this.seed = seed;        
+        this.seed = seed;
         w = planeWidth * 6;
         h = (planeHeight >> 1);
         rand = new Random(seed);
-        skyImage = new int[w * h];        
+        skyImage = new int[w * h];
         generateNightSky();
     }
-    
+
     private void generateNightSky() {
         skyImage = new int[w * h];
-        
-        for(int y = 0; y < h; y++) {
-            for(int x = 0; x < w; x++) {
+
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
                 n = rand.nextInt(num) + 1;
                 skyImage[y * w + x] = n > 10 ? 0xff000000 : 0xffffffff;
             }
         }
     }
-    
+
     public int getSkyPixel(final int x, final int y, final int offsetX) {
         return skyImage[y * w + ((offsetX + x) % w)];
     }
-    
+
     /*
     private void generateNightSky() {
         final int w = 2160;
@@ -73,6 +74,5 @@ public class StellarSky {
             }
         }
     }
-    */
-    
+     */
 }

@@ -31,10 +31,11 @@ public class Game extends JFrame implements Runnable, KeyListener {
 
     // <editor-fold defaultstate="collapsed" desc="variables, constants">
     public final boolean DEBUG = true;
-    
+
     public enum GameState {
         MENU, GAME
-    } GameState mode;
+    }
+    GameState mode;
 
     ResourceHandler resourceHandler;
     EntityManager manager;
@@ -71,19 +72,19 @@ public class Game extends JFrame implements Runnable, KeyListener {
         super("Fallen Towers v0.8.5");
 
         mode = GameState.MENU;
-        
+
         this.resourceHandler = new ResourceHandler("hu");
 
         // Thread for the game:
         gameThread = new Thread(this, "game_thread");
 
         player = new Player();
-        
+
         texLib = new TextureLibrary(
-                "textures/sprites.png", 
-                "textures/items.png", 
-                "textures/mainframe.png", 
-                "textures/winter.png", 
+                "textures/sprites.png",
+                "textures/items.png",
+                "textures/mainframe.png",
+                "textures/winter.png",
                 "textures/office.png"
         );
 
@@ -161,9 +162,9 @@ public class Game extends JFrame implements Runnable, KeyListener {
                 times.poll();
             }
             times.add(now_fps);
-            
+
             delta = (now_fps - last) >> 4;
-            switch(mode) {
+            switch (mode) {
                 case MENU:
                     renderer.repaint();
                     break;
@@ -197,12 +198,11 @@ public class Game extends JFrame implements Runnable, KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         int code = e.getKeyCode();
-        
-        if(mode == GameState.MENU) {
+
+        if (mode == GameState.MENU) {
             if (code == KeyEvent.VK_ESCAPE) {
                 System.exit(0);
-            }
-            else if (code == KeyEvent.VK_SPACE) {
+            } else if (code == KeyEvent.VK_SPACE) {
                 mode = GameState.GAME;
                 renderer.setState(mode);
             }
@@ -232,7 +232,7 @@ public class Game extends JFrame implements Runnable, KeyListener {
         if (code == KeyEvent.VK_F7) {
             renderer.IS_ANGLE_MARKER_ON = !renderer.IS_ANGLE_MARKER_ON;
         }
-        
+
         if (code == KeyEvent.VK_H) {
             renderer.IS_HELP_ON = true;
         }

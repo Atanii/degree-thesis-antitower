@@ -98,9 +98,11 @@ public class Graphic extends JPanel {
     TextureLibrary tex;
     MessageDisplayer msgdisp;
     GameState mode;
-        
+
     // WEATHER
-    public enum WeatherType { NORMAL, SNOW, RAIN };
+    public enum WeatherType {
+        NORMAL, SNOW, RAIN
+    };
     public WeatherType weather;
     private final Weather snow;
     private final Weather rain;
@@ -196,6 +198,7 @@ public class Graphic extends JPanel {
      * Setup: jframe and gameField It calls the function for filling the
      * sinTable, cosTable, ...etc. Hide cursor by make it equal with the
      * transparentCursor. It starts the gameThread.
+     *
      * @param planeWidth
      * @param planeHeight
      * @param manager
@@ -203,7 +206,7 @@ public class Graphic extends JPanel {
      */
     public Graphic(int planeWidth, int planeHeight, Player player, EntityManager manager) {
         super();
-        
+
         // GAME STATE
         mode = GameState.MENU;
 
@@ -213,7 +216,7 @@ public class Graphic extends JPanel {
 
         // Frame initialization:
         frame = new BufferedImage(planeWidth, planeHeight, BufferedImage.TYPE_INT_ARGB);
-        output = ( (DataBufferInt) (frame.getRaster().getDataBuffer()) ).getData();
+        output = ((DataBufferInt) (frame.getRaster().getDataBuffer())).getData();
         this.setIgnoreRepaint(true);
 
         // Screen data:
@@ -222,10 +225,10 @@ public class Graphic extends JPanel {
         this.planeWidth = planeWidth;
         this.planeHeight = planeHeight;
         screenProd = planeWidth * planeHeight;
-        
+
         // Sky init and generate (it's in the constructor)
         sk = new StellarSky(planeWidth, planeHeight, 500);
-        
+
         // Player:
         this.player = player;
 
@@ -235,14 +238,14 @@ public class Graphic extends JPanel {
         snow.generate();
         rain = Weather.getRain(planeWidth, planeHeight);
         rain.generate();
-        
+
         preCalculateTablesAndValues();
         setupPlayer();
         initBuffersForSpriteCasting();
 
         msgdisp = new MessageDisplayer(manager.msgh);
     }
-    
+
     public void updateMap() {
         this.map = manager.map;
         mapWidth = map.width;
@@ -279,15 +282,15 @@ public class Graphic extends JPanel {
         super.paintComponent(g);
         //g.drawImage(ImageAndPostProcessHelper.scaleNearest(frame, 4), 0, 0, this);        
         // draw current frame
-        
-        if(mode == GameState.MENU) {
+
+        if (mode == GameState.MENU) {
             g.drawImage(manager.getMenuImage(), 0, 0, this);
         } else {
             g.drawImage(frame, 0, 0, this);
             // draw messages currently waiting for drawing
             drawMessages(g);
             // if the player is inside and rain is turn on, then it renders simple rain effect
-            if(IS_WEATHER_ON) {
+            if (IS_WEATHER_ON) {
                 if (weather == WeatherType.SNOW && !player.isInside) {
                     snow.render(g, player.angle);
                 }
@@ -305,27 +308,27 @@ public class Graphic extends JPanel {
             }
         }
     }
-    
+
     public void updateWeather(long delta) {
-        if(weather == WeatherType.RAIN) {
+        if (weather == WeatherType.RAIN) {
             rain.update(delta);
-        }
-        else if(weather == WeatherType.SNOW) {
+        } else if (weather == WeatherType.SNOW) {
             snow.update(delta);
         }
     }
-    
+
     /**
      * Draw the current message.
-     * @param g 
+     *
+     * @param g
      */
     private void drawMessages(Graphics g) {
-        if( msgdisp != null ) {
+        if (msgdisp != null) {
             g.setColor(Color.blue);
             g.drawString(msgdisp.getMessage(), 10, 20);
         }
     }
-    
+
     public void setState(GameState mode) {
         this.mode = mode;
     }
@@ -338,20 +341,21 @@ public class Graphic extends JPanel {
      */
     public final void renderHUDAndOverheadGraphic() {
         // Check if player hasn't even selected a weapon:
-        if(player.getSelectedItem() == null) {
+        if (player.getSelectedItem() == null) {
             return;
         }
         // If there is a selected weapon, then paint it's overhead image on the hud:
         int[] img = new int[SIZE << SIZE_LOG];
         tex.getItem(player.getSelectedItem().overheadImg).getRGB(0, 0, 64, 64, img, 0, 64);
-        for(int y = screenh - SIZE; y < screenh; y++) {
-            for(int x = (screenw >> 1) - (SIZE >> 1); x < ((screenw >> 1) + (SIZE >> 1)); x++) {
+        for (int y = screenh - SIZE; y < screenh; y++) {
+            for (int x = (screenw >> 1) - (SIZE >> 1); x < ((screenw >> 1) + (SIZE >> 1)); x++) {
                 int index = y * screenw + x;
-                int imageX = x - ( (screenw >> 1) - (SIZE >> 1) );
-                int imageY = y - ( screenh - SIZE );
+                int imageX = x - ((screenw >> 1) - (SIZE >> 1));
+                int imageY = y - (screenh - SIZE);
                 int imageIndex = imageY * SIZE + imageX; // (y - screenh - (SIZE << 1)) * (SIZE >> 1) + (x - ((screenw >> 1) - SIZE));
-                if(img[imageIndex] != 0)
+                if (img[imageIndex] != 0) {
                     output[index] = img[imageIndex];
+                }
             }
         }
     }
@@ -363,7 +367,7 @@ public class Graphic extends JPanel {
      */
     public final void renderBeam() {
         int x = planeWidth >> 1;
-        for(int y = (planeHeight >> 1); y < planeHeight; y++) {
+        for (int y = (planeHeight >> 1); y < planeHeight; y++) {
             output[y * planeWidth + x] = Color.BLUE.getRGB();
         }
     }
@@ -372,6 +376,7 @@ public class Graphic extends JPanel {
      * This class represents all of the data of the map-cell being hit by a ray.
      */
     private class RayCastedGridData {
+
         // WALL
         int offset;													// texture offset
         float wallDistHorizontal, wallDistVertical, distance = .0f;	// Horizontal and vertical wall distances:
@@ -456,7 +461,7 @@ public class Graphic extends JPanel {
      * When all rays are casted, the screenbuffer will be drawn onto screen.
      */
     public final void render() {
-        
+
         rc.hardReset();
 
         // The angle of the angle to be casted:
@@ -618,7 +623,7 @@ public class Graphic extends JPanel {
                 rc.distance = rc.wallDistHorizontal / fishEyeCorrectionTable[raysCasted];
                 zbuffer[raysCasted] = rc.distance;
                 rc.offset = 63 - (((int) rc.tempAx) & 63);
-                    manager.getTexture(rc.tileIndexHor).getRGB(rc.offset, 0, 1, SIZE, rc.pixels, 0, 1);
+                manager.getTexture(rc.tileIndexHor).getRGB(rc.offset, 0, 1, SIZE, rc.pixels, 0, 1);
                 // VERTICAL
             } else {
                 rc.isHorizontalWallInside = rc.isVerticalWallInside;
@@ -682,9 +687,9 @@ public class Graphic extends JPanel {
                     // x & 63 = x % 64 and x & 63 = x % 64, texture offset
                     // TODO: x&63 helyett x&(SIZE-1)-el ekvivalens ?ltal?nos?t?s
                     if (IS_SHADERS_ON) {
-                       output[raysCasted + i * planeWidth] = addFogEffect(manager.getTexture(map.texMap[mapY * mapWidth + mapX]).getRGB(x & 63, y & 63), rc.distance);
+                        output[raysCasted + i * planeWidth] = addFogEffect(manager.getTexture(map.texMap[mapY * mapWidth + mapX]).getRGB(x & 63, y & 63), rc.distance);
                     } else {
-                       output[raysCasted + i * planeWidth] = manager.getTexture(map.texMap[mapY * mapWidth + mapX]).getRGB(x & 63, y & 63);
+                        output[raysCasted + i * planeWidth] = manager.getTexture(map.texMap[mapY * mapWidth + mapX]).getRGB(x & 63, y & 63);
                     }
                 }
             }
@@ -734,7 +739,7 @@ public class Graphic extends JPanel {
             if (rc.projectedSliceHeight == 0) {
                 rc.projectedSliceHeight = 1;
             }
-            if(rc.projectedSliceHeight >= planeHeight) {
+            if (rc.projectedSliceHeight >= planeHeight) {
                 int d2 = (rc.projectedSliceHeight - planeHeight) >> 1;
                 //rc.projectedSliceHeight = planeHeight;
                 //pr(raysCasted + " | " + rc.projectedSliceHeight + " | " + d2);
@@ -754,7 +759,7 @@ public class Graphic extends JPanel {
                 for (int wy = 0, index = 0;
                         wy <= rc.projectedSliceHeight - 1; wy++, index++) {
                     if (wy >= 0 && wy < planeHeight) {
-                        if(index >= rc.slicePixels.length) {
+                        if (index >= rc.slicePixels.length) {
                             break;
                         }
                         if (IS_ANGLE_MARKER_ON && rayAngle == (player.angle)) {
@@ -784,7 +789,7 @@ public class Graphic extends JPanel {
                 for (int wy = rc.startDraw, index = 0;
                         wy <= rc.startDraw + rc.projectedSliceHeight - 1; wy++, index++) {
                     if (wy >= 0 && wy < planeHeight) {
-                        if(index >= rc.slicePixels.length) {
+                        if (index >= rc.slicePixels.length) {
                             break;
                         }
                         if (IS_ANGLE_MARKER_ON && rayAngle == (player.angle)) {
@@ -797,9 +802,9 @@ public class Graphic extends JPanel {
                 }
                 // </editor-fold>
                 //////////////////////////////////////////////////////////////////////////////
-            }            
+            }
             //////////////////////////////////////////////////////////////////////////////////
-            
+
             ///////////////	SCALING AND DRAWING THIN WALL ////////////////////////////////////
             // <editor-fold defaultstate="collapsed" desc="thin wall">
             /*
@@ -893,19 +898,19 @@ public class Graphic extends JPanel {
         if (theta >= 360) {
             theta -= 360;
         }
-        
+
         int x = (spriteX << SIZE_LOG), y = (spriteY << SIZE_LOG);
 
-        if(theta >= 25f && theta <= 170f) {
+        if (theta >= 25f && theta <= 170f) {
             x += SIZE;
         }
-        if(theta >= 120f && theta <= 260f) { // y+ 64
+        if (theta >= 120f && theta <= 260f) { // y+ 64
             y += SIZE;
         }
-        
+
         xInc = (int) (x - player.x);
         yInc = (int) (y - player.y);
-        
+
         // radian = degree * PI / 180?
         // degree = radian / PI * 180?
         float thetaTemp = (float) Math.atan2(yInc, xInc);
@@ -916,25 +921,24 @@ public class Graphic extends JPanel {
         }
 
         // theta - player.angle
-        
         float yTmp;
         yTmp = theta + (fov / 2) - thetaTemp;
         if (thetaTemp > 270 && theta < 90) {
-           yTmp = theta + (fov / 2) - thetaTemp + 360;
+            yTmp = theta + (fov / 2) - thetaTemp + 360;
         }
         if (theta > 270 && thetaTemp < 90) {
-           yTmp = theta + (fov / 2) - thetaTemp - 360;
+            yTmp = theta + (fov / 2) - thetaTemp - 360;
         }
 
         float xTmp = (float) (yTmp * planeWidth / fov);
-        
+
         return planeWidth - xTmp + 32;
     }
 
     private final void pr(Object s) {
         System.out.println(s);
     }
-    
+
     /**
      * Examine the existing sprites and draw slice-by-slice the ones visible in
      * the player's FOV (Field Of View).
@@ -949,17 +953,17 @@ public class Graphic extends JPanel {
         float distance;
         int onscreenY;
         boolean inside;
-        
+
         // <editor-fold defaultstate="collapsed" desc="SPRITES">
         for (int i = 0; i < manager.getItemStartIndex(); i++) {
-            
+
             onscreenX = (int) findXOffsetForSprites(manager.sprites[i].x, manager.sprites[i].y);
 
             inside = !map.isOutside(manager.sprites[i].x, manager.sprites[i].y);
 
             distance = manager.sprites[i].distanceFromPlayer;
             projectedSliceHeight = (int) ((getPlayerPaneDist() << (SIZE_LOG)) / distance) % planeHeight;
-            
+
             if ((distance <= 90) ^ ((onscreenX) >= planeWidth) || projectedSliceHeight <= 0) {
                 continue;
             }
@@ -968,23 +972,20 @@ public class Graphic extends JPanel {
             if (onscreenY < 0) {
                 onscreenY = 0;
             }
-            
+
             manager.sprites[i].texture.getRGB(0, 0, SIZE, SIZE, pixels2, 0, SIZE);
             pixels3 = resizePixels(pixels2, SIZE, SIZE, projectedSliceHeight, projectedSliceHeight);
-            
+
             for (int col = 0; col < projectedSliceHeight; col++, onscreenX++) {
-                if( 
-                        (onscreenX < planeWidth) && ( (onscreenX) >= 0) && (col < planeWidth) && zbuffer[onscreenX] > distance
-                ) {
+                if ((onscreenX < planeWidth) && ((onscreenX) >= 0) && (col < planeWidth) && zbuffer[onscreenX] > distance) {
                     for (int a = 0; a < projectedSliceHeight; a++) {
-                        int index = (a * projectedSliceHeight + col) % (projectedSliceHeight*projectedSliceHeight);
-                        if ( ((onscreenY + a) < planeHeight)
-                          && ((pixels3[index] >> 24) != 0)
-                        ) {
+                        int index = (a * projectedSliceHeight + col) % (projectedSliceHeight * projectedSliceHeight);
+                        if (((onscreenY + a) < planeHeight)
+                                && ((pixels3[index] >> 24) != 0)) {
                             if (IS_SHADERS_ON) {
-                                output[ (onscreenX) + planeWidth * (onscreenY + a) ] = ImageAndPostProcessHelper.addFogEffect(pixels3[index], distance);
+                                output[(onscreenX) + planeWidth * (onscreenY + a)] = ImageAndPostProcessHelper.addFogEffect(pixels3[index], distance);
                             } else {
-                                output[ (onscreenX) + planeWidth * (onscreenY + a) ] = pixels3[index];
+                                output[(onscreenX) + planeWidth * (onscreenY + a)] = pixels3[index];
                             }
 
                         }
@@ -993,7 +994,7 @@ public class Graphic extends JPanel {
             } // for 2
         } // for 1
         // </editor-fold>
-        
+
         /////////////////
         // <editor-fold defaultstate="collapsed" desc="ITEMS">
         for (int i = manager.getItemStartIndex(); i < manager.getEnemyStartIndex(); i++) {
@@ -1004,7 +1005,7 @@ public class Graphic extends JPanel {
 
             distance = manager.sprites[i].distanceFromPlayer;
             projectedSliceHeight = (int) ((getPlayerPaneDist() << (SIZE_LOG)) / distance) % planeHeight;
-            
+
             if ((distance <= 90) ^ ((onscreenX) >= planeWidth) || projectedSliceHeight <= 0) {
                 continue;
             }
@@ -1013,23 +1014,20 @@ public class Graphic extends JPanel {
             if (onscreenY < 0) {
                 onscreenY = 0;
             }
-            
+
             manager.sprites[i].texture.getRGB(0, 0, SIZE, SIZE, pixels2, 0, SIZE);
             pixels3 = resizePixels(pixels2, SIZE, SIZE, projectedSliceHeight, projectedSliceHeight);
-            
+
             for (int col = 0; col < projectedSliceHeight; col++, onscreenX++) {
-                if( 
-                        (onscreenX < planeWidth) && ( (onscreenX) >= 0) && (col < planeWidth) && zbuffer[onscreenX] > distance
-                ) {
+                if ((onscreenX < planeWidth) && ((onscreenX) >= 0) && (col < planeWidth) && zbuffer[onscreenX] > distance) {
                     for (int a = 0; a < projectedSliceHeight; a++) {
-                        int index = (a * projectedSliceHeight + col) % (projectedSliceHeight*projectedSliceHeight);
-                        if ( ((onscreenY + a) < planeHeight)
-                          && ((pixels3[index] >> 24) != 0)
-                        ) {
+                        int index = (a * projectedSliceHeight + col) % (projectedSliceHeight * projectedSliceHeight);
+                        if (((onscreenY + a) < planeHeight)
+                                && ((pixels3[index] >> 24) != 0)) {
                             if (IS_SHADERS_ON) {
-                                output[ (onscreenX) + planeWidth * (onscreenY + a) ] = ImageAndPostProcessHelper.addFogEffect(pixels3[index], distance);
+                                output[(onscreenX) + planeWidth * (onscreenY + a)] = ImageAndPostProcessHelper.addFogEffect(pixels3[index], distance);
                             } else {
-                                output[ (onscreenX) + planeWidth * (onscreenY + a) ] = pixels3[index];
+                                output[(onscreenX) + planeWidth * (onscreenY + a)] = pixels3[index];
                             }
 
                         }
@@ -1038,19 +1036,18 @@ public class Graphic extends JPanel {
             } // for 2
         } // for 1
         // </editor-fold>
-        
+
         /////////////////
-        
         // <editor-fold defaultstate="collapsed" desc="SPRITES">
         for (int i = manager.getEnemyStartIndex(); i < manager.sprites.length; i++) {
-            
+
             onscreenX = (int) findXOffsetForSprites(manager.sprites[i].x, manager.sprites[i].y);
 
             inside = !map.isOutside(manager.sprites[i].x, manager.sprites[i].y);
 
             distance = manager.sprites[i].distanceFromPlayer;
             projectedSliceHeight = (int) ((getPlayerPaneDist() << (SIZE_LOG)) / distance) % planeHeight;
-            
+
             if ((distance <= 90) ^ ((onscreenX) >= planeWidth) || projectedSliceHeight <= 0) {
                 continue;
             }
@@ -1059,23 +1056,20 @@ public class Graphic extends JPanel {
             if (onscreenY < 0) {
                 onscreenY = 0;
             }
-            
+
             manager.sprites[i].texture.getRGB(0, 0, SIZE, SIZE, pixels2, 0, SIZE);
             pixels3 = resizePixels(pixels2, SIZE, SIZE, projectedSliceHeight, projectedSliceHeight);
-            
+
             for (int col = 0; col < projectedSliceHeight; col++, onscreenX++) {
-                if( 
-                        (onscreenX < planeWidth) && ( (onscreenX) >= 0) && (col < planeWidth) && zbuffer[onscreenX] > distance
-                ) {
+                if ((onscreenX < planeWidth) && ((onscreenX) >= 0) && (col < planeWidth) && zbuffer[onscreenX] > distance) {
                     for (int a = 0; a < projectedSliceHeight; a++) {
-                        int index = (a * projectedSliceHeight + col) % (projectedSliceHeight*projectedSliceHeight);
-                        if ( ((onscreenY + a) < planeHeight)
-                          && ((pixels3[index] >> 24) != 0)
-                        ) {
+                        int index = (a * projectedSliceHeight + col) % (projectedSliceHeight * projectedSliceHeight);
+                        if (((onscreenY + a) < planeHeight)
+                                && ((pixels3[index] >> 24) != 0)) {
                             if (IS_SHADERS_ON) {
-                                output[ (onscreenX) + planeWidth * (onscreenY + a) ] = ImageAndPostProcessHelper.addFogEffect(pixels3[index], distance);
+                                output[(onscreenX) + planeWidth * (onscreenY + a)] = ImageAndPostProcessHelper.addFogEffect(pixels3[index], distance);
                             } else {
-                                output[ (onscreenX) + planeWidth * (onscreenY + a) ] = pixels3[index];
+                                output[(onscreenX) + planeWidth * (onscreenY + a)] = pixels3[index];
                             }
 
                         }
@@ -1084,7 +1078,7 @@ public class Graphic extends JPanel {
             } // for 2
         } // for 1
         // </editor-fold>
-        
+
     } // casting
     //</editor-fold>
 
@@ -1097,9 +1091,9 @@ public class Graphic extends JPanel {
             gb.drawString(line, x, y += gb.getFontMetrics().getHeight());
         }
     }
-    
+
     void clearScreen() {
-        for(int i = 0; i < output.length; i++) {
+        for (int i = 0; i < output.length; i++) {
             output[i] = 0x000000;
         }
     }
@@ -1109,22 +1103,22 @@ public class Graphic extends JPanel {
      */
     public void castGraphic(long delta) {
         render();
-        
+
         if (IS_SPRITES_ON) {
             castSprites();
         }
-        
+
         if (player.SHOOTING) {
             renderBeam();
         }
-        
+
         if (IS_RENDERING_WEAPON_ON) {
             renderHUDAndOverheadGraphic();
         }
-        
+
         paintImmediately(0, 0, planeWidth, planeHeight);
     }
-    
+
     private void showPlayerData(Graphics gb) {
         gb.setColor(Color.BLUE);
         gb.fillRect(5, (planeHeight >> 1) + (planeHeight >> 2) - 15, 130, 60);

@@ -99,14 +99,14 @@ public final class TowHandler {
         tokenizer = new StringTokenizer(sc.next(), ",");
         int size = manager.map.width * manager.map.height;
         System.out.println("<<< Map Cells >>>");
-        
+
         manager.map.texMap = new int[size];
         manager.map.heightMap = new int[size];
         manager.map.insideMap = new int[size];
         //int virtualMap[] = new int[size];
-        
+
         for (int i = 0; i < size; i++) {
-            
+
             int x, y;
 
             x = Integer.parseInt(tokenizer.nextToken());
@@ -115,7 +115,7 @@ public final class TowHandler {
             manager.map.texMap[(y * manager.map.width) + x] = Integer.parseInt(tokenizer.nextToken());
             manager.map.insideMap[(y * manager.map.width) + x] = Integer.parseInt(tokenizer.nextToken());
             manager.map.heightMap[(y * manager.map.width) + x] = Integer.parseInt(tokenizer.nextToken()) == 1 ? SIZE : 0;
-            
+
             //virtualMap[(y * manager.map.width) + x] = Integer.parseInt(tokenizer.nextToken());
             //Integer.parseInt(tokenizer.nextToken());
         }
@@ -193,7 +193,7 @@ public final class TowHandler {
         tokenizer = new StringTokenizer(sc.next(), ",");
         current = Integer.parseInt(tokenizer.nextToken());
         System.out.println("<<< Enemies: " + current + " >>>");
-        
+
         manager.enemies = new Enemy[current];
 
         if (current > 0) {
@@ -242,7 +242,7 @@ public final class TowHandler {
 
         sc.nextLine();
         sc.nextLine();
-        
+
         sc.nextLine();
         sc.nextLine();
 
