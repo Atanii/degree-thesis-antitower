@@ -21,6 +21,8 @@ import hu.emanuel.jeremi.antitower.graphic.TextureLibrary;
 import hu.emanuel.jeremi.antitower.i18n.ResourceHandler;
 import hu.emanuel.jeremi.antitower.save_load.TowHandler;
 import hu.emanuel.jeremi.antitower.world.MapData;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Game extends JFrame implements Runnable, KeyListener {
 
@@ -149,27 +151,41 @@ public class Game extends JFrame implements Runnable, KeyListener {
     public synchronized void run() {
         requestFocus();
 
-        long last = 0l;
-        long now_fps;
-        Queue<Long> times = new LinkedBlockingQueue<>();
-        long delta;
+        long lastLoopTime = System.nanoTime();
+        final int TARGET_FPS = 60;
+        final long OPTIMAL_TIME = 1000000000 / TARGET_FPS;
+        int lastFpsTime = 0, fps = 0;
 
-        // GAMELOOP
         while (running) {
-            now_fps = System.currentTimeMillis();
+            long now = System.nanoTime();
+            long updateLength = now - lastLoopTime;
+            lastLoopTime = now;
+            double delta = updateLength / ((double) OPTIMAL_TIME);
 
-            while (times.size() > 0 && times.peek() <= now_fps - 1000l) {
-                times.poll();
+            lastFpsTime += updateLength;
+            fps++;
+
+            if (lastFpsTime >= 1000000000) {
+                System.out.println("(FPS: " + fps + ")");
+                lastFpsTime = 0;
+                fps = 0;
             }
-            times.add(now_fps);
 
-            delta = (now_fps - last) >> 4;
             update(delta);
+
             render();
-            last = now_fps;
-        } // while
+
+            try {
+                long a = (lastLoopTime - System.nanoTime() + OPTIMAL_TIME) / 1000000;
+                if (a >= 0l) {
+                    Thread.sleep(a);
+                }
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     } // run
-    
+
     private void render() {
         switch (mode) {
             case MENU:
@@ -182,18 +198,18 @@ public class Game extends JFrame implements Runnable, KeyListener {
                 break;
         } // switch
     }
-    
+
     private void update(double delta) {
         switch (mode) {
-                case GAME:
-                    manager.attackPlayer();
-                    player.update(manager, delta);
-                    manager.checkGoalPoint();
-                    renderer.updateWeather(delta);
-                    break;
-                default:
-                    break;
-            } // switch
+            case GAME:
+                manager.attackPlayer();
+                player.update(manager, delta);
+                manager.checkGoalPoint();
+                renderer.updateWeather(delta);
+                break;
+            default:
+                break;
+        } // switch
     }
 
     // KEYBOARD
