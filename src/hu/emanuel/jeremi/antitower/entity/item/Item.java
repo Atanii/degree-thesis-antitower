@@ -1,7 +1,5 @@
 package hu.emanuel.jeremi.antitower.entity.item;
 
-;
-
 import hu.emanuel.jeremi.antitower.entity.Sprite;
 import java.awt.image.BufferedImage;
 
