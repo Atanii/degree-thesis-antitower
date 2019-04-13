@@ -266,7 +266,7 @@ public class Player {
         }
     }
 
-    public void update(PlayerWorldConnector pwc, long delta) {
+    public void update(PlayerWorldConnector pwc, double delta) {
         int speed = (int) (this.speed * delta);
 
         float dx = pwc.getCosTable()[angle] * speed;

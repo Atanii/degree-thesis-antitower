@@ -80,7 +80,7 @@ public abstract class Weather {
      *
      * @param delta
      */
-    public abstract void update(long delta);
+    public abstract void update(double delta);
 
     /**
      * Render a static weather effects which doesn't rotate when the player

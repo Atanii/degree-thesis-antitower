@@ -67,7 +67,7 @@ public class Rain extends Weather {
      * @param delta
      */
     @Override
-    public final void update(long delta) {
+    public final void update(double delta) {
         int speed = (int) (this.speed * delta);
         for (int i = 0; i < amount; i++) {
             // first layer

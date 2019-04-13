@@ -309,7 +309,7 @@ public class Graphic extends JPanel {
         }
     }
 
-    public void updateWeather(long delta) {
+    public void updateWeather(double delta) {
         if (weather == WeatherType.RAIN) {
             rain.update(delta);
         } else if (weather == WeatherType.SNOW) {
@@ -1101,7 +1101,7 @@ public class Graphic extends JPanel {
     /**
      * The function handling, calling the casting, drawing functions.
      */
-    public void castGraphic(long delta) {
+    public void castGraphic() {
         render();
 
         if (IS_SPRITES_ON) {

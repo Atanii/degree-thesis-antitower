@@ -164,30 +164,37 @@ public class Game extends JFrame implements Runnable, KeyListener {
             times.add(now_fps);
 
             delta = (now_fps - last) >> 4;
-            switch (mode) {
-                case MENU:
-                    renderer.repaint();
-                    break;
+            update(delta);
+            render();
+            last = now_fps;
+        } // while
+    } // run
+    
+    private void render() {
+        switch (mode) {
+            case MENU:
+                renderer.repaint();
+                break;
+            case GAME:
+                renderer.castGraphic();
+                break;
+            default:
+                break;
+        } // switch
+    }
+    
+    private void update(double delta) {
+        switch (mode) {
                 case GAME:
                     manager.attackPlayer();
                     player.update(manager, delta);
                     manager.checkGoalPoint();
                     renderer.updateWeather(delta);
-                    renderer.castGraphic(delta);
-                    /*{
-                        try {
-                            Thread.sleep(delta * 10);
-                        } catch (InterruptedException ex) {
-                            Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }*/
                     break;
                 default:
                     break;
             } // switch
-            last = now_fps;
-        } // while
-    } // run
+    }
 
     // KEYBOARD
     @Override
