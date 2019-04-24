@@ -180,7 +180,7 @@ public final class TowHandler {
                 int id = Integer.parseInt(tokenizer.nextToken());
 
                 manager.sprites[i] = new Sprite(
-                        manager.texLib.getTexture(manager.map.pack, tex), x, y, id
+                        manager.renderer.tex.getTexture(manager.map.pack, tex), x, y, id
                 );
             }
         }
@@ -207,7 +207,7 @@ public final class TowHandler {
                 int type = Integer.parseInt(tokenizer.nextToken());
 
                 manager.enemies[i] = new Enemy(
-                        id, x, y, true, EnemyType.values()[type], manager.texLib
+                        id, x, y, true, EnemyType.values()[type], manager.renderer.tex
                 );
             }
         }
@@ -235,7 +235,7 @@ public final class TowHandler {
                 ItemType type = ItemType.values()[Integer.parseInt(tokenizer.nextToken())];
 
                 manager.assumables[i] = new Item(
-                        type, id, value, x, y, manager.texLib.getItemSprite(type)
+                        type, id, value, x, y, manager.renderer.tex.getItemSprite(type)
                 );
             }
         }

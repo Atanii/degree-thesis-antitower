@@ -2,6 +2,9 @@ package hu.emanuel.jeremi.antitower.graphic;
 
 import static hu.emanuel.jeremi.antitower.common.Tile64.*;
 import hu.emanuel.jeremi.antitower.entity.Enemy.EnemyType;
+import static hu.emanuel.jeremi.antitower.entity.EntityManager.ENEMY;
+import static hu.emanuel.jeremi.antitower.entity.EntityManager.ITEM;
+import static hu.emanuel.jeremi.antitower.entity.EntityManager.SPRITE;
 import hu.emanuel.jeremi.antitower.entity.Sprite.SpriteSequence;
 import hu.emanuel.jeremi.antitower.entity.item.ItemType;
 
@@ -47,7 +50,7 @@ public class TextureLibrary implements GetSpriteImage {
     //////////////////////////////////////////////////////////////////////////////////////////
 
     /////////////////////////////// CONSTRUCTORS /////////////////////////////////////////////
-    public TextureLibrary(String spritesheet_filename, String itemsheet_filename, String... texturepacks) {
+    public TextureLibrary(String spritesheet_filename, String itemsheet_filename, String[] texturepacks) {
         loadMenuImage();
 
         sprites = loadSpriteSheet(spritesheet_filename);
@@ -139,7 +142,7 @@ public class TextureLibrary implements GetSpriteImage {
     //////////////////////////////////////////////////////////////////////////////////////////
 
     /////////////////////////////// IMAGE ////////////////////////////////////////////////////
-    public BufferedImage getMenuBufferedImage() {
+    public BufferedImage getMenuImage() {
         return this.menu;
     }
 
@@ -316,6 +319,20 @@ public class TextureLibrary implements GetSpriteImage {
     //////////////////////////////////////////////////////////////////////////////////////////
 
     /////////////////////////////// MISC. ////////////////////////////////////////////////////
-    // TODO: Need here anything?
+    public BufferedImage getTexture(int pack, int id, byte type) {
+        switch (type) {
+            case SPRITE: {
+                return getTexture(pack, id);
+            }
+            case ITEM: {
+                return getItem(id);
+            }
+            case ENEMY: {
+                return getSprite(pack);
+            }
+            default:
+                return getTexture(pack, id);
+        }
+    }
     //////////////////////////////////////////////////////////////////////////////////////////	
 }

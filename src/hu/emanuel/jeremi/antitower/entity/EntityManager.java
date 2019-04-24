@@ -4,12 +4,10 @@ import static hu.emanuel.jeremi.antitower.common.Tile64.SIZE;
 import static hu.emanuel.jeremi.antitower.common.Tile64.SIZE_LOG;
 import hu.emanuel.jeremi.antitower.effect.Sound;
 
-import java.awt.image.BufferedImage;
 
 import hu.emanuel.jeremi.antitower.entity.item.Item;
 import hu.emanuel.jeremi.antitower.graphic.Graphic;
 import hu.emanuel.jeremi.antitower.graphic.Graphic.WeatherType;
-import hu.emanuel.jeremi.antitower.graphic.TextureLibrary;
 import hu.emanuel.jeremi.antitower.i18n.MessageProvider;
 import hu.emanuel.jeremi.antitower.message.MessageHandler;
 import hu.emanuel.jeremi.antitower.physics.GamePhysicsHelper;
@@ -48,18 +46,13 @@ public class EntityManager implements PlayerWorldConnector {
 
     public Graphic renderer;
 
-    public TextureLibrary texLib;
-
     private final String leveltitles[] = {"mainframe.tow", "wintertime.tow", "officemaze.tow"};
     private int levelpointer = 0;
     // </editor-fold>
 
-    public EntityManager(Player player, int planeWidth, int planeHeight,
-            MessageProvider rr, TextureLibrary texLib) {
+    public EntityManager(Player player, int planeWidth, int planeHeight, MessageProvider rr) {
 
         this.player = player;
-
-        this.texLib = texLib;
 
         this.msgProvider = rr;
 
@@ -125,26 +118,6 @@ public class EntityManager implements PlayerWorldConnector {
         renderer.updateMap();
     }
 
-    public BufferedImage getTexture(int id) {
-        return texLib.getTexture(map.pack, id);
-    }
-
-    public BufferedImage getTexture(int id, byte type) {
-        switch (type) {
-            case SPRITE: {
-                return texLib.getTexture(map.pack, id);
-            }
-            case ITEM: {
-                return texLib.getItem(id);
-            }
-            case ENEMY: {
-                return texLib.getSprite(map.pack);
-            }
-            default:
-                return texLib.getTexture(map.pack, id);
-        }
-    }
-
     public void reloadActualLevel() {
         map = new MapData(this);
 
@@ -159,10 +132,6 @@ public class EntityManager implements PlayerWorldConnector {
 
     public String getHelp() {
         return this.msgProvider.getHelp();
-    }
-
-    public BufferedImage getMenuImage() {
-        return texLib.getMenuBufferedImage();
     }
 
     /**

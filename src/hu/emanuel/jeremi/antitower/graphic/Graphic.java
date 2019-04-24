@@ -26,8 +26,7 @@ public class Graphic extends JPanel {
     /**
      *
      */
-    private static final long serialVersionUID = 3697273593000989014L;
-    boolean even = false;
+    private static final long serialVersionUID = 3697273593000989014L;    
 
     // <editor-fold defaultstate="collapsed" desc="fields">
     /////////////////////////////// PLANE ////////////////////////////////////////////////////
@@ -38,6 +37,7 @@ public class Graphic extends JPanel {
     private Graphics gb;			// for the graphics buffer and drawing
     private final BufferedImage frame;	// image for the actual frame
     private final int[] output;
+    private boolean even = false;
     //////////////////////////////////////////////////////////////////////////////////////////
 
     /////////////////////////////// ANGLES DEPENDING ON THE PLANEWIDTH ///////////////////////
@@ -65,7 +65,7 @@ public class Graphic extends JPanel {
     //////////////////////////////////////////////////////////////////////////////////////////
 
     /////////////////////////////// SPRITE CASTING ///////////////////////////////////////////
-    float zbuffer[];
+    private float zbuffer[];
     //////////////////////////////////////////////////////////////////////////////////////////
 
     /////////////////////////////// PLAYER LOCAL DATA ////////////////////////////////////////
@@ -94,11 +94,11 @@ public class Graphic extends JPanel {
     //////////////////////////////////////////////////////////////////////////////////////////
 
     // MANAGER AND LIBRARY OBJECTS: EntityManager, MapData, TextureLibrary, MessageDisplayers
-    EntityManager manager;
-    MapData map;
-    TextureLibrary tex;
-    MessageDisplayer msgdisp;
-    GameState mode;
+    private EntityManager manager;
+    private MapData map;
+    public TextureLibrary tex;
+    private MessageDisplayer msgdisp;
+    private GameState mode;
 
     // WEATHER
     public enum WeatherType {
@@ -205,7 +205,7 @@ public class Graphic extends JPanel {
      * @param manager
      * @param player
      */
-    public Graphic(int planeWidth, int planeHeight, Player player, EntityManager manager) {
+    public Graphic(int planeWidth, int planeHeight, Player player, EntityManager manager, String spritesheetPath, String itemsheetPath, String[] texturePaths) {
         super();
 
         // GAME STATE
@@ -213,7 +213,7 @@ public class Graphic extends JPanel {
 
         // EntityManager, TextureLibrary, Map
         this.manager = manager;
-        this.tex = manager.texLib;
+        this.tex = new TextureLibrary(spritesheetPath, itemsheetPath, texturePaths);
 
         // Frame initialization:
         frame = new BufferedImage(planeWidth, planeHeight, BufferedImage.TYPE_INT_ARGB);
@@ -285,7 +285,7 @@ public class Graphic extends JPanel {
         // draw current frame
 
         if (mode == GameState.MENU) {
-            g.drawImage(manager.getMenuImage(), 0, 0, this);
+            g.drawImage(tex.getMenuImage(), 0, 0, this);
         } else {
             g.drawImage(frame, 0, 0, this);
             // draw messages currently waiting for drawing
@@ -632,7 +632,7 @@ public class Graphic extends JPanel {
                 rc.distance = rc.wallDistHorizontal / fishEyeCorrectionTable[raysCasted];
                 zbuffer[raysCasted] = rc.distance;
                 rc.offset = 63 - (((int) rc.tempAx) & 63);
-                manager.getTexture(rc.tileIndexHor).getRGB(rc.offset, 0, 1, SIZE, rc.pixels, 0, 1);
+                tex.getTexture(manager.map.pack, rc.tileIndexHor).getRGB(rc.offset, 0, 1, SIZE, rc.pixels, 0, 1);
                 // VERTICAL
             } else {
                 rc.isHorizontalWallInside = rc.isVerticalWallInside;
@@ -641,10 +641,10 @@ public class Graphic extends JPanel {
                 zbuffer[raysCasted] = rc.distance;
                 if (!rc.RIGHT) {
                     rc.offset = 63 - (((int) rc.tempAy) & 63);
-                    manager.getTexture(rc.tileIndexVer).getRGB(rc.offset, 0, 1, SIZE, rc.pixels, 0, 1);
+                    tex.getTexture(manager.map.pack, rc.tileIndexVer).getRGB(rc.offset, 0, 1, SIZE, rc.pixels, 0, 1);
                 } else {
                     rc.offset = (((int) rc.tempAy) & 63);
-                    manager.getTexture(rc.tileIndexVer).getRGB(rc.offset, 0, 1, SIZE, rc.pixels, 0, 1);
+                    tex.getTexture(manager.map.pack, rc.tileIndexVer).getRGB(rc.offset, 0, 1, SIZE, rc.pixels, 0, 1);
                 }
             }
             // TODO: ezt elt?ntetni
@@ -696,9 +696,9 @@ public class Graphic extends JPanel {
                     // x & 63 = x % 64 and x & 63 = x % 64, texture offset
                     // TODO: x&63 helyett x&(SIZE-1)-el ekvivalens ?ltal?nos?t?s
                     if (IS_SHADERS_ON) {
-                        output[raysCasted + i * planeWidth] = addFogEffect(manager.getTexture(map.texMap[mapY * mapWidth + mapX]).getRGB(x & 63, y & 63), rc.distance);
+                        output[raysCasted + i * planeWidth] = addFogEffect(tex.getTexture(manager.map.pack, map.texMap[mapY * mapWidth + mapX]).getRGB(x & 63, y & 63), rc.distance);
                     } else {
-                        output[raysCasted + i * planeWidth] = manager.getTexture(map.texMap[mapY * mapWidth + mapX]).getRGB(x & 63, y & 63);
+                        output[raysCasted + i * planeWidth] = tex.getTexture(manager.map.pack, map.texMap[mapY * mapWidth + mapX]).getRGB(x & 63, y & 63);
                     }
                 }
             }
@@ -730,9 +730,9 @@ public class Graphic extends JPanel {
                     // TODO: megjav?tani
                     if (!map.isOutside(mapX, mapY)) {
                         if (IS_SHADERS_ON) {
-                            output[raysCasted + i * planeWidth] = addFogEffect(manager.getTexture(map.ceiling).getRGB(x & 63, y & 63), rc.distance);
+                            output[raysCasted + i * planeWidth] = addFogEffect(tex.getTexture(manager.map.pack, map.ceiling).getRGB(x & 63, y & 63), rc.distance);
                         } else {
-                            output[raysCasted + i * planeWidth] = manager.getTexture(map.ceiling).getRGB(x & 63, y & 63);
+                            output[raysCasted + i * planeWidth] = tex.getTexture(manager.map.pack, map.ceiling).getRGB(x & 63, y & 63);
                         }
                     } else if (IS_SKYBOX_ON) {
                         output[raysCasted + i * planeWidth] = sk.getSkyPixel(raysCasted, i, player.angle);
@@ -841,7 +841,7 @@ public class Graphic extends JPanel {
                     }
                 }
 
-                manager.getTexture(map.openedDoor).getRGB(rc.offset, 0, 1, SIZE, rc.pixels, 0, 1);
+                tex.getTexture(manager.map.pack, map.openedDoor).getRGB(rc.offset, 0, 1, SIZE, rc.pixels, 0, 1);
 
                 if (rc.distance < zbuffer[raysCasted]) {
                     rc.projectedSliceHeight = (int) ((getPlayerPaneDist() << SIZE_LOG) / rc.distance);

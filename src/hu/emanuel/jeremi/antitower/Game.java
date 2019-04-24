@@ -9,15 +9,12 @@ import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
-import java.util.Queue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.swing.JFrame;
 
 import hu.emanuel.jeremi.antitower.entity.EntityManager;
 import hu.emanuel.jeremi.antitower.entity.Player;
 import hu.emanuel.jeremi.antitower.graphic.Graphic;
-import hu.emanuel.jeremi.antitower.graphic.TextureLibrary;
 import hu.emanuel.jeremi.antitower.i18n.ResourceHandler;
 import hu.emanuel.jeremi.antitower.save_load.TowHandler;
 import hu.emanuel.jeremi.antitower.world.MapData;
@@ -41,7 +38,6 @@ public class Game extends JFrame implements Runnable, KeyListener {
 
     ResourceHandler resourceHandler;
     EntityManager manager;
-    TextureLibrary texLib;
     MapData map;
     TowHandler saveLoadHandler;
 
@@ -82,15 +78,7 @@ public class Game extends JFrame implements Runnable, KeyListener {
 
         player = new Player();
 
-        texLib = new TextureLibrary(
-                "textures/sprites.png",
-                "textures/items.png",
-                "textures/mainframe.png",
-                "textures/winter.png",
-                "textures/office.png"
-        );
-
-        manager = new EntityManager(player, planeWidth, planeHeight, resourceHandler, texLib);
+        manager = new EntityManager(player, planeWidth, planeHeight, resourceHandler);
         this.saveLoadHandler = new TowHandler(manager);
 
         // Adding listeners:
@@ -98,7 +86,16 @@ public class Game extends JFrame implements Runnable, KeyListener {
 
         // Adding JPanel (gameField):
         setLayout(new FlowLayout());
-        renderer = new Graphic(planeWidth, planeHeight, player, manager);
+        renderer = new Graphic(
+                planeWidth, planeHeight, player, manager,
+                "textures/sprites.png",
+                "textures/items.png",
+                new String[] {
+                    "textures/mainframe.png",
+                    "textures/winter.png",
+                    "textures/office.png" 
+                }
+        );
         renderer.setLayout(null);
         setMinimumSize(new Dimension(planeWidth + 20, planeHeight + 20));
         renderer.setPreferredSize(new Dimension(planeWidth, planeHeight));
