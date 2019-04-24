@@ -27,6 +27,7 @@ public class Graphic extends JPanel {
      *
      */
     private static final long serialVersionUID = 3697273593000989014L;
+    boolean even = false;
 
     // <editor-fold defaultstate="collapsed" desc="fields">
     /////////////////////////////// PLANE ////////////////////////////////////////////////////
@@ -466,16 +467,24 @@ public class Graphic extends JPanel {
 
         // The angle of the angle to be casted:
         int rayAngle = (rayAngle = getAngle() - ANGLE30) < 0 ? rayAngle + ANGLE360 : rayAngle;
-
+        
         // Loop from left to right
         for (int raysCasted = 0; raysCasted < planeWidth; raysCasted += angleBetweenRays) {
-
+            
             // START VALUES FOR VARIABLES, DISTANCES...ETC
             // default distance
             zbuffer[raysCasted] = Float.MAX_VALUE;
 
             rc.reset();
 
+            if( (even && (raysCasted & 1) == 1) || (!even && (raysCasted & 1) == 0) ) {
+                zbuffer[raysCasted] = Float.MIN_VALUE;
+                ///////////////	INCREMENTING RAY-ANGLE TO NEXT POSITION //////////////////////////
+                rayAngle = (rayAngle += angleBetweenRays) >= ANGLE360 ? (rayAngle - ANGLE360) : rayAngle;
+                //////////////////////////////////////////////////////////////////////////////////
+                continue;
+            }
+            
             // <editor-fold defaultstate="collapsed" desc="HORIZONTAL & VERTICAL INTERSECTIONS">
             ///////////////	HORIZONTAL INTERSECTIONS /////////////////////////////////////////
             if ((rayAngle > ANGLE0) && (rayAngle < ANGLE180)) {	// facing down
@@ -958,7 +967,11 @@ public class Graphic extends JPanel {
         for (int i = 0; i < manager.getItemStartIndex(); i++) {
 
             onscreenX = (int) findXOffsetForSprites(manager.sprites[i].x, manager.sprites[i].y);
-
+/*
+            if( (even && (onscreenX & 1) == 1) || (!even && (onscreenX & 1) == 0) ) {
+                continue;
+            }
+            */
             inside = !map.isOutside(manager.sprites[i].x, manager.sprites[i].y);
 
             distance = manager.sprites[i].distanceFromPlayer;
@@ -1000,7 +1013,11 @@ public class Graphic extends JPanel {
         for (int i = manager.getItemStartIndex(); i < manager.getEnemyStartIndex(); i++) {
 
             onscreenX = (int) findXOffsetForSprites(manager.sprites[i].x, manager.sprites[i].y);
-
+  /*          
+            if( (even && (onscreenX & 1) == 1) || (!even && (onscreenX & 1) == 0) ) {
+                continue;
+            }
+*/
             inside = !map.isOutside(manager.sprites[i].x, manager.sprites[i].y);
 
             distance = manager.sprites[i].distanceFromPlayer;
@@ -1042,7 +1059,11 @@ public class Graphic extends JPanel {
         for (int i = manager.getEnemyStartIndex(); i < manager.sprites.length; i++) {
 
             onscreenX = (int) findXOffsetForSprites(manager.sprites[i].x, manager.sprites[i].y);
-
+  /*          
+            if( (even && (onscreenX & 1) == 1) || (!even && (onscreenX & 1) == 0) ) {
+                continue;
+            }
+*/
             inside = !map.isOutside(manager.sprites[i].x, manager.sprites[i].y);
 
             distance = manager.sprites[i].distanceFromPlayer;
@@ -1102,6 +1123,8 @@ public class Graphic extends JPanel {
      * The function handling, calling the casting, drawing functions.
      */
     public void castGraphic() {
+        even = !even;
+        
         render();
 
         if (IS_SPRITES_ON) {
