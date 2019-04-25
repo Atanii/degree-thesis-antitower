@@ -178,14 +178,13 @@ public class Graphic extends JPanel {
     private void setupPlayer() {
         // TODO: get rid of this
         player.FOV = ANGLE60;
-        setFOV(player.FOV);
+        FOV = ANGLE60;
         player.speed = 5;
-        //player.rotateSpeed = ANGLE5 / 2;
         player.rotateSpeed = ANGLE5;
         player.playerPaneDist = (int) ((planeWidth >> 1) / (float) Math.tan(GamePhysicsHelper.toCustomRad(player.FOV >> 1, ANGLE180)));
         player.isInside = false;
         player.angle = ANGLE0;
-        angleBetweenRays = getFOV() / planeWidth;
+        angleBetweenRays = FOV / planeWidth;
     }
 
     /**
@@ -213,6 +212,7 @@ public class Graphic extends JPanel {
 
         // EntityManager, TextureLibrary, Map
         this.manager = manager;
+        this.manager.setRenderer(this);
         this.tex = new TextureLibrary(spritesheetPath, itemsheetPath, texturePaths);
 
         // Frame initialization:
@@ -898,7 +898,7 @@ public class Graphic extends JPanel {
      */
     private float findXOffsetForSprites(int spriteX, int spriteY) {
         float theta = (player.angle * 60f / planeWidth);
-        float fov = getFOV() * 60f / planeWidth;
+        float fov = FOV * 60f / planeWidth;
         int xInc, yInc;
 
         if (theta < 0) {
@@ -1176,14 +1176,6 @@ public class Graphic extends JPanel {
 
     public void setAngle(int angle) {
         this.angle = angle;
-    }
-
-    public int getFOV() {
-        return FOV;
-    }
-
-    public void setFOV(int fOV) {
-        FOV = fOV;
     }
 
     public int getPlayerPaneDist() {

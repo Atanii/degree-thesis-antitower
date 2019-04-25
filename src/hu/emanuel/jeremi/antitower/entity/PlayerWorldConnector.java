@@ -20,7 +20,7 @@ public interface PlayerWorldConnector {
 
     public void makenteractWithClosestInteractive();
 
-    public void synchGraphWithData(int x, int y, int angle, int FOV, int playerPaneDist);
+    public void synchGraphWithData(int x, int y, int angle, int playerPaneDist);
 
     public void updateDistBetweenndSprites();
 
@@ -30,5 +30,5 @@ public interface PlayerWorldConnector {
 
     public void handleShoot(int x, int y, int angle);
 
-    public void updateRendererPlayerReference(int x, int y, int angle, int fOV, int playerPaneDist);
+    public void updateRendererPlayerReference(int x, int y, int angle, int playerPaneDist);
 }

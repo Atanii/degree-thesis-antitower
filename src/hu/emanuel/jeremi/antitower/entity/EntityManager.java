@@ -58,6 +58,8 @@ public class EntityManager implements PlayerWorldConnector {
 
         this.planeWidth = planeWidth;
         this.planeHeight = planeHeight;
+        
+        this.saveLoadHandler = new TowHandler(this);
 
         msgh = new MessageHandler();
     }
@@ -384,10 +386,9 @@ public class EntityManager implements PlayerWorldConnector {
     }
 
     @Override
-    public void synchGraphWithData(int x, int y, int angle, int FOV, int playerPaneDist) {
+    public void synchGraphWithData(int x, int y, int angle, int playerPaneDist) {
         renderer.setPlayerX(x);
         renderer.setPlayerY(y);
-        renderer.setFOV(FOV);
         renderer.setPlayerPaneDist(playerPaneDist);
     }
 
@@ -412,11 +413,10 @@ public class EntityManager implements PlayerWorldConnector {
     }
 
     @Override
-    public void updateRendererPlayerReference(int x, int y, int angle, int fOV, int playerPaneDist) {
+    public void updateRendererPlayerReference(int x, int y, int angle, int playerPaneDist) {
         renderer.setPlayerX(x);
         renderer.setPlayerY(y);
         renderer.setAngle(angle);
-        renderer.setFOV(fOV);
         renderer.setPlayerPaneDist(playerPaneDist);
     }
 

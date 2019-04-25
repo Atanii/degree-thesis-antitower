@@ -340,7 +340,7 @@ public class Player {
             (new Sound("sound/my_laser.wav")).play();
         }
 
-        pwc.updateRendererPlayerReference(x, y, angle, FOV, playerPaneDist);
+        pwc.updateRendererPlayerReference(x, y, angle, playerPaneDist);
         pwc.updateDistBetweenndSprites();
         pwc.checkAssumableCollision();
     }

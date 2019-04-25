@@ -16,8 +16,6 @@ import hu.emanuel.jeremi.antitower.entity.EntityManager;
 import hu.emanuel.jeremi.antitower.entity.Player;
 import hu.emanuel.jeremi.antitower.graphic.Graphic;
 import hu.emanuel.jeremi.antitower.i18n.ResourceHandler;
-import hu.emanuel.jeremi.antitower.save_load.TowHandler;
-import hu.emanuel.jeremi.antitower.world.MapData;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -38,8 +36,6 @@ public class Game extends JFrame implements Runnable, KeyListener {
 
     ResourceHandler resourceHandler;
     EntityManager manager;
-    MapData map;
-    TowHandler saveLoadHandler;
 
     // Thread for the game.
     Thread gameThread;
@@ -79,7 +75,6 @@ public class Game extends JFrame implements Runnable, KeyListener {
         player = new Player();
 
         manager = new EntityManager(player, planeWidth, planeHeight, resourceHandler);
-        this.saveLoadHandler = new TowHandler(manager);
 
         // Adding listeners:
         addKeyListener(this);
@@ -115,8 +110,6 @@ public class Game extends JFrame implements Runnable, KeyListener {
 
         pack();
 
-        manager.setRenderer(renderer);
-        manager.setTowHandler(saveLoadHandler);
         manager.setWeatherAndDayTime();
         manager.LoadLevel();
         renderer.updateMap();
