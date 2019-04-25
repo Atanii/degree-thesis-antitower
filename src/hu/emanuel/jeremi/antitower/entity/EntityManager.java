@@ -140,10 +140,10 @@ public class EntityManager implements PlayerWorldConnector {
      *
      */
     public void makePlayerInteractWithClosestInteractive() {
-        Interactive minTemp = null;
+        ToggleDoor minTemp = null;
         float minDistance = Float.MAX_VALUE;
         float distance;
-        for (Interactive i : doors) {
+        for (ToggleDoor i : doors) {
             distance = GamePhysicsHelper.getDistance(i.getMapX(), i.getMapY(), player.x, player.y);
             if (distance <= minDistance) {
                 minDistance = distance;

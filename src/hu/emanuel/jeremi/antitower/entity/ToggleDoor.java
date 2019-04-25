@@ -2,7 +2,7 @@ package hu.emanuel.jeremi.antitower.entity;
 
 import hu.emanuel.jeremi.antitower.effect.Sound;
 
-public class ToggleDoor implements Interactive {
+public class ToggleDoor {
 
     public int x, y;
     private final int key;
@@ -10,8 +10,6 @@ public class ToggleDoor implements Interactive {
     public int closed, opened;
 
     public ToggleDoor(int closed, int opened, int x, int y, int key, boolean isClosed) {
-        this.x = x;
-        this.y = y;
         this.x = x;
         this.y = y;
         this.closed = closed;
@@ -29,7 +27,6 @@ public class ToggleDoor implements Interactive {
         return isClosed ? closed : opened;
     }
 
-    @Override
     public boolean interactWithPlayer(int key_card_id) {
         if (this.key == key_card_id) {
             toggle();
@@ -39,12 +36,10 @@ public class ToggleDoor implements Interactive {
         }
     }
 
-    @Override
     public int getMapX() {
         return x;
     }
 
-    @Override
     public int getMapY() {
         return y;
     }

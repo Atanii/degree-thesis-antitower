@@ -79,7 +79,7 @@ public class Player {
         initPlayer();
     }
 
-    public boolean interact(Interactive toInteractWith) {
+    public boolean interact(ToggleDoor toInteractWith) {
         INTERACTING = false;
         if (toInteractWith == null) {
             return false;
