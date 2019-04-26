@@ -2,7 +2,7 @@ package hu.emanuel.jeremi.antitower.entity;
 
 import hu.emanuel.jeremi.antitower.effect.Sound;
 import hu.emanuel.jeremi.antitower.entity.Sprite.SpriteSequence;
-import hu.emanuel.jeremi.antitower.graphic.GetSpriteImage;
+import hu.emanuel.jeremi.antitower.graphic.TextureLibrary;
 
 public class Enemy {
 
@@ -43,13 +43,13 @@ public class Enemy {
     public static final Sound RIFLE_TOWER_DESTROYED = new Sound("sound/tower_break.wav");
     // </editor-fold>
 
-    public Enemy(int id, int x, int y, boolean hostile, EnemyType type, GetSpriteImage seqGetter) {
+    public Enemy(int id, int x, int y, boolean hostile, EnemyType type, TextureLibrary texLib) {
         this.x = x;
         this.y = y;
         this.id = id;
         this.now = 0;
         this.hostile = hostile;
-        this.frames = seqGetter.getEnemySprites(type, x, y, id);
+        this.frames = texLib.getEnemySprites(type, x, y, id);
         this.type = type;
         setConfiguration(type);
     }

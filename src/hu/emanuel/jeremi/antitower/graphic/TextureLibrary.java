@@ -14,7 +14,7 @@ import java.net.URL;
 
 import javax.imageio.ImageIO;
 
-public class TextureLibrary implements GetSpriteImage {
+public class TextureLibrary {
     /////////////////////////////// VARIABLES, CONSTS... /////////////////////////////////////
 
     public static final boolean DEBUG = true;
@@ -172,19 +172,7 @@ public class TextureLibrary implements GetSpriteImage {
     public BufferedImage getTexture(int pack, int id) {
         return img[pack][id];
     }
-
-    /*
-	public BufferedImage getItem(int id) {
-		int w = this.items.s.getWidth() >> SIZE_LOG;
-		
-		int col = ( id % w ) << SIZE_LOG;
-		int row = (int) Math.floor(id / w) << SIZE_LOG;
-        
-        System.out.println(id + " | " + col + " | " + row);
-		
-		return this.items.s.getSubimage(col, row, SIZE, SIZE);
-	}
-     */
+    
     public BufferedImage getItem(int id) {
         int w = this.items.w;
 
@@ -250,7 +238,6 @@ public class TextureLibrary implements GetSpriteImage {
         return null;
     }
 
-    @Override
     public SpriteSequence getEnemySprites(EnemyType type, int x, int y, int id) {
         BufferedImage temp[] = new BufferedImage[SPRITES_ROW_LENGTH];
 
@@ -284,7 +271,6 @@ public class TextureLibrary implements GetSpriteImage {
         return new SpriteSequence(temp, ENEMY_SPSEQ_START_FRAME, x, y, id);
     }
 
-    @Override
     public BufferedImage getItemSprite(ItemType type) {
         switch (type) {
             case ZAPPER:
@@ -296,25 +282,6 @@ public class TextureLibrary implements GetSpriteImage {
             default:
                 return null;
         }
-    }
-
-    @Override
-    public BufferedImage getItemOverheadIcon(ItemType type) {
-        switch (type) {
-            case ZAPPER:
-                return items.s.getSubimage(0, 0 * SIZE, SIZE, SIZE);
-            case KEY_CARD:
-                return items.s.getSubimage(SIZE, 0 * SIZE, SIZE, SIZE);
-            case SHIELD:
-                return items.s.getSubimage(2 * SIZE, 0 * SIZE, SIZE, SIZE);
-            default:
-                return null;
-        }
-    }
-
-    @Override
-    public BufferedImage getDecorationSprite(int tileId) {
-        return null;
     }
     //////////////////////////////////////////////////////////////////////////////////////////
 
